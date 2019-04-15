@@ -1,0 +1,26 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# ANOVApower
+
+The goal of ANOVApower is to easily simulate ANOVA designs and calculate the observed power.
+
+## Installation
+
+You can install the released version of ANOVApower from [GitHub](https://github.com/Lakens/ANOVApower) with:
+
+``` r
+devtools::install.github("Lakens/ANOVApower")
+```
+
