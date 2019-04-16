@@ -12,19 +12,30 @@ power_oneway_between(design_result, alpha_level = 0.05)
 \item{alpha_level}{Alpha level used to determine statistical significance}
 }
 \value{
-Returns
 mu = means
+
 sigma = standard deviation
+
 n = sample size
+
 alpha_level = alpha level
+
 Cohen_f = Cohen f
+
 f_2 = Cohen's f^2
+
 lambda = lambda
+
 F_critical = Criticial F-value
+
 power = power
+
 df1 = degrees of freedom for the effect
+
 df2 = degrees of freedom of the error
+
 eta_p_2 = partial eta-squared
+
 mean_mat = matrix of the means
 }
 \description{
@@ -36,11 +47,10 @@ too be added
 }
 
 \examples{
-## Set up a within design with 2 factors, each with 2 levels,
-## with correlation between observations of 0.8,
+## Set up a within design with one factor with 2 levels,
 ## 40 participants (woh do all conditions), and standard deviation of 2
-## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
-## 'voice', with names for levels of "cheerful", "sad", amd "human", "robot"
+## with a mean pattern of 1, 0, 1, conditions labeled 'condition'
+## with names for levels of "cheerful", "neutral", "sad"
 design_result <- ANOVA_design(string = "3b", n = 40, mu = c(1, 0, 1),
       sd = 2, labelnames = c("condition", "cheerful", "neutral", "sad"))
 power_result <- power_oneway_between(design_result, alpha_level = 0.05)
