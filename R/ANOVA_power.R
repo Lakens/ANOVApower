@@ -19,7 +19,7 @@
 #'       p_adjust = "none", nsims = 10)
 #' @section References:
 #' too be added
-#' @importFrom stats pnorm pt qnorm qt as.formula median
+#' @importFrom stats pnorm pt qnorm qt as.formula median p.adjust
 #' @importFrom utils combn
 #' @importFrom reshape2 melt
 #' @importFrom MASS mvrnorm
@@ -221,7 +221,7 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
       # store p-values and effect sizes for calculations and plots.
       sim_data[i,] <- c(aov_result$anova_table[[6]], #p-value for ANOVA
                         aov_result$anova_table[[5]], #partial eta squared
-                        paired_p, #p-values for paired comparisons
+                        p.adjust(paired_p, method = p_adjust), #p-values for paired comparisons, added correction for multiple comparisons
                         paired_d #effect sizes
     )}
   #}) #close withProgress Block outside of Shiny
