@@ -27,7 +27,7 @@
 #' @export
 #'
 
-ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 1000, seed = NULL){
+ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 1000, seed = NULL, verbose = TRUE){
 
   # #Require necessary packages
   # requireNamespace(mvtnorm, quietly = TRUE)
@@ -392,15 +392,16 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   #######################
   # Return Results ----
   #######################
-
-  # The section below should be blocked out when in Shiny
-  cat("Power and Effect sizes for ANOVA tests")
-  cat("\n")
-  print(main_results)
-  cat("\n")
-  cat("Power and Effect sizes for contrasts")
-  cat("\n")
-  print(pc_results)
+  if(verbose == TRUE){
+    # The section below should be blocked out when in Shiny
+    cat("Power and Effect sizes for ANOVA tests")
+    cat("\n")
+    print(main_results)
+    cat("\n")
+    cat("Power and Effect sizes for contrasts")
+    cat("\n")
+    print(pc_results)
+  }
 
   # Return results in list()
   invisible(list(sim_data = sim_data,
