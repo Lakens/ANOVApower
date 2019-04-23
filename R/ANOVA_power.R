@@ -29,15 +29,6 @@
 
 ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 1000, seed = NULL, verbose = TRUE){
 
-  # #Require necessary packages
-  # requireNamespace(mvtnorm, quietly = TRUE)
-  # requireNamespace(MASS, quietly = TRUE)
-  # requireNamespace(afex, quietly = TRUE)
-  # requireNamespace(emmeans, quietly = TRUE)
-  # requireNamespace(ggplot2, quietly = TRUE)
-  # requireNamespace(gridExtra, quietly = TRUE)
-  # requireNamespace(reshape2, quietly = TRUE)
-
   options(scipen = 999) # 'turn off' scientific notation
   set.seed(seed)
 
@@ -237,7 +228,7 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
 
   plotData <-
     suppressMessages({
-      melt(sim_data[1:(2 ^ factors - 1)], value.name = 'p')
+      reshape2::melt(sim_data[1:(2 ^ factors - 1)], value.name = 'p')
     })
 
   SalientLineColor <- "#535353"
@@ -305,7 +296,7 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   # melt the data into a ggplot friendly 'long' format
   p_paired <- sim_data[(2 * (2 ^ factors - 1) + 1):(2 * (2 ^ factors - 1) + possible_pc)]
 
-  plotData <- suppressMessages(melt(p_paired, value.name = 'p'))
+  plotData <- suppressMessages(reshape2::melt(p_paired, value.name = 'p'))
 
   # plot each of the p-value distributions
   plt2 = ggplot(plotData, aes(x = plotData$p)) +
