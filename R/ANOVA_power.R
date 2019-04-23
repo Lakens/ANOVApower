@@ -4,6 +4,7 @@
 #' @param p_adjust Correction for multiple comparisons
 #' @param nsims standard deviation for all conditions
 #' @param seed Set seed for reproducible results
+#' @param verbose Set to FALSE to not print results (default = TRUE)
 #' @return Returns dataframe with simulation data (p-values and effect sizes), anova results and simple effect results, plots of p-value distribution, p_adjust = p_adjust, nsims, and alpha_level.
 #' @examples
 #' ## Set up a within design with 2 factors, each with 2 levels,
@@ -28,6 +29,15 @@
 #'
 
 ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 1000, seed = NULL, verbose = TRUE){
+
+  # #Require necessary packages
+  # requireNamespace(mvtnorm, quietly = TRUE)
+  # requireNamespace(MASS, quietly = TRUE)
+  # requireNamespace(afex, quietly = TRUE)
+  # requireNamespace(emmeans, quietly = TRUE)
+  # requireNamespace(ggplot2, quietly = TRUE)
+  # requireNamespace(gridExtra, quietly = TRUE)
+  # requireNamespace(reshape2, quietly = TRUE)
 
   options(scipen = 999) # 'turn off' scientific notation
   set.seed(seed)
@@ -226,18 +236,16 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
 
   # melt the data into a long format for plots in ggplot2
 
-  plotData <-
-    suppressMessages({
-      reshape2::melt(sim_data[1:(2 ^ factors - 1)], value.name = 'p')
-    })
+  plotData <- suppressMessages(melt(sim_data[1:(2 ^ factors - 1)], value.name = 'p'))
 
   SalientLineColor <- "#535353"
   LineColor <- "#D0D0D0"
   BackgroundColor <- "#F0F0F0"
 
   # plot each of the p-value distributions
-
-  plt1 = ggplot(plotData, aes(x = plotData$p)) +
+  #create variable p to use in ggplot and prevent package check error.
+  p <- plotData$p
+  plt1 = ggplot(plotData, aes(x = p)) +
     scale_x_continuous(breaks = seq(0, 1, by = .1),
                        labels = seq(0, 1, by = .1)) +
     geom_histogram(colour = "#535353",
@@ -296,10 +304,11 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   # melt the data into a ggplot friendly 'long' format
   p_paired <- sim_data[(2 * (2 ^ factors - 1) + 1):(2 * (2 ^ factors - 1) + possible_pc)]
 
-  plotData <- suppressMessages(reshape2::melt(p_paired, value.name = 'p'))
-
+  plotData <- suppressMessages(melt(p_paired, value.name = 'p'))
+  #create variable p to use in ggplot and prevent package check error.
+  p <- plotData$p
   # plot each of the p-value distributions
-  plt2 = ggplot(plotData, aes(x = plotData$p)) +
+  plt2 = ggplot(plotData, aes(x = p)) +
     scale_x_continuous(breaks = seq(0, 1, by = .1),
                        labels = seq(0, 1, by = .1)) +
     geom_histogram(colour = "#535353",

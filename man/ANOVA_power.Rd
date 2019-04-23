@@ -5,7 +5,7 @@
 \title{Simulation function used to perform the simulation}
 \usage{
 ANOVA_power(design_result, alpha_level = 0.05, p_adjust = "none",
-  nsims = 1000, seed = NULL)
+  nsims = 1000, seed = NULL, verbose = TRUE)
 }
 \arguments{
 \item{design_result}{Output from the ANOVA_design function}
@@ -17,6 +17,8 @@ ANOVA_power(design_result, alpha_level = 0.05, p_adjust = "none",
 \item{nsims}{standard deviation for all conditions}
 
 \item{seed}{Set seed for reproducible results}
+
+\item{verbose}{Set to FALSE to not print results (default = TRUE)}
 }
 \value{
 Returns dataframe with simulation data (p-values and effect sizes), anova results and simple effect results, plots of p-value distribution, p_adjust = p_adjust, nsims, and alpha_level.
