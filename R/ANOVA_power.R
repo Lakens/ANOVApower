@@ -239,67 +239,31 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   plotData <- suppressMessages(melt(sim_data[1:(2 ^ factors - 1)], value.name = 'p'))
 
   SalientLineColor <- "#535353"
-  LineColor <- "#D0D0D0"
-  BackgroundColor <- "#F0F0F0"
+  LineColor <- "Black"
+  BackgroundColor <- "White"
 
   # plot each of the p-value distributions
   #create variable p to use in ggplot and prevent package check error.
   p <- plotData$p
+  # Helper function for string wrapping.
+  swr = function(string, nwrap=10) {
+    paste(strwrap(string, width=10), collapse="\n")
+  }
+  swr = Vectorize(swr)
+
+  # Create line breaks in variable
+  plotData$variable = swr(chartr("_:", "  ", plotData$variable))
+
   plt1 = ggplot(plotData, aes(x = p)) +
     scale_x_continuous(breaks = seq(0, 1, by = .1),
                        labels = seq(0, 1, by = .1)) +
-    geom_histogram(colour = "#535353",
-                   fill = "#84D5F0",
+    geom_histogram(colour = "black",
+                   fill = "white",
                    breaks = seq(0, 1, by = .01)) +
     geom_vline(xintercept = alpha_level, colour = 'red') +
     facet_grid(variable ~ .) +
     labs(x = "p") +
-    theme_bw() +
-    theme(
-      panel.grid.major.x = element_blank(),
-      panel.grid.minor.x = element_blank(),
-      panel.grid.minor.y = element_blank()
-    ) +
-    theme(panel.background = element_rect(fill = BackgroundColor)) +
-    theme(plot.background = element_rect(fill = BackgroundColor)) +
-    theme(panel.border = element_rect(colour = BackgroundColor)) +
-    theme(panel.grid.major = element_line(colour = LineColor, size = .75)) +
-    theme(plot.title = element_text(
-      face = "bold",
-      colour = SalientLineColor,
-      vjust = 2,
-      size = 20
-    )) +
-    theme(axis.text.x = element_text(
-      size = 10,
-      colour = SalientLineColor,
-      face = "bold"
-    )) +
-    theme(axis.text.y = element_text(
-      size = 10,
-      colour = SalientLineColor,
-      face = "bold"
-    )) +
-    theme(axis.title.y = element_text(
-      size = 12,
-      colour = SalientLineColor,
-      face = "bold",
-      vjust = 2
-    )) +
-    theme(axis.title.x = element_text(
-      size = 12,
-      colour = SalientLineColor,
-      face = "bold",
-      vjust = 0
-    )) +
-    theme(axis.ticks.x = element_line(colour = SalientLineColor, size =
-                                        2)) +
-    theme(axis.ticks.y = element_line(colour = BackgroundColor)) +
-    theme(axis.line = element_line()) +
-    theme(axis.line.x = element_line(size = 1.2, colour = SalientLineColor)) +
-    theme(axis.line.y = element_line(colour = BackgroundColor)) +
-    theme(plot.margin = unit(c(1, 1, 1, 1), "cm"))
-
+    theme_bw()
   #Plot p-value distributions for simple comparisons
   # melt the data into a ggplot friendly 'long' format
   p_paired <- sim_data[(2 * (2 ^ factors - 1) + 1):(2 * (2 ^ factors - 1) + possible_pc)]
@@ -307,62 +271,20 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   plotData <- suppressMessages(melt(p_paired, value.name = 'p'))
   #create variable p to use in ggplot and prevent package check error.
   p <- plotData$p
+  # Create line breaks in variable
+  plotData$variable = swr(chartr("_:", "  ", plotData$variable))
+
   # plot each of the p-value distributions
   plt2 = ggplot(plotData, aes(x = p)) +
     scale_x_continuous(breaks = seq(0, 1, by = .1),
                        labels = seq(0, 1, by = .1)) +
-    geom_histogram(colour = "#535353",
-                   fill = "#84D5F0",
+    geom_histogram(colour = "black",
+                   fill = "white",
                    breaks = seq(0, 1, by = .01)) +
     geom_vline(xintercept = alpha_level, colour = 'red') +
     facet_grid(variable ~ .) +
     labs(x = expression(p)) +
-    theme_bw() +
-    theme(
-      panel.grid.major.x = element_blank(),
-      panel.grid.minor.x = element_blank(),
-      panel.grid.minor.y = element_blank()
-    ) +
-    theme(panel.background = element_rect(fill = BackgroundColor)) +
-    theme(plot.background = element_rect(fill = BackgroundColor)) +
-    theme(panel.border = element_rect(colour = BackgroundColor)) +
-    theme(panel.grid.major = element_line(colour = LineColor, size = .75)) +
-    theme(plot.title = element_text(
-      face = "bold",
-      colour = SalientLineColor,
-      vjust = 2,
-      size = 20
-    )) +
-    theme(axis.text.x = element_text(
-      size = 10,
-      colour = SalientLineColor,
-      face = "bold"
-    )) +
-    theme(axis.text.y = element_text(
-      size = 10,
-      colour = SalientLineColor,
-      face = "bold"
-    )) +
-    theme(axis.title.y = element_text(
-      size = 12,
-      colour = SalientLineColor,
-      face = "bold",
-      vjust = 2
-    )) +
-    theme(axis.title.x = element_text(
-      size = 12,
-      colour = SalientLineColor,
-      face = "bold",
-      vjust = 0
-    )) +
-    theme(axis.ticks.x = element_line(colour = SalientLineColor, size =
-                                        2)) +
-    theme(axis.ticks.y = element_line(colour = BackgroundColor)) +
-    theme(axis.line = element_line()) +
-    theme(axis.line.x = element_line(size = 1.2, colour = SalientLineColor)) +
-    theme(axis.line.y = element_line(colour = BackgroundColor)) +
-    theme(plot.margin = unit(c(1, 1, 1, 1), "cm"))
-
+    theme_bw()
   ###############
   # 9. Sumary of power and effect sizes of main effects and contrasts ----
   ###############
@@ -412,5 +334,4 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
                  p_adjust = p_adjust,
                  nsims = nsims,
                  alpha_level = alpha_level))
-
 }
