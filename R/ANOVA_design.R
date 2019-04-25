@@ -5,6 +5,7 @@
 #' @param sd standard deviation for all conditions
 #' @param r Correlation between dependent variables (single value or matrix)
 #' @param labelnames Vector specifying factor and condition names
+#' @param plot Should means plot be printed (defaults to TRUE)
 #' @return Returns Single data-frame with simulated data, design, design list, factor names, formulas for ANOVA, means, sd, correlation, sample size per condition, correlation matrix, covariance matrix, design string, label names, factor names, meansplot
 #' @examples
 #' ## Set up a within design with 2 factors, each with 2 levels,
@@ -26,7 +27,7 @@
 #' @export
 #'
 
-ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames){
+ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
 
   #Checks to ensure information is entered correctly into function
   #if (n < 3 || n > 1000) {
@@ -370,7 +371,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames){
       geom_errorbar(aes(ymin = mu-sd, ymax = mu+sd),
                     position = position_dodge(width=0.9), size=.6, width=.3) +
       coord_cartesian(ylim=c(min(mu)-sd, max(mu)+sd)) +
-      theme_bw() + ggtitle("Means for each condition in the design") +
+      theme_bw(size = 16) + ggtitle("Means for each condition in the design") +
      scale_colour_brewer(palette = "Dark2")
 
   } else {
@@ -383,12 +384,9 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames){
       theme_bw() + ggtitle("Means for each condition in the design") +
       scale_colour_brewer(palette = "Dark2")
   }
-
-
-
-
-
-  print(meansplot2)  #should be blocked in Shiny context
+  if(plot == TRUE){
+    print(meansplot2)  #should be blocked in Shiny context
+  }
 
   # Return results in list()
   invisible(list(df = df,
