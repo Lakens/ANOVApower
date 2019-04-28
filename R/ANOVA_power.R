@@ -129,7 +129,7 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   sigmatrix <- design_result$sigmatrix
 
   #Create the data frame. This will be re-used in the simulation (y variable is overwritten) but created only once to save time in the simulation
-  df <- design_result$df
+  dataframe <- design_result$dataframe
 
   ###############
   # 3. Specify factors for formula ----
@@ -139,7 +139,7 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   frml2 <- design_result$frml2
 
   aov_result <- suppressMessages({aov_car(frml1, #here we use frml1 to enter formula 1 as designed above on the basis of the design
-                                         data = df, include_aov = FALSE,
+                                         data = dataframe, include_aov = FALSE,
                                          anova_table = list(es = "pes", p_adjust_method = p_adjust)) }) #This reports PES not GES
 
 
@@ -163,7 +163,7 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
     nrow = nsims
   ))
 
-  paired_tests <- combn(unique(df$cond),2)
+  paired_tests <- combn(unique(dataframe$cond),2)
   paired_p <- numeric(possible_pc)
   paired_d <- numeric(possible_pc)
   within_between <- sigmatrix[lower.tri(sigmatrix)] #based on whether correlation is 0 or not, we can determine if we should run a paired or independent t-test
@@ -189,8 +189,8 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   #withProgress(message = 'Running simulations', value = 0, { #block outside of Shiny
     for (i in 1:nsims) { #for each simulated experiment
       #incProgress(1/nsims, detail = paste("Now running simulation", i, "out of",nsims,"simulations")) #Block outside of Shiny
-      #We simulate a new y variable, melt it in long format, and add it to the df (surpressing messages)
-      df$y <- suppressMessages({
+      #We simulate a new y variable, melt it in long format, and add it to the dataframe (surpressing messages)
+      dataframe$y <- suppressMessages({
         melt(as.data.frame(mvrnorm(
           n = n,
           mu = mu,
@@ -201,13 +201,13 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
       # We perform the ANOVA using AFEX
       #Can be set to NICE to speed up, but required data grabbing from output the change.
       aov_result <- suppressMessages({aov_car(frml1, #here we use frml1 to enter fromula 1 as designed above on the basis of the design
-                                            data = df, include_aov = FALSE, #Need development code to get aov_include function
+                                            data = dataframe, include_aov = FALSE, #Need development code to get aov_include function
                                             anova_table = list(es = "pes",
                                                                p_adjust_method = p_adjust))}) #This reports PES not GES
 
       for (j in 1:possible_pc) {
-        x <- df$y[which(df$cond == paired_tests[1,j])]
-        y <- df$y[which(df$cond == paired_tests[2,j])]
+        x <- dataframe$y[which(dataframe$cond == paired_tests[1,j])]
+        y <- dataframe$y[which(dataframe$cond == paired_tests[2,j])]
         #this can be sped up by tweaking the functions that are loaded to only give p and dz
         ifelse(within_between[j] == 0,
                t_test_res <- effect_size_d(x, y, conf.level = 1 - alpha_level),

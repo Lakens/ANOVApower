@@ -29,22 +29,9 @@
 
 ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
 
-  #Checks to ensure information is entered correctly into function
-  #if (n < 3 || n > 1000) {
-  #  error <- "Sample per cell (n) must be greater than 2 and less than 1001"
-  #  stop(error)
-  #}
-
   if (length(labelnames) != length(as.numeric(strsplit(string, "\\D+")[[1]])) + sum(as.numeric(strsplit(string, "\\D+")[[1]]))) {
     stop("Design (string) does not match the length of the labelnames")
   }
-
-  # #Require packages needed to run the function; return error if not loaded
-  # requireNamespace(MASS, quietly = TRUE)
-  # #requireNamespace(emmeans, quietly = TRUE)
-  # requireNamespace(ggplot2, quietly = TRUE)
-  # requireNamespace(gridExtra, quietly = TRUE)
-  # requireNamespace(reshape2, quietly = TRUE)
 
   ###############
   # 1. Specify Design and Simulation----
@@ -83,7 +70,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
   if(factors == 3){factornames <- c(factornames1,factornames2,factornames3)}
 
   #Specify within/between factors in design: Factors that are within are 1, between 0
-  design <- strsplit(gsub("[^A-Za-z]","",string),"",fixed=TRUE)[[1]]
+  design <- strsplit(gsub("[^A-Za-z]","",string),"",fixed = TRUE)[[1]]
   design <- as.numeric(design == "w") #if within design, set value to 1, otherwise to 0
 
   mu2 <- mu
@@ -100,25 +87,25 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
 
 
   #Create the data frame. This will be re-used in the simulation (y variable is overwritten) but created only once to save time in the simulation
-  df <- as.data.frame(mvrnorm(n=n,
+  dataframe <- as.data.frame(mvrnorm(n=n,
                               mu=mu2,
                               Sigma=sigmatrix_2,
                               empirical = FALSE))
-  df$subject<-as.factor(c(1:n)) #create temp subject variable just for merging
+  dataframe$subject<-as.factor(c(1:n)) #create temp subject variable just for merging
   #Melt dataframe
-  df <- melt(df,
+  dataframe <- melt(dataframe,
              id.vars = "subject",
              variable.name = "cond",
              value.name = "y")
 
-  # Let's break this down - it's a bit tricky. First, we want to create a list of a1 a2 b1 b2 that will indicate the factors.
+  # Let's break this down - it's a bit tricky. First, we want to create a list of labelnames that will indicate the factors.
   # We are looping this over the number of factors.
   # This: as.numeric(strsplit(string, "\\D+")[[1]]) - takes the string used to specify the design and turn it in a list.
-  # we take the letters from the alfabet: paste(letters[[j]] and add numbers 1 to however many factors there as: 1:as.numeric(strsplit(string, "\\D+")[[1]])[j], sep="")
-  # We this get e.g. ,a1 a2 - we repeat these each: n*(2^(factors-1)*2)/(2^j) and them times:  (2^j/2) to get a list for each factor
+  # we take the labelnames and factornames and combine them
+  # We repeat these each: n*(2^(factors-1)*2)/(2^j) and them times:  (2^j/2) to get a list for each factor
   # We then bind these together with the existing dataframe.
   for(j in 1:factors){
-    df <- cbind(df, as.factor(unlist(rep(as.list(paste(factornames[[j]],
+    dataframe <- cbind(dataframe, as.factor(unlist(rep(as.list(paste(factornames[[j]],
                                                        labelnameslist[[j]],
                                                        sep="_")),
                                          each = n*prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[1:j]),
@@ -126,9 +113,9 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
     ))))
   }
   #Rename the factor variables that were just created
-  names(df)[4:(3+factors)] <- factornames[1:factors]
+  names(dataframe)[4:(3+factors)] <- factornames[1:factors]
 
-  #Create subject colum (depends on design)
+  #Create subject column
   subject <- 1:n #Set subject to 1 to the number of subjects collected
 
   for(j2 in length(design):1){ #for each factor in the design, from last to first
@@ -143,10 +130,10 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
     }
   }
 
-  #Overwrite subject columns in df
-  df$subject <- subject
+  #Overwrite subject columns in dataframe
+  dataframe$subject <- subject
   #For the correlation matrix, we want the names of each possible comparison of means
-  #Need to identify which columns from df to pull the factor names from
+  #Need to identify which columns from dataframe to pull the factor names from
   if (factors == 1) {
     cond_col <- c(4)
   } else if (factors == 2) {
@@ -155,7 +142,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
     cond_col <- c(4, 5, 6)
   }
 
-  df$cond <- as.character(interaction(df[, cond_col], sep = "_")) #create a new condition variable combine 2 columns (interaction is a cool function!)
+  dataframe$cond <- as.character(interaction(dataframe[, cond_col], sep = "_")) #create a new condition variable combine 2 columns (interaction is a cool function!)
 
   ###############
   # 3. Specify factors for formula ----
@@ -188,7 +175,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
 
   ############################################
   #Specify factors for formula ###############
-  design_list <- unique(apply((df)[4:(3+factors)], 1, paste, collapse="_"))
+  design_list <- unique(apply((dataframe)[4:(3+factors)], 1, paste, collapse="_"))
 
   ###############
   # 4. Create Covariance Matrix ----
@@ -333,9 +320,9 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
 
   #Changed to SD so that way the authors can visually check to make sure the SD matches that of the intended input -- ARC
 
-  df_means <- data.frame(mu, sd)
+  dataframe_means <- data.frame(mu, sd)
   for(j in 1:factors){
-    df_means <- cbind(df_means, as.factor(unlist(rep(as.list(paste(labelnameslist[[j]],
+    dataframe_means <- cbind(dataframe_means, as.factor(unlist(rep(as.list(paste(labelnameslist[[j]],
                                                                    sep="")),
                                                      each = prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[1:j]),
                                                      times = prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[j:factors])
@@ -343,25 +330,25 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
   }
 
   if(factors == 1){
-    names(df_means) <- c("mu","SD",factornames[1])
-    df_means[,factornames[1]] <- ordered(df_means[,factornames[1]], levels = labelnameslist[[1]])
+    names(dataframe_means) <- c("mu","SD",factornames[1])
+    dataframe_means[,factornames[1]] <- ordered(dataframe_means[,factornames[1]], levels = labelnameslist[[1]])
   }
   if(factors == 2){
-    names(df_means)<-c("mu","SD",factornames[1],factornames[2])
-    df_means[,factornames[1]] <- ordered(df_means[,factornames[1]], levels = labelnameslist[[1]])
-    df_means[,factornames[2]] <- ordered(df_means[,factornames[2]], levels = labelnameslist[[2]])
+    names(dataframe_means)<-c("mu","SD",factornames[1],factornames[2])
+    dataframe_means[,factornames[1]] <- ordered(dataframe_means[,factornames[1]], levels = labelnameslist[[1]])
+    dataframe_means[,factornames[2]] <- ordered(dataframe_means[,factornames[2]], levels = labelnameslist[[2]])
   }
 
   if(factors == 3){
-    names(df_means)<-c("mu","SD",factornames[1],factornames[2],factornames[3])
-    df_means[,factornames[1]] <- ordered(df_means[,factornames[1]], levels = labelnameslist[[1]])
-    df_means[,factornames[2]] <- ordered(df_means[,factornames[2]], levels = labelnameslist[[2]])
-    df_means[,factornames[3]] <- ordered(df_means[,factornames[3]], levels = labelnameslist[[3]])
+    names(dataframe_means)<-c("mu","SD",factornames[1],factornames[2],factornames[3])
+    dataframe_means[,factornames[1]] <- ordered(dataframe_means[,factornames[1]], levels = labelnameslist[[1]])
+    dataframe_means[,factornames[2]] <- ordered(dataframe_means[,factornames[2]], levels = labelnameslist[[2]])
+    dataframe_means[,factornames[3]] <- ordered(dataframe_means[,factornames[3]], levels = labelnameslist[[3]])
   }
 
-  if(factors == 1){meansplot = ggplot(df_means, aes_string(y = "mu", x = factornames[1]))}
-  if(factors == 2){meansplot = ggplot(df_means, aes_string(y = "mu", x = factornames[1], colour = factornames[2]))}
-  if(factors == 3){meansplot = ggplot(df_means, aes_string(y = "mu", x = factornames[1], colour = factornames[2])) + facet_wrap(  paste("~",factornames[3],sep=""))}
+  if(factors == 1){meansplot = ggplot(dataframe_means, aes_string(y = "mu", x = factornames[1]))}
+  if(factors == 2){meansplot = ggplot(dataframe_means, aes_string(y = "mu", x = factornames[1], colour = factornames[2]))}
+  if(factors == 3){meansplot = ggplot(dataframe_means, aes_string(y = "mu", x = factornames[1], colour = factornames[2])) + facet_wrap(  paste("~",factornames[3],sep=""))}
 
   #Set custom color palette if factor 2 has a length greater than 8
   if (factors >= 2 && length(labelnameslist[[2]]) >= 9) {
@@ -371,7 +358,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
       geom_errorbar(aes(ymin = mu-sd, ymax = mu+sd),
                     position = position_dodge(width=0.9), size=.6, width=.3) +
       coord_cartesian(ylim=c(min(mu)-sd, max(mu)+sd)) +
-      theme_bw(size = 16) + ggtitle("Means for each condition in the design") +
+      theme_bw(base_size = 16) + ggtitle("Means for each condition in the design") +
      scale_colour_brewer(palette = "Dark2")
 
   } else {
@@ -389,7 +376,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
   }
 
   # Return results in list()
-  invisible(list(df = df,
+  invisible(list(dataframe = dataframe,
                  design = design,
                  design_list = design_list,
                  factors = factors,

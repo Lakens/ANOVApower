@@ -24,3 +24,7 @@ Imports:
     gridExtra,
     reshape2,
     stats
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

@@ -4,7 +4,7 @@
 \alias{ANOVA_design}
 \title{Design function to specify the details for the simulation}
 \usage{
-ANOVA_design(string, n, mu, sd, r = 0, labelnames)
+ANOVA_design(string, n, mu, sd, r = 0, labelnames, plot = TRUE)
 }
 \arguments{
 \item{string}{String specifying the ANOVA design.}
@@ -18,6 +18,8 @@ ANOVA_design(string, n, mu, sd, r = 0, labelnames)
 \item{r}{Correlation between dependent variables (single value or matrix)}
 
 \item{labelnames}{Vector specifying factor and condition names}
+
+\item{plot}{Should means plot be printed (defaults to TRUE)}
 }
 \value{
 Returns Single data-frame with simulated data, design, design list, factor names, formulas for ANOVA, means, sd, correlation, sample size per condition, correlation matrix, covariance matrix, design string, label names, factor names, meansplot
