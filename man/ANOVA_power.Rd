@@ -14,7 +14,7 @@ ANOVA_power(design_result, alpha_level = 0.05, p_adjust = "none",
 
 \item{p_adjust}{Correction for multiple comparisons}
 
-\item{nsims}{standard deviation for all conditions}
+\item{nsims}{number of simulations to perform}
 
 \item{seed}{Set seed for reproducible results}
 

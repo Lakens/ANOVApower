@@ -26,5 +26,7 @@ Imports:
     stats
 Suggests: 
     knitr,
-    rmarkdown
-VignetteBuilder: knitr
+    rmarkdown,
+    pwr
+VignetteBuilder: 
+    knitr

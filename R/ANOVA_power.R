@@ -2,7 +2,7 @@
 #' @param design_result Output from the ANOVA_design function
 #' @param alpha_level Alpha level used to determine statistical significance
 #' @param p_adjust Correction for multiple comparisons
-#' @param nsims standard deviation for all conditions
+#' @param nsims number of simulations to perform
 #' @param seed Set seed for reproducible results
 #' @param verbose Set to FALSE to not print results (default = TRUE)
 #' @return Returns dataframe with simulation data (p-values and effect sizes), anova results and simple effect results, plots of p-value distribution, p_adjust = p_adjust, nsims, and alpha_level.
