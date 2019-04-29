@@ -2,7 +2,7 @@
 % Please edit documentation in R/mu_from_ES.R
 \name{mu_from_ES}
 \alias{mu_from_ES}
-\title{Using the formulas below, we can calculate the means for between designs with one factor (One-Way ANOVA). Using the formula also used in Albers & Lakens (2018), we can determine the means that should yield a specified effect sizes (expressed in Cohen's f).}
+\title{Convenience function to calculate the means for between designs with one factor (One-Way ANOVA). Can be used to determine the means that should yield a specified effect sizes (expressed in Cohen's f).}
 \usage{
 mu_from_ES(K, ES)
 }
@@ -12,10 +12,10 @@ mu_from_ES(K, ES)
 \item{ES}{Effect size (eta-squared)}
 }
 \value{
-Returns plots with power curves for the effects, and a dataframe with the summary data.
+Returns vector of means
 }
 \description{
-Using the formulas below, we can calculate the means for between designs with one factor (One-Way ANOVA). Using the formula also used in Albers & Lakens (2018), we can determine the means that should yield a specified effect sizes (expressed in Cohen's f).
+Convenience function to calculate the means for between designs with one factor (One-Way ANOVA). Can be used to determine the means that should yield a specified effect sizes (expressed in Cohen's f).
 }
 \section{References}{
 
