@@ -10,9 +10,9 @@
 #' @examples
 #' ## Set up a within design with 2 factors, each with 2 levels,
 #' ## with correlation between observations of 0.8,
-#' ## 40 participants (woh do all conditions), and standard deviation of 2
+#' ## 40 participants (who do all conditions), and standard deviation of 2
 #' ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
-#' ## 'voice', with names for levels of "cheerful", "sad", amd "human", "robot"
+#' ## 'voice', with names for levels of "cheerful", "sad", and "human", "robot"
 #' ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0), sd = 2, r = 0.8,
 #'       labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"))
 #' @section References:
@@ -339,8 +339,8 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
     dataframe_means[,factornames[2]] <- ordered(dataframe_means[,factornames[2]], levels = labelnameslist[[2]])
   }
 
-  if(factors == 3){
-    names(dataframe_means)<-c("mu","SD",factornames[1],factornames[2],factornames[3])
+  if(factors == 3) {
+    names(dataframe_means) <- c("mu","SD",factornames[1],factornames[2],factornames[3])
     dataframe_means[,factornames[1]] <- ordered(dataframe_means[,factornames[1]], levels = labelnameslist[[1]])
     dataframe_means[,factornames[2]] <- ordered(dataframe_means[,factornames[2]], levels = labelnameslist[[2]])
     dataframe_means[,factornames[3]] <- ordered(dataframe_means[,factornames[3]], levels = labelnameslist[[3]])

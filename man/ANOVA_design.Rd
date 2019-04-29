@@ -35,9 +35,9 @@ too be added
 \examples{
 ## Set up a within design with 2 factors, each with 2 levels,
 ## with correlation between observations of 0.8,
-## 40 participants (woh do all conditions), and standard deviation of 2
+## 40 participants (who do all conditions), and standard deviation of 2
 ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
-## 'voice', with names for levels of "cheerful", "sad", amd "human", "robot"
+## 'voice', with names for levels of "cheerful", "sad", and "human", "robot"
 ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0), sd = 2, r = 0.8,
       labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"))
 }
