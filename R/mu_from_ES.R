@@ -1,7 +1,7 @@
-#' Using the formulas below, we can calculate the means for between designs with one factor (One-Way ANOVA). Using the formula also used in Albers & Lakens (2018), we can determine the means that should yield a specified effect sizes (expressed in Cohen's f).
+#' Convenience function to calculate the means for between designs with one factor (One-Way ANOVA). Can be used to determine the means that should yield a specified effect sizes (expressed in Cohen's f).
 #' @param K Number of groups (2, 3, or 4)
 #' @param ES Effect size (eta-squared)
-#' @return Returns plots with power curves for the effects, and a dataframe with the summary data.
+#' @return Returns vector of means
 #' @examples
 #' ## Medium effect size (eta-squared), 2 groups
 #' ES <- 0.0588
