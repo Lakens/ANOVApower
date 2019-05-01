@@ -1,4 +1,4 @@
-#' Design function to specify the details for the simulation
+#' Design function used to specify the parameters used in the simulation
 #' @param string String specifying the ANOVA design.
 #' @param n Sample size in each condition
 #' @param mu Vector specifying mean for each condition
@@ -25,7 +25,6 @@
 #' @importFrom grDevices colorRampPalette
 #' @import ggplot2
 #' @export
-#'
 
 ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
 
@@ -46,7 +45,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
   if(prod(as.numeric(strsplit(string, "\\D+")[[1]])) != length(mu)){stop("the length of the vector with means does not match the study design")}
 
   ###############
-  # 2. Create Dataframe based on Design ----
+  # 2. Create Factors and Design ----
   ###############
 
   #Count number of factors in design
@@ -73,112 +72,11 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
   design <- strsplit(gsub("[^A-Za-z]","",string),"",fixed = TRUE)[[1]]
   design <- as.numeric(design == "w") #if within design, set value to 1, otherwise to 0
 
-  mu2 <- mu
-  sd2 <- sd
-  sigmatrix_2 <- matrix(0, length(mu),length(mu)) #create temp matrix filled with value of correlation, nrow and ncol set to length in mu
-
-  #The loop below is to avoid issues with creating the matrix associated with having a sd < r
-  while (sd2 < min(r)) {
-    sd2 <- sd2*10
-    mu2 <- mu2*10
-  }
-
-  diag(sigmatrix_2) <- sd2 # replace the diagonal with the sd
-
-
-  #Create the data frame. This will be re-used in the simulation (y variable is overwritten) but created only once to save time in the simulation
-  dataframe <- as.data.frame(mvrnorm(n=n,
-                              mu=mu2,
-                              Sigma=sigmatrix_2,
-                              empirical = FALSE))
-  dataframe$subject<-as.factor(c(1:n)) #create temp subject variable just for merging
-  #Melt dataframe
-  dataframe <- melt(dataframe,
-             id.vars = "subject",
-             variable.name = "cond",
-             value.name = "y")
-
-  # Let's break this down - it's a bit tricky. First, we want to create a list of labelnames that will indicate the factors.
-  # We are looping this over the number of factors.
-  # This: as.numeric(strsplit(string, "\\D+")[[1]]) - takes the string used to specify the design and turn it in a list.
-  # we take the labelnames and factornames and combine them
-  # We repeat these each: n*(2^(factors-1)*2)/(2^j) and them times:  (2^j/2) to get a list for each factor
-  # We then bind these together with the existing dataframe.
-  for(j in 1:factors){
-    dataframe <- cbind(dataframe, as.factor(unlist(rep(as.list(paste(factornames[[j]],
-                                                       labelnameslist[[j]],
-                                                       sep="_")),
-                                         each = n*prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[1:j]),
-                                         times = prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[j:factors])
-    ))))
-  }
-  #Rename the factor variables that were just created
-  names(dataframe)[4:(3+factors)] <- factornames[1:factors]
-
-  #Create subject column
-  subject <- 1:n #Set subject to 1 to the number of subjects collected
-
-  for(j2 in length(design):1){ #for each factor in the design, from last to first
-    #if w: repeat current string as often as the levels in the current factor (e.g., 3)
-    #id b: repeat current string + max of current subject
-    if(design[j2] == 1){subject <- rep(subject,as.numeric(strsplit(string, "\\D+")[[1]])[j2])}
-    subject_length <- length(subject) #store current length - to append to string of this length below
-    if(design[j2] == 0){
-      for(j3 in 2:as.numeric(strsplit(string, "\\D+")[[1]])[j2]){
-        subject <- append(subject,subject[1:subject_length]+max(subject))
-      }
-    }
-  }
-
-  #Overwrite subject columns in dataframe
-  dataframe$subject <- subject
-  #For the correlation matrix, we want the names of each possible comparison of means
-  #Need to identify which columns from dataframe to pull the factor names from
-  if (factors == 1) {
-    cond_col <- c(4)
-  } else if (factors == 2) {
-    cond_col <- c(4, 5)
-  } else {
-    cond_col <- c(4, 5, 6)
-  }
-
-  dataframe$cond <- as.character(interaction(dataframe[, cond_col], sep = "_")) #create a new condition variable combine 2 columns (interaction is a cool function!)
+  #Specify design list (all possible combinations of levels)
+  design_list <- apply(expand.grid(labelnameslist), 1, paste, collapse = "_")
 
   ###############
-  # 3. Specify factors for formula ----
-  ###############
-  if(factors == 1 & sum(design) == 1){frml1 <- as.formula(paste("y ~ ",factornames[1]," + Error(subject/",factornames[1],")",sep=""))}
-  if(factors == 1 & sum(design) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1]," + Error(1 | subject)",sep=""))}
-
-  if(factors == 2){
-    if(sum(design) == 2){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[1],"*",factornames[2],")"))}
-    if(sum(design) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"  + Error(1 | subject)"))}
-    if(all(design == c(1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[1],")"))}
-    if(all(design == c(0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[2],")"))}
-  }
-
-  if(factors == 3){
-    if(sum(design) == 3){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[2],"*",factornames[3],")"))}
-    if(sum(design) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(1 | subject)"))}
-    if(all(design == c(1, 0, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],")"))}
-    if(all(design == c(0, 1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[2],")"))}
-    if(all(design == c(0, 0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[3],")"))}
-    if(all(design == c(1, 1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[2],")"))}
-    if(all(design == c(0, 1, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[2],"*",factornames[3],")"))}
-    if(all(design == c(1, 0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[3],")"))}
-  }
-
-  #Specify second formula used for plotting
-  if(factors == 1){frml2 <- as.formula(paste("~",factornames[1]))}
-  if(factors == 2){frml2 <- as.formula(paste("~",factornames[1],"+",factornames[2]))}
-  if(factors == 3){frml2 <- as.formula(paste("~",factornames[1],"+",factornames[2],"+",factornames[3]))}
-
-  ############################################
-  #Specify factors for formula ###############
-  design_list <- unique(apply((dataframe)[4:(3+factors)], 1, paste, collapse="_"))
-
-  ###############
-  # 4. Create Covariance Matrix ----
+  # 3. Create Correlation and Covariance Matrix ----
   ###############
 
   #Create empty matrix
@@ -192,7 +90,6 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
 
   #Code by Lisa De Bruine. Allows multiple inputs for r - only use single value now.
   #from: https://github.com/debruine/faux/blob/master/R/rnorm_multi.R
-  # correlation matrix
   generate_cor_matrix  <- function(vars = 3, cors = 0, mu = 0, sd = 1) {
     if (length(mu) == 1) {
       mu <- rep(mu, vars)
@@ -280,31 +177,12 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
   #Then for each factor in the design, if 1, set number to wildcard
   for(i1 in 1:length(design_list)){
     design_list_split <- unlist(strsplit(design_list[i1],"_"))
-    current_factor <- design_list_split[c(2,4,6)[1:length(design)]] #this creates a string of 2, 2,4 or 2,4,6 depending on the length of the design for below
+    #current_factor <- design_list_split[c(2,4,6)[1:length(design)]] #this creates a string of 2, 2,4 or 2,4,6 depending on the length of the design for below
     for(i2 in 1:length(design)){
       #We set each number that is within to a wildcard, so that all within subject factors are matched
-
-      if(design[i2]==1){current_factor[i2] <- "\\w+"}
-
+      if(design[i2]==1){design_list_split[i2] <- "\\w+"}
     }
-    ifelse(factors == 1,
-           current_factor <- paste0(c(design_list_split[1]),
-                                    "_",
-                                    current_factor,
-                                    collapse="_"),
-           ifelse(factors == 2,
-                  current_factor <- paste0(c(design_list_split[c(1,3)]),
-                                           "_",
-                                           current_factor,
-                                           collapse="_"),
-                  current_factor <- paste0(c(design_list_split[c(1,3,5)]),
-                                           "_",
-                                           current_factor,
-                                           collapse="_")))
-
-
-
-    sigmatrix[i1,]<-as.numeric(grepl(current_factor, design_list)) # compare factors that match with current factor, given wildcard, save list to sigmatrix
+    sigmatrix[i1,]<-as.numeric(grepl(paste0(design_list_split, collapse="_"), design_list[i1])) # compare factors that match with current factor, given wildcard, save list to sigmatrix
   }
 
   #Now multiply the matrix we just created (that says what is within, and what is between,  with the original covariance matrix)
@@ -313,12 +191,103 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
   sigmatrix <- sigma*sigmatrix
   row.names(sigmatrix) <- design_list
   colnames(sigmatrix) <- design_list
+  row.names(cor_mat) <- design_list
+  colnames(cor_mat) <- design_list
 
   ###############
-  # 6. Create plot of means to vizualize the design ----
+  # 4. Create Dataframe based on Design ----
   ###############
 
-  #Changed to SD so that way the authors can visually check to make sure the SD matches that of the intended input -- ARC
+  #Create the data frame. This will be re-used in the simulation (y variable is overwritten) but created only once to save time in the simulation
+  dataframe <- as.data.frame(mvrnorm(n=n,
+                              mu=mu,
+                              Sigma=sigmatrix,
+                              empirical = FALSE))
+  dataframe$subject<-as.factor(c(1:n)) #create temp subject variable just for merging
+  #Melt dataframe
+  dataframe <- melt(dataframe,
+             id.vars = "subject",
+             variable.name = "cond",
+             value.name = "y")
+
+  # Let's break this down - it's a bit tricky. First, we want to create a list of labelnames that will indicate the factors.
+  # We are looping this over the number of factors.
+  # This: as.numeric(strsplit(string, "\\D+")[[1]]) - takes the string used to specify the design and turn it in a list.
+  # we take the labelnames and factornames and combine them
+  # We repeat these each: n*(2^(factors-1)*2)/(2^j) and them times:  (2^j/2) to get a list for each factor
+  # We then bind these together with the existing dataframe.
+  for(j in 1:factors){
+    dataframe <- cbind(dataframe, as.factor(unlist(rep(as.list(paste(factornames[[j]],
+                                                       labelnameslist[[j]],
+                                                       sep="_")),
+                                         each = n*prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[1:j]),
+                                         times = prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[j:factors])
+    ))))
+  }
+  #Rename the factor variables that were just created
+  names(dataframe)[4:(3+factors)] <- factornames[1:factors]
+
+  #Create subject column
+  subject <- 1:n #Set subject to 1 to the number of subjects collected
+
+  for(j2 in length(design):1){ #for each factor in the design, from last to first
+    #if w: repeat current string as often as the levels in the current factor (e.g., 3)
+    #id b: repeat current string + max of current subject
+    if(design[j2] == 1){subject <- rep(subject,as.numeric(strsplit(string, "\\D+")[[1]])[j2])}
+    subject_length <- length(subject) #store current length - to append to string of this length below
+    if(design[j2] == 0){
+      for(j3 in 2:as.numeric(strsplit(string, "\\D+")[[1]])[j2]){
+        subject <- append(subject,subject[1:subject_length]+max(subject))
+      }
+    }
+  }
+
+  #Overwrite subject columns in dataframe
+  dataframe$subject <- subject
+  #For the correlation matrix, we want the names of each possible comparison of means
+  #Need to identify which columns from dataframe to pull the factor names from
+  if (factors == 1) {
+    cond_col <- c(4)
+  } else if (factors == 2) {
+    cond_col <- c(4, 5)
+  } else {
+    cond_col <- c(4, 5, 6)
+  }
+
+  dataframe$cond <- as.character(interaction(dataframe[, cond_col], sep = "_")) #create a new condition variable combine 2 columns (interaction is a cool function!)
+
+  ###############
+  # 5. Specify factors for formula ----
+  ###############
+  if(factors == 1 & sum(design) == 1){frml1 <- as.formula(paste("y ~ ",factornames[1]," + Error(subject/",factornames[1],")",sep=""))}
+  if(factors == 1 & sum(design) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1]," + Error(1 | subject)",sep=""))}
+
+  if(factors == 2){
+    if(sum(design) == 2){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[1],"*",factornames[2],")"))}
+    if(sum(design) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"  + Error(1 | subject)"))}
+    if(all(design == c(1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[1],")"))}
+    if(all(design == c(0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[2],")"))}
+  }
+
+  if(factors == 3){
+    if(sum(design) == 3){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[2],"*",factornames[3],")"))}
+    if(sum(design) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(1 | subject)"))}
+    if(all(design == c(1, 0, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],")"))}
+    if(all(design == c(0, 1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[2],")"))}
+    if(all(design == c(0, 0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[3],")"))}
+    if(all(design == c(1, 1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[2],")"))}
+    if(all(design == c(0, 1, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[2],"*",factornames[3],")"))}
+    if(all(design == c(1, 0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[3],")"))}
+  }
+
+  #Specify second formula used for plotting
+  if(factors == 1){frml2 <- as.formula(paste("~",factornames[1]))}
+  if(factors == 2){frml2 <- as.formula(paste("~",factornames[1],"+",factornames[2]))}
+  if(factors == 3){frml2 <- as.formula(paste("~",factornames[1],"+",factornames[2],"+",factornames[3]))}
+
+  ###############
+  # 6. Create plot of means to visualize the design ----
+  ###############
 
   dataframe_means <- data.frame(mu, sd)
   for(j in 1:factors){
@@ -393,4 +362,3 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
                  factornames = factornames,
                  meansplot = meansplot2))
 }
-

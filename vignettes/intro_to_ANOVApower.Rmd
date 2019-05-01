@@ -12,7 +12,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ANOVApower)
-nsims = 1000
+nsims = 100
 ```
 
 # An Introduction to ANOVApower
@@ -696,18 +696,3 @@ power_res$power_AB
 ```
 
 We see the 26.9 and 64.2, and 26.9 correspond to the results of the simulation quite closely. 
-
-We can use the code by Chris Aberson (2019) to produce the same results from his 2019 book on power analysis to compare results.
-
-```{r}
-#Load the code by Chris Aberson
-source("https://raw.githubusercontent.com/chrisaberson/pwr2ppl/master/R/win2F.R")
-
-win2F(m1.1=2, m2.1=1, m1.2=4, m2.2=2, 
-      s1.1=5, s2.1=5, s1.2=5, s2.2=5, 
-      r12=0.8, r13=0.5, r14=0.4, 
-               r23=0.4, r24=0.5, 
-                        r34=0.8,
-      n=20)
-```
-
