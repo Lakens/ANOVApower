@@ -2,7 +2,7 @@
 % Please edit documentation in R/ANOVA_design.R
 \name{ANOVA_design}
 \alias{ANOVA_design}
-\title{Design function to specify the details for the simulation}
+\title{Design function used to specify the parameters used in the simulation}
 \usage{
 ANOVA_design(string, n, mu, sd, r = 0, labelnames, plot = TRUE)
 }
@@ -25,7 +25,7 @@ ANOVA_design(string, n, mu, sd, r = 0, labelnames, plot = TRUE)
 Returns Single data-frame with simulated data, design, design list, factor names, formulas for ANOVA, means, sd, correlation, sample size per condition, correlation matrix, covariance matrix, design string, label names, factor names, meansplot
 }
 \description{
-Design function to specify the details for the simulation
+Design function used to specify the parameters used in the simulation
 }
 \section{References}{
 

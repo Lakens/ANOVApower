@@ -25,6 +25,7 @@
 #' @importFrom grDevices colorRampPalette
 #' @import ggplot2
 #' @export
+#'
 
 ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
 
