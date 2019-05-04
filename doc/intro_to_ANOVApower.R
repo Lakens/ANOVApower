@@ -1,7 +1,7 @@
 ## ----setup, include=FALSE------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 library(ANOVApower)
-nsims = 1000
+nsims = 100
 
 ## ---- fig.width=7, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE----
 design_result <- ANOVA_design(string = "2b*2w*2b",
@@ -368,15 +368,4 @@ power_res$power_A
 power_res$power_B
 power_res$power_AB
 
-
-## ------------------------------------------------------------------------
-#Load the code by Chris Aberson
-source("https://raw.githubusercontent.com/chrisaberson/pwr2ppl/master/R/win2F.R")
-
-win2F(m1.1=2, m2.1=1, m1.2=4, m2.2=2, 
-      s1.1=5, s2.1=5, s1.2=5, s2.2=5, 
-      r12=0.8, r13=0.5, r14=0.4, 
-               r23=0.4, r24=0.5, 
-                        r34=0.8,
-      n=20)
 

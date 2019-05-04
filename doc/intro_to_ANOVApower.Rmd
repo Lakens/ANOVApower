@@ -12,7 +12,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ANOVApower)
-nsims = 1000
+nsims = 100
 ```
 
 # An Introduction to ANOVApower
@@ -40,7 +40,13 @@ Currently the ANOVA_design function can create designs up three factors, for bot
 
 ### Specifying the design using 'string'
 
-'string' is used to specify the design. **Seperate factors with a \* (asterisk)**. A "2b*3w" is a design with two factors (a 2b factor and a 3w factor), the first of which has 2 between participant levels (2b), and the second of which has 3 within participants levels (3w). An example of such a design is a group of people in one condition who get a drug, and a group of people in another condition who get a placebo, and we measure their health before they take the pill, one day after they take the pill, and a week after they take the pill. 
+'string' is used to specify the design. 
+Every factor is specified with a number, indicating the numner of levels of the factor, and a letter, b or w, to indicate whether the factor is manipulated between or within participants.
+For example, a `2b` design has two between-participant groups. 
+A `12w` design has one factor with 12 levels, all manipulated within-participants.
+A "2b*3w" is a design with two factors (a 2b factor and a 3w factor), the first of which has 2 between participant levels (2b), and the second of which has 3 within participants levels (3w). 
+**If there are multiple factors (the functions take up to three different factors) seperate factors with a \* (asterisk)**. 
+An example of a `2b*3w` design is a group of people in one condition who get a drug, and a group of people in another condition who get a placebo, and we measure their health before they take the pill, one day after they take the pill, and a week after they take the pill. 
 
 ### Specifying the means using 'mu'
 
@@ -696,18 +702,3 @@ power_res$power_AB
 ```
 
 We see the 26.9 and 64.2, and 26.9 correspond to the results of the simulation quite closely. 
-
-We can use the code by Chris Aberson (2019) to produce the same results from his 2019 book on power analysis to compare results.
-
-```{r}
-#Load the code by Chris Aberson
-source("https://raw.githubusercontent.com/chrisaberson/pwr2ppl/master/R/win2F.R")
-
-win2F(m1.1=2, m2.1=1, m1.2=4, m2.2=2, 
-      s1.1=5, s2.1=5, s1.2=5, s2.2=5, 
-      r12=0.8, r13=0.5, r14=0.4, 
-               r23=0.4, r24=0.5, 
-                        r34=0.8,
-      n=20)
-```
-

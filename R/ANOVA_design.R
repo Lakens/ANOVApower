@@ -4,7 +4,7 @@
 #' @param mu Vector specifying mean for each condition
 #' @param sd standard deviation for all conditions
 #' @param r Correlation between dependent variables (single value or matrix)
-#' @param labelnames Vector specifying factor and condition names
+#' @param labelnames Optional vector to specifying factor and condition names (recommended, if not used factors and levels are indicated by letters and numbers)
 #' @param plot Should means plot be printed (defaults to TRUE)
 #' @return Returns Single data-frame with simulated data, design, design list, factor names, formulas for ANOVA, means, sd, correlation, sample size per condition, correlation matrix, covariance matrix, design string, label names, factor names, meansplot
 #' @examples
@@ -27,9 +27,21 @@
 #' @export
 #'
 
-ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
+ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRUE){
+  #If labelnames are not provided, they are generated.
+  #Store factor levels (used many times in the script, calculate once)
+  factor_levels <- as.numeric(strsplit(string, "\\D+")[[1]])
 
-  if (length(labelnames) != length(as.numeric(strsplit(string, "\\D+")[[1]])) + sum(as.numeric(strsplit(string, "\\D+")[[1]]))) {
+  if (is.null(labelnames)) {
+    for(i1 in 1:length(factor_levels)){
+      labelnames <- append(labelnames,paste(paste(letters[i1]), sep = ""))
+      for(i2 in 1:factor_levels[i1]){
+        labelnames <- append(labelnames,paste(paste(letters[i1]), paste(i2), sep = ""))
+      }
+    }
+  }
+
+  if (length(labelnames) != length(factor_levels) + sum(factor_levels)) {
     stop("Design (string) does not match the length of the labelnames")
   }
 
@@ -37,29 +49,29 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
   # 1. Specify Design and Simulation----
   ###############
   # String used to specify the design
-  # Add numers for each factor with 2 levels, e.g., 2 for a factor with 2 levels
-  # Add a w after the number for within factors, and a b for between factors
-  # Seperate factors with a * (asteriks)
+  # Add numbers for each factor with 2 levels, e.g., 2 for a factor with 2 levels
+  # Add a 'w' after the number for within factors, and a 'b' for between factors
+  # Separate factors with a * (asterisk)
   # Thus "2b*3w) is a design with 2 between levels, and 3 within levels
 
   #Check if design an means match up - if not, throw an error and stop
-  if(prod(as.numeric(strsplit(string, "\\D+")[[1]])) != length(mu)){stop("the length of the vector with means does not match the study design")}
+  if(prod(factor_levels) != length(mu)){stop("the length of the vector with means does not match the study design")}
 
   ###############
   # 2. Create Factors and Design ----
   ###############
 
   #Count number of factors in design
-  factors <- length(as.numeric(strsplit(string, "\\D+")[[1]]))
+  factors <- length(factor_levels)
 
   #Get factor names and labelnameslist
-  labelnames1 <- labelnames[(1 + 1):(1+as.numeric(strsplit(string, "\\D+")[[1]])[1])]
-  if(factors > 1){labelnames2 <- labelnames[(as.numeric(strsplit(string, "\\D+")[[1]])[1] + 3):((as.numeric(strsplit(string, "\\D+")[[1]])[1] + 3) + as.numeric(strsplit(string, "\\D+")[[1]])[2] - 1)]}
-  if(factors > 2){labelnames3 <- labelnames[(as.numeric(strsplit(string, "\\D+")[[1]])[2] + as.numeric(strsplit(string, "\\D+")[[1]])[1] + 4):((as.numeric(strsplit(string, "\\D+")[[1]])[2] + as.numeric(strsplit(string, "\\D+")[[1]])[1] + 4) + as.numeric(strsplit(string, "\\D+")[[1]])[3] - 1)]}
+  labelnames1 <- labelnames[(1 + 1):(1+factor_levels[1])]
+  if(factors > 1){labelnames2 <- labelnames[(factor_levels[1] + 3):((factor_levels[1] + 3) + factor_levels[2] - 1)]}
+  if(factors > 2){labelnames3 <- labelnames[(factor_levels[2] + factor_levels[1] + 4):((factor_levels[2] + factor_levels[1] + 4) + factor_levels[3] - 1)]}
 
   factornames1 <- labelnames[1]
-  if(factors > 1){factornames2 <- labelnames[as.numeric(strsplit(string, "\\D+")[[1]])[1] + 2]}
-  if(factors > 2){factornames3 <- labelnames[as.numeric(strsplit(string, "\\D+")[[1]])[2] + as.numeric(strsplit(string, "\\D+")[[1]])[1] + 3]}
+  if(factors > 1){factornames2 <- labelnames[factor_levels[1] + 2]}
+  if(factors > 2){factornames3 <- labelnames[factor_levels[2] + factor_levels[1] + 3]}
 
   if(factors == 1){labelnameslist <- list(labelnames1)}
   if(factors == 2){labelnameslist <- list(labelnames1,labelnames2)}
@@ -213,7 +225,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
 
   # Let's break this down - it's a bit tricky. First, we want to create a list of labelnames that will indicate the factors.
   # We are looping this over the number of factors.
-  # This: as.numeric(strsplit(string, "\\D+")[[1]]) - takes the string used to specify the design and turn it in a list.
+  # This: factor_levels - takes the string used to specify the design and turn it in a list.
   # we take the labelnames and factornames and combine them
   # We repeat these each: n*(2^(factors-1)*2)/(2^j) and them times:  (2^j/2) to get a list for each factor
   # We then bind these together with the existing dataframe.
@@ -221,8 +233,8 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
     dataframe <- cbind(dataframe, as.factor(unlist(rep(as.list(paste(factornames[[j]],
                                                        labelnameslist[[j]],
                                                        sep="_")),
-                                         each = n*prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[1:j]),
-                                         times = prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[j:factors])
+                                         each = n*prod(factor_levels)/prod(factor_levels[1:j]),
+                                         times = prod(factor_levels)/prod(factor_levels[j:factors])
     ))))
   }
   #Rename the factor variables that were just created
@@ -234,10 +246,10 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
   for(j2 in length(design):1){ #for each factor in the design, from last to first
     #if w: repeat current string as often as the levels in the current factor (e.g., 3)
     #id b: repeat current string + max of current subject
-    if(design[j2] == 1){subject <- rep(subject,as.numeric(strsplit(string, "\\D+")[[1]])[j2])}
+    if(design[j2] == 1){subject <- rep(subject,factor_levels[j2])}
     subject_length <- length(subject) #store current length - to append to string of this length below
     if(design[j2] == 0){
-      for(j3 in 2:as.numeric(strsplit(string, "\\D+")[[1]])[j2]){
+      for(j3 in 2:factor_levels[j2]){
         subject <- append(subject,subject[1:subject_length]+max(subject))
       }
     }
@@ -294,8 +306,8 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames, plot = TRUE){
   for(j in 1:factors){
     dataframe_means <- cbind(dataframe_means, as.factor(unlist(rep(as.list(paste(labelnameslist[[j]],
                                                                    sep="")),
-                                                     each = prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[1:j]),
-                                                     times = prod(as.numeric(strsplit(string, "\\D+")[[1]]))/prod(as.numeric(strsplit(string, "\\D+")[[1]])[j:factors])
+                                                     each = prod(factor_levels)/prod(factor_levels[1:j]),
+                                                     times = prod(factor_levels)/prod(factor_levels[j:factors])
     ))))
   }
 

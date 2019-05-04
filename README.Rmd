@@ -28,7 +28,7 @@ Currently the ANOVA_design function can create designs up three factors, for bot
 3. mu: a vector with the means for each condition.
 4. sd: the population standard deviation. Assumes homogeneity of variances (only one standard deviation can be provided).
 5. r: the correlation for within designs (or 0 for between designs).
-6. labelnames: This is a vector of words that indicate factor names and level names (see below).
+6. labelnames: This is an optonal vector of words that indicates factor names and level names (see below).
 7. A final optional setting is to specify if you want to output a plot or not (plot = TRUE or FALSE)
 
 ### Specifying the design using 'string'
@@ -76,13 +76,13 @@ design_result <- ANOVA_design(string = "2b*2w*2b",
 
 ### Specifying label names
 
-To make sure the plots and tables with simulation results are easy to interpret, it really helps to name all factors and levels. You can enter the labels in the 'labelnames' variable.
+To make sure the plots and tables with simulation results are easy to interpret, it really helps to name all factors and levels. You can enter the labels in the 'labelnames' variable. You can also choose not to specify names. Then all factors are indicated by letters (a, b, c) and all levels by numbers (a1, a2, a3).
 
 For the 2x3 design we have been using as an example, where there are 2 factors (condition and time of measurement), the first with 2 levels (placebo vs. medicine) and the second with three levels (time1, time2, and time3) we would enter the labels as follows: 
 
 c("condition", "placebo", "medicine", "time", "time1", "time2", "time3")
 
-As you can see, you follow the order of the design (2b*3w), and first write the FACTOR label (condition) followed by the levels of that factor (placebo and medicine). Then you write the second factor name (time) followed by the three labels for each level (time1, time2, time3). **Do not use spaces in the names (so not "time 1" but "time1" or "time_1").**
+As you can see, you follow the order of the design (2b*3w), and first write the **FACTOR** label (condition) followed by the levels of that factor (placebo and medicine). Then you write the second factor name (time) followed by the three labels for each **LEVEL** (time1, time2, time3). **Do not use spaces in the names (so not "time 1" but "time1" or "time_1").**
 
 ### Specifying the correlation 
 
@@ -133,9 +133,7 @@ design_result <- ANOVA_design(string = "2w*2w",
                               n = 80,
                               mu = c(1.1, 1.2, 1.3, 1.4),
                               sd = 2,
-                              r <- c(0.91, 0.92, 0.93, 0.94, 0.95, 0.96),
-                              labelnames = c("A", "a1", "a2", "B", "b1", "b2"))
-
+                              r <- c(0.91, 0.92, 0.93, 0.94, 0.95, 0.96))
 ```
 
 We can check the correlation matrix by asking for it from the design_result object to check if it was entered the way we wanted:
@@ -143,6 +141,8 @@ We can check the correlation matrix by asking for it from the design_result obje
 ```{r}
 design_result$cor_mat
 ```
+
+Note that we did not specify the labelnames, and thus they are automatically created. 
 
 ### Specifying the sample size
 
