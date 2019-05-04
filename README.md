@@ -12,7 +12,16 @@ You can install the released version of ANOVApower from
 ``` r
 devtools::install_github("Lakens/ANOVApower")
 ```
-
+## Table of Contents
+* [ANOVA_design Function](#anova_design-function)  
+* [ANOVA_power Function](#the-anova_power-function)
+    * [Two Group One-Way ANOVA](#power-in-a-two-group-one-way-anova)
+    * [Three Between Subjects Conditions](#three-between-subject-conditions)
+    * [Repeated Measures ANOVA](#power-in-repeated-measures-anova)
+    * [2x2 ANOVA, Within-Between Design](#2x2-anova-within-between-design)
+    * [Two-Way ANOVA, Between Participants Design](#two-way-anova-between-participants-design)
+    * [2x2 ANOVA, Within Design](#two-by-two-anova-within-design)
+    
 ## ANOVA\_design function
 
 Currently the ANOVA\_design function can create designs up three
