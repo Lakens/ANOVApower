@@ -13,7 +13,7 @@ output: github_document
     
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-nsims = 100
+nsims = 10000
 library(ANOVApower)
 ```
 
