@@ -1,4 +1,18 @@
 
+## Table of Contents
+
+  - [ANOVA\_design Function](#anova_design-function)  
+  - [ANOVA\_power Function](#the-anova_power-function)
+      - [Two Group One-Way ANOVA](#power-in-a-two-group-one-way-anova)
+      - [Three Between Subjects
+        Conditions](#three-between-subject-conditions)
+      - [Repeated Measures ANOVA](#power-in-repeated-measures-anova)
+      - [2x2 ANOVA, Within-Between
+        Design](#2x2-anova-within-between-design)
+      - [Two-Way ANOVA, Between Participants
+        Design](#two-way-anova-between-participants-design)
+      - [2x2 ANOVA, Within Design](#two-by-two-anova-within-design)
+
 # An Introduction to ANOVApower
 
 The goal of ANOVApower is to easily simulate ANOVA designs and calculate
@@ -12,16 +26,7 @@ You can install the released version of ANOVApower from
 ``` r
 devtools::install_github("Lakens/ANOVApower")
 ```
-## Table of Contents
-* [ANOVA_design Function](#anova_design-function)  
-* [ANOVA_power Function](#the-anova_power-function)
-    * [Two Group One-Way ANOVA](#power-in-a-two-group-one-way-anova)
-    * [Three Between Subjects Conditions](#three-between-subject-conditions)
-    * [Repeated Measures ANOVA](#power-in-repeated-measures-anova)
-    * [2x2 ANOVA, Within-Between Design](#2x2-anova-within-between-design)
-    * [Two-Way ANOVA, Between Participants Design](#two-way-anova-between-participants-design)
-    * [2x2 ANOVA, Within Design](#two-by-two-anova-within-design)
-    
+
 ## ANOVA\_design function
 
 Currently the ANOVA\_design function can create designs up three
@@ -387,11 +392,11 @@ ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##                 power effect_size
-    ## anova_condition    72       0.029
+    ## anova_condition    75      0.0318
     ## 
     ## Power and Effect sizes for contrasts
     ##                                   power effect_size
-    ## p_condition_control_condition_pet    72      0.3538
+    ## p_condition_control_condition_pet    75      0.3649
 
 ``` r
 #Note we do not specify any correlation in the ANOVA_design function (default r = 0), nor do we specify an alpha in the ANOVA_power function (default is 0.05)
@@ -465,11 +470,11 @@ power_result <- ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##                 power effect_size
-    ## anova_condition    91      0.0272
+    ## anova_condition    93      0.0322
     ## 
     ## Power and Effect sizes for contrasts
     ##                                   power effect_size
-    ## p_condition_control_condition_pet    91      0.3418
+    ## p_condition_control_condition_pet    93      0.3548
 
 ## Three between subject conditions
 
@@ -514,13 +519,13 @@ ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##                 power effect_size
-    ## anova_condition    39      0.0339
+    ## anova_condition    40      0.0327
     ## 
     ## Power and Effect sizes for contrasts
     ##                                   power effect_size
-    ## p_condition_control_condition_cat    38      0.3446
-    ## p_condition_control_condition_dog    49      0.4179
-    ## p_condition_cat_condition_dog         4      0.0710
+    ## p_condition_control_condition_cat    33      0.3312
+    ## p_condition_control_condition_dog    43      0.3923
+    ## p_condition_cat_condition_dog         2      0.0582
 
 The result shows that you would have quite low power with 50
 participants, both for the overall ANOVA (just around 50% power), as for
@@ -716,11 +721,11 @@ ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##             power effect_size
-    ## anova_speed    79      0.1929
+    ## anova_speed    81      0.1954
     ## 
     ## Power and Effect sizes for contrasts
     ##                         power effect_size
-    ## p_speed_fast_speed_slow    79      0.4899
+    ## p_speed_fast_speed_slow    81      0.5035
 
 The results of the simulation are indeed very close to 80.777%. Note
 that the simulation calculates Cohen’s \(d_z\) effect sizes for paired
@@ -768,11 +773,11 @@ ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##             power effect_size
-    ## anova_speed    78      0.3246
+    ## anova_speed    75      0.3019
     ## 
     ## Power and Effect sizes for contrasts
     ##                         power effect_size
-    ## p_speed_fast_speed_slow    78      0.6622
+    ## p_speed_fast_speed_slow    75      0.6519
 
 ### Power in Repeated Measures ANOVA with More than 2 Groups
 
@@ -901,13 +906,13 @@ ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##             power effect_size
-    ## anova_speed    97      0.3551
+    ## anova_speed    97      0.3443
     ## 
     ## Power and Effect sizes for contrasts
     ##                           power effect_size
-    ## p_speed_fast_speed_medium    52      0.5146
-    ## p_speed_fast_speed_slow      98      1.0005
-    ## p_speed_medium_speed_slow    56      0.5146
+    ## p_speed_fast_speed_medium    55      0.5050
+    ## p_speed_fast_speed_slow      98      1.0094
+    ## p_speed_medium_speed_slow    55      0.4917
 
 The results of the simulation are indeed very close to 96.9%. We can see
 this is in line with the power estimate from Gpower:
@@ -964,18 +969,18 @@ simulation_result <- ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##           power effect_size
-    ## anova_B       0      0.0040
-    ## anova_A       2      0.0144
-    ## anova_B:A    90      0.1797
+    ## anova_B       0      0.0032
+    ## anova_A       9      0.0092
+    ## anova_B:A    91      0.2081
     ## 
     ## Power and Effect sizes for contrasts
     ##                       power effect_size
-    ## p_A_a1_B_b1_A_a1_B_b2    67      0.5386
-    ## p_A_a1_B_b1_A_a2_B_b1    51      0.4647
-    ## p_A_a1_B_b1_A_a2_B_b2     8     -0.0057
-    ## p_A_a1_B_b2_A_a2_B_b1     2     -0.0612
-    ## p_A_a1_B_b2_A_a2_B_b2    67     -0.5596
-    ## p_A_a2_B_b1_A_a2_B_b2    55     -0.4681
+    ## p_A_a1_B_b1_A_a1_B_b2    66      0.5132
+    ## p_A_a1_B_b1_A_a2_B_b1    64      0.5248
+    ## p_A_a1_B_b1_A_a2_B_b2     4     -0.0088
+    ## p_A_a1_B_b2_A_a2_B_b1     6      0.0022
+    ## p_A_a1_B_b2_A_a2_B_b2    60     -0.5066
+    ## p_A_a2_B_b1_A_a2_B_b2    67     -0.5307
 
 We can simulate the same Two-Way ANOVA increasing the correlation to
 0.7.
@@ -1006,18 +1011,18 @@ simulation_result <- ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##           power effect_size
-    ## anova_B       0      0.0021
-    ## anova_A       7      0.0149
-    ## anova_B:A    96      0.3267
+    ## anova_B       0      0.0014
+    ## anova_A       6      0.0116
+    ## anova_B:A    99      0.3363
     ## 
     ## Power and Effect sizes for contrasts
     ##                       power effect_size
-    ## p_A_a1_B_b1_A_a1_B_b2    84      0.6780
-    ## p_A_a1_B_b1_A_a2_B_b1    87      0.7162
-    ## p_A_a1_B_b1_A_a2_B_b2     5      0.0223
-    ## p_A_a1_B_b2_A_a2_B_b1     4      0.0119
-    ## p_A_a1_B_b2_A_a2_B_b2    78     -0.6540
-    ## p_A_a2_B_b1_A_a2_B_b2    81     -0.6703
+    ## p_A_a1_B_b1_A_a1_B_b2    84      0.7000
+    ## p_A_a1_B_b1_A_a2_B_b1    80      0.6852
+    ## p_A_a1_B_b1_A_a2_B_b2     7     -0.0263
+    ## p_A_a1_B_b2_A_a2_B_b1     5     -0.0254
+    ## p_A_a1_B_b2_A_a2_B_b2    91     -0.7450
+    ## p_A_a2_B_b1_A_a2_B_b2    86     -0.7024
 
 ## Two-way ANOVA, between participants Design
 
@@ -1123,48 +1128,48 @@ power_result <- ANOVA_power(design_result, alpha_level = 0.05, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##                         power effect_size
-    ## anova_Factor_A             42      0.0301
-    ## anova_Factor_B             44      0.0295
-    ## anova_Factor_A:Factor_B    65      0.0620
+    ## anova_Factor_A             44      0.0309
+    ## anova_Factor_B             43      0.0249
+    ## anova_Factor_A:Factor_B    64      0.0671
     ## 
     ## Power and Effect sizes for contrasts
     ##                                                   power effect_size
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a1_Factor_B_b2     1      0.0089
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a1_Factor_B_b3     4      0.0479
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b1     3      0.0332
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b2     7      0.0764
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b3     6      0.0526
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b1     2      0.0249
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b2     5      0.0317
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b3    87      1.0454
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a1_Factor_B_b3     7      0.0338
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b1     3      0.0252
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b2     6      0.0680
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b3     5      0.0393
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b1     5      0.0172
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b2     5      0.0208
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b3    88      1.0279
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b1     1     -0.0114
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b2     7      0.0348
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b3     6      0.0079
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b1     4     -0.0268
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b2     9     -0.0102
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b3    87      1.0089
-    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a2_Factor_B_b2     6      0.0411
-    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a2_Factor_B_b3     7      0.0214
-    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b1     3     -0.0079
-    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b2     2     -0.0084
-    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b3    87      1.0151
-    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a2_Factor_B_b3     7     -0.0346
-    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b1     5     -0.0507
-    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b2     7     -0.0460
-    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b3    87      0.9687
-    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b1     8     -0.0237
-    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b2     9     -0.0191
-    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b3    86      1.0083
-    ## p_Factor_A_a3_Factor_B_b1_Factor_A_a3_Factor_B_b2     5      0.0078
-    ## p_Factor_A_a3_Factor_B_b1_Factor_A_a3_Factor_B_b3    87      1.0231
-    ## p_Factor_A_a3_Factor_B_b2_Factor_A_a3_Factor_B_b3    90      1.0163
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a1_Factor_B_b2     6      0.0275
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a1_Factor_B_b3     6     -0.0237
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b1     4     -0.0094
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b2     5     -0.0194
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b3     3     -0.0126
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b1     9     -0.0389
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b2     2     -0.0049
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b3    86      1.0021
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a1_Factor_B_b3     4     -0.0533
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b1     5     -0.0353
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b2     6     -0.0514
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b3     7     -0.0395
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b1     8     -0.0627
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b2     6     -0.0338
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b3    79      0.9765
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b1     5      0.0215
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b2     5      0.0040
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b3     5      0.0161
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b1     4     -0.0114
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b2     3      0.0206
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b3    85      0.9987
+    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a2_Factor_B_b2     3     -0.0118
+    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a2_Factor_B_b3     7     -0.0049
+    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b1     8     -0.0320
+    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b2     4     -0.0008
+    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b3    84      1.0040
+    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a2_Factor_B_b3     7      0.0084
+    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b1     8     -0.0183
+    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b2     2      0.0148
+    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b3    78      1.0075
+    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b1     9     -0.0232
+    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b2     7      0.0063
+    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b3    85      1.0155
+    ## p_Factor_A_a3_Factor_B_b1_Factor_A_a3_Factor_B_b2     4      0.0323
+    ## p_Factor_A_a3_Factor_B_b1_Factor_A_a3_Factor_B_b3    85      1.0197
+    ## p_Factor_A_a3_Factor_B_b2_Factor_A_a3_Factor_B_b3    82      0.9892
 
 We can check these against the analytic solution.
 
@@ -1248,18 +1253,18 @@ simulation_result <- ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##           power effect_size
-    ## anova_A      22      0.1072
-    ## anova_B      62      0.2432
-    ## anova_A:B    26      0.0986
+    ## anova_A      29      0.1111
+    ## anova_B      59      0.2153
+    ## anova_A:B    21      0.0771
     ## 
     ## Power and Effect sizes for contrasts
     ##                       power effect_size
-    ## p_A_a1_B_b1_A_a1_B_b2    22     -0.3128
-    ## p_A_a1_B_b1_A_a2_B_b1    39      0.4195
-    ## p_A_a1_B_b1_A_a2_B_b2     2      0.0166
-    ## p_A_a1_B_b2_A_a2_B_b1    68      0.5806
-    ## p_A_a1_B_b2_A_a2_B_b2    12      0.2228
-    ## p_A_a2_B_b1_A_a2_B_b2    80     -0.6603
+    ## p_A_a1_B_b1_A_a1_B_b2    23     -0.3182
+    ## p_A_a1_B_b1_A_a2_B_b1    40      0.4291
+    ## p_A_a1_B_b1_A_a2_B_b2     7      0.0399
+    ## p_A_a1_B_b2_A_a2_B_b1    66      0.5770
+    ## p_A_a1_B_b2_A_a2_B_b2    17      0.2406
+    ## p_A_a2_B_b1_A_a2_B_b2    73     -0.6166
 
 We can use the analytic solution based on the formula in Potvin & Schutz
 (2000). I created a function ‘power\_2x2\_within’ that contains the
