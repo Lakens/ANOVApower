@@ -4,5 +4,6 @@
 ^README\.Rmd$
 ^LICENSE\.md$
 ^ANOVApower\.Rproj$
-^ANOVApower\.yml$
+^ANOVApower\.travis.yml$
+^ANOVApower\README.html$
 ^\.Rproj\.user$
