@@ -1,6 +1,8 @@
 ^Meta$
 ^doc$
+^README_files$
 ^README\.Rmd$
 ^LICENSE\.md$
 ^ANOVApower\.Rproj$
+^ANOVApower\.yml$
 ^\.Rproj\.user$
