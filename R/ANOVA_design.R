@@ -85,8 +85,16 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
   design <- strsplit(gsub("[^A-Za-z]","",string),"",fixed = TRUE)[[1]]
   design <- as.numeric(design == "w") #if within design, set value to 1, otherwise to 0
 
-  #Specify design list (all possible combinations of levels)
-  design_list <- apply(expand.grid(labelnameslist), 1, paste, collapse = "_")
+  #Specify design list (similar as below)
+  xxx <- data.frame(matrix(NA, nrow = prod(factor_levels), ncol = 0))
+  for(j in 1:factors){
+    xxx <- cbind(xxx, as.factor(unlist(rep(as.list(paste(labelnameslist[[j]],
+                                                         sep="_")),
+                                           each = prod(factor_levels)/prod(factor_levels[1:j]),
+                                           times = prod(factor_levels)/prod(factor_levels[j:factors])
+    ))))
+  }
+  design_list <- as.character(interaction(xxx[, 1:factors], sep = "_")) #create a new condition variable combine 2 columns (interaction is a cool function!)
 
   ###############
   # 3. Create Correlation and Covariance Matrix ----
