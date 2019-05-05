@@ -29,6 +29,12 @@ test_that("errors", {
                "non-conformable arguments")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, r = "A"),
                "object 'cor_mat' not found")
+  expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, labelnames = c("A", "B")),
+               "Design (string) does not match the length of the labelnames")
+  expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1,
+                            labelnames = c("W factor", "W 1", "W 2", "B factor", "B 1", "B 2")),
+               "unexpected symbol")
+
 
   # inconsistent arguments
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 0, sd = 1),
@@ -43,6 +49,13 @@ test_that("2W", {
   # fix uppercase letters are design = 0
   d <- ANOVA_design("2W", n = 100, mu = c(0,0), sd = 1)
   expect_equal(d$design, 1)
+})
+
+test_that("bad labels", {
+  # fix or error bad labels
+  lb <- c("W factor", "W 1", "W 2", "B factor", "B 1", "B 2")
+  d <- ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, labelnames = lb)
+
 })
 
 # test grep for strings ----
