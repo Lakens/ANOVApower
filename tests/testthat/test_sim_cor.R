@@ -3,12 +3,15 @@ library(ANOVApower)
 library(reshape2)
 
 test_that("simulated correlations fit expected values", {
-  design_result <- ANOVA_design(string = "2w*2b",
-                                n = 100000,
+  design_result <- ANOVA_design(string = "2b*2w",
+                                n = 1000000,
                                 mu = c(0, 0, 0, 0),
                                 sd = 2,
                                 r = 0.8,
-                                labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"))
+                                labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"),
+                                plot = FALSE)
+
+  design_result$cor_mat
 
   data_wide <- dcast(design_result$dataframe, subject ~ cond, value.var="y")
   a1 <- data_wide[,2][!is.na(data_wide[,2])]
@@ -28,15 +31,15 @@ test_that("simulated correlations fit expected values", {
   res3i <- cor(b1, b1)
   res4i <- cor(b2, b2)
 
-  expect_equal(res1, 0.8 + 1e-6)
-  expect_equal(res2, 0 + 1e-6)
-  expect_equal(res3, 0 + 1e-6)
-  expect_equal(res4, 0 + 1e-6)
-  expect_equal(res5, 0 + 1e-6)
-  expect_equal(res6, 0.8 + 1e-6)
-  expect_equal(res1i, 1 + 1e-6)
-  expect_equal(res2i, 1 + 1e-6)
-  expect_equal(res3i, 1 + 1e-6)
-  expect_equal(res4i, 1 + 1e-6)
+  expect_equal(res1, 0.8, tolerance = .003)
+  expect_equal(res2, 0, tolerance = .003)
+  expect_equal(res3, 0, tolerance = .003)
+  expect_equal(res4, 0, tolerance = .003)
+  expect_equal(res5, 0, tolerance = .003)
+  expect_equal(res6, 0.8, tolerance = .003)
+  expect_equal(res1i, 1, tolerance = .003)
+  expect_equal(res2i, 1, tolerance = .003)
+  expect_equal(res3i, 1, tolerance = .003)
+  expect_equal(res4i, 1, tolerance = .003)
 })
 
