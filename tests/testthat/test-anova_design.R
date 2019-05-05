@@ -200,3 +200,32 @@ test_that("2w*2b", {
   expect_equal(d$labelnames, list(c("W1", "W2"), c("B1", "B2")))
   expect_equal(d$factornames, c("W", "B"))
 })
+
+# 2b*2w----
+test_that("2b*2w", {
+  d <- ANOVA_design("2b*2w", n = 100, mu = 1:4, sd = 1, r = 0.5,
+                    labelnames = c("B", "B1", "B2", "W", "W1", "W2"))
+  expect_equal(d$design, c(0, 1))
+  expect_equal(d$design_list, c("B1_W1", "B2_W1", "B1_W2", "B2_W2"))
+  expect_equal(d$factors, 2)
+  expect_equal(d$frml1, y ~ B * W + Error(subject/W))
+  expect_equal(d$frml2, ~B + W)
+  expect_equal(d$mu, 1:4)
+  expect_equal(d$sd, 1)
+  expect_equal(d$r, 0.5)
+  expect_equal(d$n, 100)
+
+  mat <- data.frame(
+    "B1_W1" = c(1, 0, .5, 0),
+    "B2_W1" = c(0, 1, 0, .5),
+    "B1_W2" = c(.5, 0, 1, 0),
+    "B2_W2" = c(0, .5, 0, 1),
+    row.names = c("B1_W1", "B2_W1", "B1_W2", "B2_W2")
+  )
+  expect_equal(d$cor_mat, mat)
+  expect_equal(d$sigmatrix, mat)
+
+  expect_equal(d$string, "2b*2w")
+  expect_equal(d$labelnames, list(c("B1", "B2"), c("W1", "W2")))
+  expect_equal(d$factornames, c("B", "W"))
+})
