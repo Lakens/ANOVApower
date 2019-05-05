@@ -27,6 +27,7 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    pwr
+    pwr,
+    testthat
 VignetteBuilder: 
     knitr
