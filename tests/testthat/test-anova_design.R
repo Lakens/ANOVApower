@@ -36,6 +36,34 @@ test_that("errors", {
                "object 'cor_mat' not found")
 })
 
+test_that("2W", {
+  # fix uppercase letters are design = 0
+  d <- ANOVA_design("2W", n = 100, mu = c(0,0), sd = 1)
+  expect_equal(d$design, 1)
+})
+
+# test grep for strings ----
+test_that("test grep for strings", {
+  pattern <- "^([2-9](w|b)\\*){0,2}[2-9](w|b)$"
+
+  # should work
+  good_strings <- c("2w", "2b", "2W", "2B", "2w*2b", "3w*3b*2w")
+  for (x in good_strings) {
+    find <- grep(pattern, x, ignore.case = TRUE, perl = TRUE)
+    #expect_equal(find, 1)
+    if (length(find) == 0 || find != 1) { print(x) }
+  }
+
+
+  # should not work
+  bad_strings <- c("2a", "w2", "b2", "0w", "0b", "1w", "1b", "2b+2w", "2b*2b*2b*2b")
+  for (x in bad_strings) {
+    find <- grep(pattern, x, ignore.case = TRUE, perl = TRUE)
+    #expect_equal(find, integer(0))
+    if (length(find) != 0) { print(x) }
+  }
+})
+
 # 2w defaults ----
 test_that("2w defaults", {
   d <- ANOVA_design("2w", n = 100, mu = c(0,0), sd = 1)
