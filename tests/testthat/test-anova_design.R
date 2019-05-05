@@ -12,16 +12,19 @@ test_that("errors", {
   expect_error(ANOVA_design("2w*2b", mu = c(0, 0, 0, 0), sd = 1),
                "argument \"n\" is missing, with no default")
 
+  # passing bad arguments: *SHOULD BE AN ERROR*
+  expect_error(ANOVA_design("2w*2b", n = 100, mu = c(0, 0, 0, 0), sd = -1), "?")
+  expect_error(ANOVA_design("2F", n = 10, mu = 1:2, sd = 1), "?")
+
   # bad arguments
   expect_error(ANOVA_design("wrong string"), "NA/NaN argument")
-  #expect_error(ANOVA_design("2F", n = 10, mu = 1:2, sd = 1), "*SHOULD BE AN ERROR*")
   expect_error(ANOVA_design("2w*2b", n = "A", mu = 1:4, sd = 1),
                "non-numeric argument to binary operator")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = c("A", "B", "C", "D"), sd = 1),
                "non-numeric argument to binary operator")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = "A"),
                "requires numeric/complex matrix/vector arguments")
-  #expect_error(ANOVA_design("2w*2b", n = 100, mu = c(0, 0, 0, 0), sd = -1), "?")
+
   expect_error(ANOVA_design("2w*2b", n = c(10,10,10,10), mu = 1:4, sd = 1),
                "non-conformable arguments")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, r = "A"),
@@ -50,8 +53,8 @@ test_that("test grep for strings", {
   good_strings <- c("2w", "2b", "2W", "2B", "2w*2b", "3w*3b*2w")
   for (x in good_strings) {
     find <- grep(pattern, x, ignore.case = TRUE, perl = TRUE)
-    #expect_equal(find, 1)
-    if (length(find) == 0 || find != 1) { print(x) }
+    expect_equal(find, 1)
+    #if (length(find) == 0 || find != 1) { print(x) }
   }
 
 
@@ -59,8 +62,8 @@ test_that("test grep for strings", {
   bad_strings <- c("2a", "w2", "b2", "0w", "0b", "1w", "1b", "2b+2w", "2b*2b*2b*2b")
   for (x in bad_strings) {
     find <- grep(pattern, x, ignore.case = TRUE, perl = TRUE)
-    #expect_equal(find, integer(0))
-    if (length(find) != 0) { print(x) }
+    expect_equal(find, integer(0))
+    #if (length(find) != 0) { print(x) }
   }
 })
 
@@ -166,4 +169,34 @@ test_that("2b set r & labels", {
   expect_equal(d$string, "2b")
   expect_equal(d$labelnames, list(c("B1", "B2")))
   expect_equal(d$factornames, "B")
+})
+
+
+# 2w*2b----
+test_that("2w*2b", {
+  d <- ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, r = 0.5,
+                    labelnames = c("W", "W1", "W2", "B", "B1", "B2"))
+  expect_equal(d$design, c(1, 0))
+  expect_equal(d$design_list, c("W1_B1", "W2_B1", "W1_B2", "W2_B2"))
+  expect_equal(d$factors, 2)
+  expect_equal(d$frml1, y ~ W * B + Error(subject/W))
+  expect_equal(d$frml2, ~W + B)
+  expect_equal(d$mu, 1:4)
+  expect_equal(d$sd, 1)
+  expect_equal(d$r, 0.5)
+  expect_equal(d$n, 100)
+
+  mat <- data.frame(
+    "W1_B1" = c(1, .5, 0, 0),
+    "W2_B1" = c(.5, 1, 0, 0),
+    "W1_B2" = c(0, 0, 1, .5),
+    "W2_B2" = c(0, 0, .5, 1),
+    row.names = c("W1_B1", "W2_B1", "W1_B2", "W2_B2")
+  )
+  expect_equal(d$cor_mat, mat)
+  expect_equal(d$sigmatrix, mat)
+
+  expect_equal(d$string, "2w*2b")
+  expect_equal(d$labelnames, list(c("W1", "W2"), c("B1", "B2")))
+  expect_equal(d$factornames, c("W", "B"))
 })
