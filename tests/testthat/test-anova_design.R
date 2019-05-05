@@ -171,6 +171,66 @@ test_that("2b set r & labels", {
   expect_equal(d$factornames, "B")
 })
 
+# 4w
+test_that("4w", {
+  d <- ANOVA_design("4w", n = 100, mu = 1:4, sd = 1:4, r = 0.5,
+                    labelnames = c("W", "W1", "W2", "W3", "W4"))
+  expect_equal(d$design, 1)
+  expect_equal(d$design_list, c("W1", "W2", "W3", "W4"))
+  expect_equal(d$factors, 1)
+  expect_equal(d$frml1, y ~ W + Error(subject/W))
+  expect_equal(d$frml2, ~W)
+  expect_equal(d$mu, 1:4)
+  expect_equal(d$sd, 1:4)
+  expect_equal(d$r, 0.5)
+  expect_equal(d$n, 100)
+
+  mat <- data.frame(
+    "W1" = c(1, 0.5, 0.5, 0.5),
+    "W2" = c(0.5, 1, 0.5, 0.5),
+    "W3" = c(0.5, 0.5, 1, 0.5),
+    "W4" = c(0.5, 0.5, 0.5, 1),
+    row.names = c("W1", "W2", "W3", "W4")
+  )
+  expect_equal(d$cor_mat, mat)
+  sigma <- as.matrix(mat) * (1:4 %*% t(1:4))
+  expect_equal(d$sigmatrix, as.data.frame(sigma))
+
+  expect_equal(d$string, "4w")
+  expect_equal(d$labelnames, list(c("W1", "W2", "W3", "W4")))
+  expect_equal(d$factornames, "W")
+})
+
+# 4b
+test_that("4b", {
+  d <- ANOVA_design("4b", n = 100, mu = 1:4, sd = 1:4, r = 0.5,
+                    labelnames = c("B", "B1", "B2", "B3", "B4"))
+  expect_equal(d$design, 0)
+  expect_equal(d$design_list, c("B1", "B2", "B3", "B4"))
+  expect_equal(d$factors, 1)
+  expect_equal(d$frml1, y ~ B + Error(1 | subject))
+  expect_equal(d$frml2, ~B)
+  expect_equal(d$mu, 1:4)
+  expect_equal(d$sd, 1:4)
+  expect_equal(d$r, 0.5)
+  expect_equal(d$n, 100)
+
+  mat <- data.frame(
+    "B1" = c(1, 0, 0, 0),
+    "B2" = c(0, 1, 0, 0),
+    "B3" = c(0, 0, 1, 0),
+    "B4" = c(0, 0, 0, 1),
+    row.names = c("B1", "B2", "B3", "B4")
+  )
+  expect_equal(d$cor_mat, mat)
+  sigma <- as.matrix(mat) * (1:4 %*% t(1:4))
+  expect_equal(d$sigmatrix, as.data.frame(sigma))
+
+  expect_equal(d$string, "4b")
+  expect_equal(d$labelnames, list(c("B1", "B2", "B3", "B4")))
+  expect_equal(d$factornames, "B")
+})
+
 
 # 2w*2b----
 test_that("2w*2b", {
