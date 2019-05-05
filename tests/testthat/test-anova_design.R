@@ -85,8 +85,8 @@ test_that("2w defaults", {
     "a2" = c(0, 1),
     row.names = c("a1", "a2")
   )
-  expect_equal(d$cor_mat, mat)
-  expect_equal(d$sigmatrix, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$string, "2w")
   expect_equal(d$labelnames, list(c("a1", "a2")))
@@ -111,8 +111,8 @@ test_that("2b defaults", {
     "a2" = c(0, 1),
     row.names = c("a1", "a2")
   )
-  expect_equal(d$cor_mat, mat)
-  expect_equal(d$sigmatrix, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$string, "2b")
   expect_equal(d$labelnames, list(c("a1", "a2")))
@@ -137,8 +137,8 @@ test_that("2w set r & labels", {
     "W2" = c(0.5, 1),
     row.names = c("W1", "W2")
   )
-  expect_equal(d$cor_mat, mat)
-  expect_equal(d$sigmatrix, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$string, "2w")
   expect_equal(d$labelnames, list(c("W1", "W2")))
@@ -163,8 +163,8 @@ test_that("2b set r & labels", {
     "B2" = c(0, 1),
     row.names = c("B1", "B2")
   )
-  expect_equal(d$cor_mat, mat)
-  expect_equal(d$sigmatrix, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$string, "2b")
   expect_equal(d$labelnames, list(c("B1", "B2")))
@@ -192,9 +192,9 @@ test_that("4w", {
     "W4" = c(0.5, 0.5, 0.5, 1),
     row.names = c("W1", "W2", "W3", "W4")
   )
-  expect_equal(d$cor_mat, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
   sigma <- as.matrix(mat) * (1:4 %*% t(1:4))
-  expect_equal(d$sigmatrix, as.data.frame(sigma))
+  expect_true(dplyr::all_equal(d$sigmatrix, as.data.frame(sigma)))
 
   expect_equal(d$string, "4w")
   expect_equal(d$labelnames, list(c("W1", "W2", "W3", "W4")))
@@ -222,9 +222,9 @@ test_that("4b", {
     "B4" = c(0, 0, 0, 1),
     row.names = c("B1", "B2", "B3", "B4")
   )
-  expect_equal(d$cor_mat, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
   sigma <- as.matrix(mat) * (1:4 %*% t(1:4))
-  expect_equal(d$sigmatrix, as.data.frame(sigma))
+  expect_true(dplyr::all_equal(d$sigmatrix, as.data.frame(sigma)))
 
   expect_equal(d$string, "4b")
   expect_equal(d$labelnames, list(c("B1", "B2", "B3", "B4")))
@@ -253,8 +253,8 @@ test_that("2w*2b", {
     "W2_B2" = c(0, 0, .5, 1),
     row.names = c("W1_B1", "W2_B1", "W1_B2", "W2_B2")
   )
-  expect_equal(d$cor_mat, mat)
-  expect_equal(d$sigmatrix, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$string, "2w*2b")
   expect_equal(d$labelnames, list(c("W1", "W2"), c("B1", "B2")))
@@ -282,8 +282,8 @@ test_that("2b*2w", {
     "B2_W2" = c(0, .5, 0, 1),
     row.names = c("B1_W1", "B2_W1", "B1_W2", "B2_W2")
   )
-  expect_equal(d$cor_mat, mat)
-  expect_equal(d$sigmatrix, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$string, "2b*2w")
   expect_equal(d$labelnames, list(c("B1", "B2"), c("W1", "W2")))
