@@ -194,13 +194,11 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
     design_list_split <- unlist(strsplit(design_list[i1],"_"))
     #current_factor <- design_list_split[c(2,4,6)[1:length(design)]] #this creates a string of 2, 2,4 or 2,4,6 depending on the length of the design for below
     for(i2 in 1:length(design)){
-      #We set each number that is within to a wildcard, so that all within subject factors are matched
-      if(design[i2]==1){design_list_split[i2] <- "\\w+"}
+      #We set each number that is between to a wildcard, so that all between participant factors are matched
+      if(design[i2]==0){design_list_split[i2] <- "\\w+"}
     }
     sigmatrix[i1,]<-as.numeric(grepl(paste0(design_list_split, collapse="_"), design_list)) # compare factors that match with current factor, given wildcard, save list to sigmatrix
   }
-
-
 
   #Now multiply the matrix we just created (that says what is within, and what is between,  with the original covariance matrix)
   #So factors manipulated within are correlated, those manipulated between are not.
