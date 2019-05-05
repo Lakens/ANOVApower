@@ -12,20 +12,28 @@ test_that("errors", {
   expect_error(ANOVA_design("2w*2b", mu = c(0, 0, 0, 0), sd = 1),
                "argument \"n\" is missing, with no default")
 
+  # passing bad arguments: *SHOULD BE AN ERROR*
+  expect_error(ANOVA_design("2w*2b", n = 100, mu = c(0, 0, 0, 0), sd = -1), "?")
+  expect_error(ANOVA_design("2F", n = 10, mu = 1:2, sd = 1), "?")
+
   # bad arguments
   expect_error(ANOVA_design("wrong string"), "NA/NaN argument")
-  #expect_error(ANOVA_design("2F", n = 10, mu = 1:2, sd = 1), "*SHOULD BE AN ERROR*")
   expect_error(ANOVA_design("2w*2b", n = "A", mu = 1:4, sd = 1),
                "non-numeric argument to binary operator")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = c("A", "B", "C", "D"), sd = 1),
                "non-numeric argument to binary operator")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = "A"),
                "requires numeric/complex matrix/vector arguments")
-  #expect_error(ANOVA_design("2w*2b", n = 100, mu = c(0, 0, 0, 0), sd = -1), "?")
-  #expect_error(ANOVA_design("2w*2b", n = c(10,10,10,10), mu = 1:4, sd = 1),
-  #             "non-conformable arguments")
+  expect_error(ANOVA_design("2w*2b", n = c(10,10,10,10), mu = 1:4, sd = 1),
+               "non-conformable arguments")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, r = "A"),
                "object 'cor_mat' not found")
+  expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, labelnames = c("A", "B")),
+               "Design (string) does not match the length of the labelnames")
+  expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1,
+                            labelnames = c("W factor", "W 1", "W 2", "B factor", "B 1", "B 2")),
+               "unexpected symbol")
+
 
   # inconsistent arguments
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 0, sd = 1),
@@ -35,6 +43,7 @@ test_that("errors", {
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, r = c(.5, 0, .4)),
                "object 'cor_mat' not found")
 })
+
 
 # test_that("2W", {
 #   # fix uppercase letters are design = 0
@@ -82,8 +91,8 @@ test_that("2w defaults", {
     "a2" = c(0, 1),
     row.names = c("a1", "a2")
   )
-  expect_equal(d$cor_mat, mat)
-  expect_equal(d$sigmatrix, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$string, "2w")
   expect_equal(d$labelnames, list(c("a1", "a2")))
@@ -108,8 +117,8 @@ test_that("2b defaults", {
     "a2" = c(0, 1),
     row.names = c("a1", "a2")
   )
-  expect_equal(d$cor_mat, mat)
-  expect_equal(d$sigmatrix, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$string, "2b")
   expect_equal(d$labelnames, list(c("a1", "a2")))
@@ -134,8 +143,8 @@ test_that("2w set r & labels", {
     "W2" = c(0.5, 1),
     row.names = c("W1", "W2")
   )
-  expect_equal(d$cor_mat, mat)
-  expect_equal(d$sigmatrix, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$string, "2w")
   expect_equal(d$labelnames, list(c("W1", "W2")))
@@ -160,10 +169,129 @@ test_that("2b set r & labels", {
     "B2" = c(0, 1),
     row.names = c("B1", "B2")
   )
-  expect_equal(d$cor_mat, mat)
-  expect_equal(d$sigmatrix, mat)
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$string, "2b")
   expect_equal(d$labelnames, list(c("B1", "B2")))
   expect_equal(d$factornames, "B")
+})
+
+# 4w
+test_that("4w", {
+  d <- ANOVA_design("4w", n = 100, mu = 1:4, sd = 1:4, r = 0.5,
+                    labelnames = c("W", "W1", "W2", "W3", "W4"))
+  expect_equal(d$design, 1)
+  expect_equal(d$design_list, c("W1", "W2", "W3", "W4"))
+  expect_equal(d$factors, 1)
+  expect_equal(d$frml1, y ~ W + Error(subject/W))
+  expect_equal(d$frml2, ~W)
+  expect_equal(d$mu, 1:4)
+  expect_equal(d$sd, 1:4)
+  expect_equal(d$r, 0.5)
+  expect_equal(d$n, 100)
+
+  mat <- data.frame(
+    "W1" = c(1, 0.5, 0.5, 0.5),
+    "W2" = c(0.5, 1, 0.5, 0.5),
+    "W3" = c(0.5, 0.5, 1, 0.5),
+    "W4" = c(0.5, 0.5, 0.5, 1),
+    row.names = c("W1", "W2", "W3", "W4")
+  )
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  sigma <- as.matrix(mat) * (1:4 %*% t(1:4))
+  expect_true(dplyr::all_equal(d$sigmatrix, as.data.frame(sigma)))
+
+  expect_equal(d$string, "4w")
+  expect_equal(d$labelnames, list(c("W1", "W2", "W3", "W4")))
+  expect_equal(d$factornames, "W")
+})
+
+# 4b
+test_that("4b", {
+  d <- ANOVA_design("4b", n = 100, mu = 1:4, sd = 1:4, r = 0.5,
+                    labelnames = c("B", "B1", "B2", "B3", "B4"))
+  expect_equal(d$design, 0)
+  expect_equal(d$design_list, c("B1", "B2", "B3", "B4"))
+  expect_equal(d$factors, 1)
+  expect_equal(d$frml1, y ~ B + Error(1 | subject))
+  expect_equal(d$frml2, ~B)
+  expect_equal(d$mu, 1:4)
+  expect_equal(d$sd, 1:4)
+  expect_equal(d$r, 0.5)
+  expect_equal(d$n, 100)
+
+  mat <- data.frame(
+    "B1" = c(1, 0, 0, 0),
+    "B2" = c(0, 1, 0, 0),
+    "B3" = c(0, 0, 1, 0),
+    "B4" = c(0, 0, 0, 1),
+    row.names = c("B1", "B2", "B3", "B4")
+  )
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  sigma <- as.matrix(mat) * (1:4 %*% t(1:4))
+  expect_true(dplyr::all_equal(d$sigmatrix, as.data.frame(sigma)))
+
+  expect_equal(d$string, "4b")
+  expect_equal(d$labelnames, list(c("B1", "B2", "B3", "B4")))
+  expect_equal(d$factornames, "B")
+})
+
+
+# 2w*2b----
+test_that("2w*2b", {
+  d <- ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, r = 0.5,
+                    labelnames = c("W", "W1", "W2", "B", "B1", "B2"))
+  expect_equal(d$design, c(1, 0))
+  expect_equal(d$design_list, c("W1_B1", "W2_B1", "W1_B2", "W2_B2"))
+  expect_equal(d$factors, 2)
+  expect_equal(d$frml1, y ~ W * B + Error(subject/W))
+  expect_equal(d$frml2, ~W + B)
+  expect_equal(d$mu, 1:4)
+  expect_equal(d$sd, 1)
+  expect_equal(d$r, 0.5)
+  expect_equal(d$n, 100)
+
+  mat <- data.frame(
+    "W1_B1" = c(1, .5, 0, 0),
+    "W2_B1" = c(.5, 1, 0, 0),
+    "W1_B2" = c(0, 0, 1, .5),
+    "W2_B2" = c(0, 0, .5, 1),
+    row.names = c("W1_B1", "W2_B1", "W1_B2", "W2_B2")
+  )
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
+
+  expect_equal(d$string, "2w*2b")
+  expect_equal(d$labelnames, list(c("W1", "W2"), c("B1", "B2")))
+  expect_equal(d$factornames, c("W", "B"))
+})
+
+# 2b*2w----
+test_that("2b*2w", {
+  d <- ANOVA_design("2b*2w", n = 100, mu = 1:4, sd = 1, r = 0.5,
+                    labelnames = c("B", "B1", "B2", "W", "W1", "W2"))
+  expect_equal(d$design, c(0, 1))
+  expect_equal(d$design_list, c("B1_W1", "B2_W1", "B1_W2", "B2_W2"))
+  expect_equal(d$factors, 2)
+  expect_equal(d$frml1, y ~ B * W + Error(subject/W))
+  expect_equal(d$frml2, ~B + W)
+  expect_equal(d$mu, 1:4)
+  expect_equal(d$sd, 1)
+  expect_equal(d$r, 0.5)
+  expect_equal(d$n, 100)
+
+  mat <- data.frame(
+    "B1_W1" = c(1, 0, .5, 0),
+    "B2_W1" = c(0, 1, 0, .5),
+    "B1_W2" = c(.5, 0, 1, 0),
+    "B2_W2" = c(0, .5, 0, 1),
+    row.names = c("B1_W1", "B2_W1", "B1_W2", "B2_W2")
+  )
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
+
+  expect_equal(d$string, "2b*2w")
+  expect_equal(d$labelnames, list(c("B1", "B2"), c("W1", "W2")))
+  expect_equal(d$factornames, c("B", "W"))
 })
