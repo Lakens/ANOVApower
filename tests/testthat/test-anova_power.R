@@ -121,19 +121,19 @@ test_that("3b long", {
     p <- ANOVA_power(design, alpha_level = 0.05, nsims = 5000, seed = 123, verbose = FALSE)
   )
 
-  pc_1 <- pwr.t.test(d = 2.2/6.4,
+  pc_1 <- pwr::pwr.t.test(d = 2.2/6.4,
+                          n = 50,
+                          sig.level = 0.05,
+                          type = "two.sample",
+                          alternative = "two.sided")$power
+
+  pc_2 <- pwr::pwr.t.test(d = 2.6 / 6.4,
                      n = 50,
                      sig.level = 0.05,
-                     type="two.sample",
-                     alternative="two.sided")$power
+                     type = "two.sample",
+                     alternative = "two.sided")$power
 
-  pc_2 <- pwr.t.test(d = 2.6/6.4,
-                     n = 50,
-                     sig.level = 0.05,
-                     type="two.sample",
-                     alternative="two.sided")$power
-
-  pc_3 <- pwr.t.test(d = 0.4/6.4,
+  pc_3 <- pwr::pwr.t.test(d = 0.4/6.4,
                      n = 50,
                      sig.level = 0.05,
                      type="two.sample",
