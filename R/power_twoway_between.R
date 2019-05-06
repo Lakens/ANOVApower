@@ -87,7 +87,7 @@ power_twoway_between <- function(design_result, alpha_level=0.05){
   MS_error <- design_result$sd^2
   SS_error <- MS_error * (design_result$n*length(design_result$mu))
 
-  # For main effect A
+  # Power calculations
   df_A <- (length(design_result$labelnames[[1]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
   df_B <- (length(design_result$labelnames[[2]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
   df_AB <- (length(design_result$labelnames[[1]])-1) * (length(design_result$labelnames[[2]])-1)

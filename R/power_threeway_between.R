@@ -1,6 +1,6 @@
 #' Analytic power calculation for three-way between designs.
 #' @param design_result Output from the ANOVA_design function
-#' @param alpha_level Alpha level used to determine statistical significance
+#' @param alpha_level Alpha level used to determine statistical significance (default to 0.05)
 #' @return
 #' mu = means
 #'
@@ -119,7 +119,7 @@
 #'       "voice", "human", "robot", "color", "green", "red"))
 #' power_result <- power_threeway_between(design_result, alpha_level = 0.05)
 #' @section References:
-#' too be added
+#' to be added
 #' @importFrom stats pf qf
 #' @export
 #'
@@ -128,36 +128,35 @@ power_threeway_between <- function(design_result, alpha_level=0.05){
   mu_array <- array(design_result$mu, dim = c(length(design_result$labelnames[[1]]),
                                               length(design_result$labelnames[[2]]),
                                               length(design_result$labelnames[[3]])))
-  #Gender
+  #A
   mu_A <- apply(mu_array,c(3),mean)
   mu_A
-  #Country
+  #B
   mu_B <- apply(mu_array,c(2),mean)
   mu_B
-  #Position
+  #C
   mu_C <- apply(mu_array,c(1),mean)
   mu_C
 
-  #GENDER*NATIONALITY
+  #A*B
   mu_AB <- apply(mu_array,c(2,3),mean)
   mu_AB
   mu_AB <- mu_AB - (mean(design_result$mu) + sweep(mu_AB, 1, rowMeans(mu_AB)) + sweep(mu_AB, 2, colMeans(mu_AB)))
   mu_AB
 
-  #SIZE*LOAD
+  #A*C
   mu_AC <- apply(mu_array,c(1,3),mean)
   mu_AC
   mu_AC <- mu_AC - (mean(design_result$mu) + sweep(mu_AC, 2, colMeans(mu_AC)) + sweep(mu_AC, 1, rowMeans(mu_AC)))
   mu_AC
 
-  #COLOR*LOAD
+  #B*C
   mu_BC <- apply(mu_array,c(1,2),mean)
   mu_BC
   mu_BC <- mu_BC - (mean(design_result$mu) + sweep(mu_BC,1, rowMeans(mu_BC)) + sweep(mu_BC,2, colMeans(mu_BC)))
   mu_BC
 
   # Calculate degrees of freedom
-
   df_A <- (length(design_result$labelnames[[1]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
   df_B <- (length(design_result$labelnames[[2]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
   df_C <- (length(design_result$labelnames[[3]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
@@ -172,7 +171,6 @@ power_threeway_between <- function(design_result, alpha_level=0.05){
   df_total <- df_error + df_A + df_B + df_C + df_AB + df_AC + df_BC + df_ABC
 
   # Calculate sum of squares
-
   MS_A <- design_result$n * length(design_result$labelnames[[2]]) * length(design_result$labelnames[[3]]) * (sum((mu_A - mean(mu_A))^2)/(length(design_result$labelnames[[2]])-1))
   SS_A <- design_result$n * length(design_result$labelnames[[2]]) * length(design_result$labelnames[[3]]) * sum((mu_A - mean(mu_A))^2)
 
