@@ -32,7 +32,7 @@ test_that("errors", {
   expect_error(ANOVA_design("2w*2b", n = "A", mu = 1:4, sd = 1),
                "non-numeric argument to binary operator")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, r = "A"),
-               "If a single correlation (r) is entered it must be >= 0 and < 1",
+               "Correlation must be greater than 0 and less than 1",
                fixed = TRUE)
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, labelnames = c("A", "B")),
                "Design \\(string\\) does not match the length of the labelnames")

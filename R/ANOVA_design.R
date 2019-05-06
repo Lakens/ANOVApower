@@ -35,13 +35,13 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
   }
 
 #Ensure string is greater than 0
-  if (sd <= 0) {
+  if (length(sd) == 1 && sd <= 0) {
     stop("Standard deviation (sd) is less than or equal to zero; input a value greater than zero")
   }
 
 #Ensure, if single correlation is input, that it is between 0 and 1
-  if (length(r) == 1 && r < 0 || r >=1 ) {
-    stop("If a single correlation (r) is entered it must be >= 0 and < 1")
+  if (any(r < 0) | any(r >=1) ) {
+    stop("Correlation must be greater than 0 and less than 1")
   }
 
 #Ensure proper n input
