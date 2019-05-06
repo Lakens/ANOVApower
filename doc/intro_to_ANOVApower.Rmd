@@ -701,4 +701,4 @@ power_res$power_AB
 
 ```
 
-We see the 26.9 and 64.2, and 26.9 correspond to the results of the simulation quite closely. 
+We see the 26.9 and 64.2, and 26.9 correspond to the results of the simulation quite closely.  

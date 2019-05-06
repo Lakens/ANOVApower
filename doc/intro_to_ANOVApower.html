@@ -210,7 +210,7 @@ pre, code {
 background-color: #f7f7f7;
 border-radius: 3px;
 color: #333;
-white-space: pre-wrap; 
+white-space: pre-wrap;
 }
 pre {
 border-radius: 3px;
@@ -278,17 +278,17 @@ text-decoration: underline; }
 a[href^="https:"] {
 text-decoration: underline; }
 
-code > span.kw { color: #555; font-weight: bold; } 
-code > span.dt { color: #902000; } 
-code > span.dv { color: #40a070; } 
-code > span.bn { color: #d14; } 
-code > span.fl { color: #d14; } 
-code > span.ch { color: #d14; } 
-code > span.st { color: #d14; } 
-code > span.co { color: #888888; font-style: italic; } 
-code > span.ot { color: #007020; } 
-code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.kw { color: #555; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #d14; }
+code > span.fl { color: #d14; }
+code > span.ch { color: #d14; }
+code > span.st { color: #d14; }
+code > span.co { color: #888888; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; }
 </style>
 
 
@@ -481,7 +481,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## anova_voice             1      0.0113
 ## anova_emotion          85      0.0934
 ## anova_voice:emotion    75      0.0718
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                                                             power
 ## p_voice_human_emotion_cheerful_voice_human_emotion_sad         98
@@ -497,7 +497,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## p_voice_human_emotion_sad_voice_robot_emotion_cheerful          -0.6519
 ## p_voice_human_emotion_sad_voice_robot_emotion_sad               -0.6234
 ## p_voice_robot_emotion_cheerful_voice_robot_emotion_sad           0.0282</code></pre>
-<p>The result for the power simulation has two sections (which can be surpressed by setting verbose = FALSE). The first table provides power (from 0 to 100%) and effect sizes (partial eta-squared) for the ANOVA result. We see the results for the main effects of factor voice, emotion, and the voice*emotion interaction.</p>
+<p>The result for the power simulation has two sections (which can be surpressed by setting verbose = FALSE). The first table provides power (from 0 to 100%) and effect sizes (partial eta-squared) for the ANOVA result. We see the results for the main effects of factor voice, emotion, and the voice*emotion interaction. </p>
 <p>The result for the power simulation reveal power is highest for the main effect of emotion. Remember that this is the within-subjects factor, and the means are highly correlated (0.8) - so we have high power for within comparisons. Power is lower for the interaction, and very low for the main effect of voice.</p>
 <p>An ANOVA is typically followed up with contrasts. A statistical hypothesis often predicts not just an interaction, but also the shape of an interaction. For example, when looking at the plot of our design above, we might be specifically interested in comparing the independent effect for the cheerful vs sad human voice assistant, and the difference for sad voice when they are robotic or human. The second table provides the power for <em>t</em>-tests for all comparisons, and the effect sizes (Cohen’s d for between-subject contrasts, and Cohen’s <span class="math inline">\(d_z\)</span> for within-subject contrasts, see <a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2013.00863/full">Lakens, 2013</a>).</p>
 <p>Power is relatively high for the differences between within-participant conditions, and power is very low for the minor differences among the three similar means (1.03, 0.98, 1.01). In addition to the two tables, the ANOVA_power function returns the raw simulation data (all p-values and effect sizes for each simulation, use simulation_result$sim_data) and a plot showing the <em>p</em>-value distributions for all tests in the ANOVA.</p>
@@ -523,7 +523,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Power and Effect sizes for ANOVA tests
 ##                 power effect_size
 ## anova_condition    67      0.0289
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                                   power effect_size
 ## p_condition_control_condition_pet    67      0.3467</code></pre>
@@ -559,7 +559,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Power and Effect sizes for ANOVA tests
 ##                 power effect_size
 ## anova_condition    92       0.028
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                                   power effect_size
 ## p_condition_control_condition_pet    92      0.3469</code></pre>
@@ -583,7 +583,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Power and Effect sizes for ANOVA tests
 ##                 power effect_size
 ## anova_condition    46      0.0362
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                                   power effect_size
 ## p_condition_control_condition_cat    37      0.3159
@@ -654,7 +654,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Power and Effect sizes for ANOVA tests
 ##             power effect_size
 ## anova_speed    78      0.2169
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                         power effect_size
 ## p_speed_fast_speed_slow    78      0.4887</code></pre>
@@ -685,7 +685,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Power and Effect sizes for ANOVA tests
 ##             power effect_size
 ## anova_speed    73      0.2847
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                         power effect_size
 ## p_speed_fast_speed_slow    73       0.642</code></pre>
@@ -743,7 +743,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Power and Effect sizes for ANOVA tests
 ##             power effect_size
 ## anova_speed    98      0.3505
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                           power effect_size
 ## p_speed_fast_speed_medium    55      0.5209
@@ -780,7 +780,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## anova_B       0      0.0044
 ## anova_A       4      0.0083
 ## anova_B:A    87      0.1919
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                       power effect_size
 ## p_A_a1_B_b1_A_a1_B_b2    66      0.5095
@@ -811,7 +811,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## anova_B       0      0.0021
 ## anova_A       3      0.0084
 ## anova_B:A    97      0.3152
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                       power effect_size
 ## p_A_a1_B_b1_A_a1_B_b2    86      0.7162
@@ -850,7 +850,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## anova_Factor_A             47      0.0321
 ## anova_Factor_B             49      0.0337
 ## anova_Factor_A:Factor_B    71      0.0674
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                                                   power effect_size
 ## p_Factor_A_a1_Factor_B_b1_Factor_A_a1_Factor_B_b2     4     -0.0314
@@ -934,7 +934,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## anova_A      28      0.1063
 ## anova_B      66      0.2714
 ## anova_A:B    30      0.1127
-## 
+##
 ## Power and Effect sizes for contrasts
 ##                       power effect_size
 ## p_A_a1_B_b1_A_a1_B_b2    33     -0.3425

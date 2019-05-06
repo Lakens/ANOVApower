@@ -1,14 +1,14 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----setup, include=FALSE-------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 library(ANOVApower)
 nsims = 100
 
 ## ---- fig.width=7, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE----
 design_result <- ANOVA_design(string = "2b*2w*2b",
-                              n = 10, 
-                              mu = c(1, 2, 3, 4, 5, 6, 7, 8), 
-                              sd = 1, 
-                              r = 0.9, 
+                              n = 10,
+                              mu = c(1, 2, 3, 4, 5, 6, 7, 8),
+                              sd = 1,
+                              r = 0.9,
                               labelnames = c("factor1", "a1", "a2", "factor2", "b1", "b2", "factor3", "c1", "c2"))
 
 
@@ -32,15 +32,15 @@ design_result$cor_mat
 
 ## ---- fig.width=7, fig.height=4------------------------------------------
 design_result <- ANOVA_design(string = "2b*2w",
-                   n = 40, 
-                   mu = c(1.03, 1.41, 0.98, 1.01), 
-                   sd = 1.03, 
-                   r=0.8, 
+                   n = 40,
+                   mu = c(1.03, 1.41, 0.98, 1.01),
+                   sd = 1.03,
+                   r=0.8,
                    labelnames = c("voice", "human", "robot", "emotion", "cheerful", "sad"))
 
-power_result <- ANOVA_power(design_result, 
-                                 alpha = 0.05, 
-                                 nsims = nsims, 
+power_result <- ANOVA_power(design_result,
+                                 alpha = 0.05,
+                                 nsims = nsims,
                                  seed = 1234)
 
 
@@ -56,8 +56,8 @@ labelnames <- c("condition", "control", "pet") #
 
 design_result <- ANOVA_design(string = string,
                               n = n,
-                              mu = mu, 
-                              sd = sd, 
+                              mu = mu,
+                              sd = sd,
                               labelnames = labelnames)
 
 ANOVA_power(design_result, nsims = nsims)
@@ -87,9 +87,9 @@ mu <- c(24, 26.2)
 sd <- 6.4
 labelnames <- c("condition", "control", "pet") #
 design_result <- ANOVA_design(string = string,
-                   n = n, 
-                   mu = mu, 
-                   sd = sd, 
+                   n = n,
+                   mu = mu,
+                   sd = sd,
                    labelnames = labelnames)
 
 power_result <- ANOVA_power(design_result, nsims = nsims)
@@ -102,9 +102,9 @@ sd <- 6.4
 labelnames <- c("condition", "control", "cat", "dog") #
 
 design_result <- ANOVA_design(string = string,
-                   n = n, 
-                   mu = mu, 
-                   sd = sd, 
+                   n = n,
+                   mu = mu,
+                   sd = sd,
                    labelnames = labelnames)
 
 ANOVA_power(design_result, nsims = nsims)
@@ -156,10 +156,10 @@ string = paste(K,"w",sep="")
 labelnames <- c("speed", "fast", "slow")
 
 design_result <- ANOVA_design(string = string,
-                              n = n, 
-                              mu = mu, 
-                              sd = sd, 
-                              r = r, 
+                              n = n,
+                              mu = mu,
+                              sd = sd,
+                              r = r,
                               labelnames = labelnames)
 
 ANOVA_power(design_result, nsims = nsims)
@@ -179,10 +179,10 @@ string = paste(K,"w",sep="")
 labelnames <- c("speed", "fast", "slow")
 
 design_result <- ANOVA_design(string = string,
-                              n = n, 
-                              mu = mu, 
-                              sd = sd, 
-                              r = r, 
+                              n = n,
+                              mu = mu,
+                              sd = sd,
+                              r = r,
                               labelnames = labelnames)
 
 ANOVA_power(design_result, nsims = nsims)
@@ -215,10 +215,10 @@ string = paste(K,"w",sep="")
 labelnames <- c("speed", "fast", "medium", "slow")
 
 design_result <- ANOVA_design(string = string,
-                              n = n, 
-                              mu = mu, 
-                              sd = sd, 
-                              r = r, 
+                              n = n,
+                              mu = mu,
+                              sd = sd,
+                              r = r,
                               labelnames = labelnames)
 
 ANOVA_power(design_result, nsims = nsims)
@@ -242,10 +242,10 @@ string = "2w*2b"
 alpha_level <- 0.05
 labelnames = c("A", "a1", "a2", "B", "b1", "b2")
 design_result <- ANOVA_design(string = string,
-                              n = n, 
-                              mu = mu, 
-                              sd = sd, 
-                              r = r, 
+                              n = n,
+                              mu = mu,
+                              sd = sd,
+                              r = r,
                               labelnames = labelnames)
 
 
@@ -264,10 +264,10 @@ string = "2w*2b"
 alpha_level <- 0.05
 labelnames = c("A", "a1", "a2", "B", "b1", "b2")
 design_result <- ANOVA_design(string = string,
-                              n = n, 
-                              mu = mu, 
-                              sd = sd, 
-                              r = r, 
+                              n = n,
+                              mu = mu,
+                              sd = sd,
+                              r = r,
                               labelnames = labelnames)
 
 simulation_result <- ANOVA_power(design_result, nsims = nsims)
@@ -320,9 +320,9 @@ labelnames <- c("Factor_A", "a1", "a2", "a3", "Factor_B", "b1", "b2", "b3") #
 # the label names should be in the order of the means specified above.
 
 design_result <- ANOVA_design(string = string,
-                   n = n, 
-                   mu = mu, 
-                   sd = sd, 
+                   n = n,
+                   mu = mu,
+                   sd = sd,
                    labelnames = labelnames)
 
 power_result <- ANOVA_power(design_result, alpha_level = 0.05, nsims = nsims)
@@ -341,7 +341,7 @@ power_res$power_AB
 knitr::include_graphics("screenshots/PS2000.png")
 
 ## ------------------------------------------------------------------------
-mu = c(2,1,4,2) 
+mu = c(2,1,4,2)
 n <- 20
 sd <- 5
 r <- c(
@@ -353,10 +353,10 @@ r <- c(
 string = "2w*2w"
 labelnames = c("A", "a1", "a2", "B", "b1", "b2")
 design_result <- ANOVA_design(string = string,
-                              n = n, 
-                              mu = mu, 
-                              sd = sd, 
-                              r = r, 
+                              n = n,
+                              mu = mu,
+                              sd = sd,
+                              r = r,
                               labelnames = labelnames)
 
 simulation_result <- ANOVA_power(design_result, nsims = nsims)
