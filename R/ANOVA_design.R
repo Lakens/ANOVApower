@@ -34,8 +34,8 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
     stop("Problem in the string argument: must input number of levels as integer (2-99) and factor-type (between or within) as lower case b (between) or w (within)")
   }
 
-#Ensure string is greater than 0
-  if (length(sd) == 1 && sd <= 0) {
+#Ensure sd is greater than 0
+  if (any(sd <= 0)) {
     stop("Standard deviation (sd) is less than or equal to zero; input a value greater than zero")
   }
 
