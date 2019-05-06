@@ -28,6 +28,27 @@
 #'
 
 ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRUE){
+
+#Check String for an acceptable digits and factor (w or b)
+  if (grepl("^(\\d{1,2}(w|b)\\*){0,2}\\d{1,2}(w|b)$", string, ignore.case = FALSE, perl = TRUE) == FALSE) {
+    stop("Problem in the string argument: must input number of levels as integer (2-99) and factor-type (between or within) as lower case b (between) or w (within)")
+  }
+
+#Ensure string is greater than 0
+  if (sd <= 0) {
+    stop("Standard deviation (sd) is less than or equal to zero; input a value greater than zero")
+  }
+
+#Ensure, if single correlation is input, that it is between 0 and 1
+  if (length(r) == 1 && r < 0 || r >=1 ) {
+    stop("If a single correlation (r) is entered it must be >= 0 and < 1")
+  }
+
+#Ensure proper n input
+  if (length(n) != 1 ) {
+    stop("Only balanced designs allowed: n can only be one value")
+  }
+
   #If labelnames are not provided, they are generated.
   #Store factor levels (used many times in the script, calculate once)
   factor_levels <- as.numeric(strsplit(string, "\\D+")[[1]])
@@ -56,6 +77,11 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
 
   #Check if design an means match up - if not, throw an error and stop
   if(prod(factor_levels) != length(mu)){stop("the length of the vector with means does not match the study design")}
+
+  #Check if the factors are of an acceptable number of levels
+  if(any(factor_levels <= 0) == TRUE | any(factor_levels > 99) ) {
+    stop("Each factor can only have between 2 and 99 levels")
+  }
 
   ###############
   # 2. Create Factors and Design ----

@@ -30,6 +30,15 @@
 
 ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 1000, seed = NULL, verbose = TRUE){
 
+  if (is.element(p_adjust, c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")) == FALSE ) {
+    stop("p_adjust must be of an acceptable adjustment method: see ?p.adjust")
+  }
+
+  if (nsims < 10) {
+    stop("The number of repetitions in simulation must be at least 10; suggested at least 1000 for accurate results")
+  }
+
+
   # #Require necessary packages
   # requireNamespace(mvtnorm, quietly = TRUE)
   # requireNamespace(MASS, quietly = TRUE)
@@ -98,6 +107,11 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   if (missing(alpha_level)) {
     alpha_level <- 0.05
   }
+
+  if (alpha_level >= 1 | alpha_level <= 0  ) {
+    stop("alpha_level must be less than 1 and greater than zero")
+  }
+
   string <- design_result$string #String used to specify the design
 
   factornames <- design_result$factornames #Get factor names

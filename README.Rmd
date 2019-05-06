@@ -17,6 +17,8 @@ nsims = 10000
 library(ANOVApower)
 ```
 
+[![Build Status](https://travis-ci.com/Lakens/ANOVApower.png)](https://travis-ci.com/Lakens/ANOVApower)
+
 # An Introduction to ANOVApower
 
 The goal of ANOVApower is to easily simulate ANOVA designs and calculate the observed power.

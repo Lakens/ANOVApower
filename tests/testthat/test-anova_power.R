@@ -4,15 +4,17 @@ context("test-anova_power")
 
 # error messages
 test_that("error messages", {
-  design <- ANOVA_design(string = "2w", n = 10, mu = c(0, 0), sd = 1)
+  design <- ANOVA_design(string = "2w", n = 10, mu = c(0, 0), sd = 1, plot = FALSE)
 
   expect_error(ANOVA_power(), "argument \"design_result\" is missing, with no default")
-  expect_error(ANOVA_power(design, nsims = -1), "invalid 'nrow' value \\(< 0\\)")
+  expect_error(ANOVA_power(design, nsims = -1), "The number of repetitions in simulation must be at least 10; suggested at least 1000 for accurate results")
+  expect_error(ANOVA_power(design, nsims = 10, p_adjust = "BEEFERONNI"), "p_adjust must be of an acceptable adjustment method: see ?p.adjust",
+               fixed = TRUE)
 })
 
 #2w
 test_that("2w", {
-  design <- ANOVA_design(string = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5)
+  design <- ANOVA_design(string = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
   p <- ANOVA_power(design, nsims = 50, seed = 8675309, verbose = FALSE)
 
   comp <- list()
@@ -37,7 +39,8 @@ test_that("2w", {
 # 2w*2w
 test_that("2w*2w", {
   design <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0), sd = 2, r = 0.8,
-                         labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"))
+                         labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"),
+                         plot = FALSE)
 
   p <- ANOVA_power(design, nsims = 50, seed = 8675309, verbose = FALSE)
 
@@ -71,7 +74,7 @@ test_that("2w*2w", {
 test_that("2w long", {
   skip_on_cran()
 
-  design <- ANOVA_design(string = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5)
+  design <- ANOVA_design(string = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
   system.time(
     p <- ANOVA_power(design, nsims = 1000, seed = 8675309, verbose = FALSE)
   )

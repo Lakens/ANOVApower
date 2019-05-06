@@ -5,7 +5,7 @@ test_that("errors", {
   # missing arguments
   expect_error(ANOVA_design(),
                "argument \"string\" is missing, with no default")
-  expect_error(ANOVA_design("2w*2b"),
+  expect_error(ANOVA_design("2w*2b", n =20, sd = 1),
                "argument \"mu\" is missing, with no default")
   expect_error(ANOVA_design("2w*2b", mu = c(0, 0, 0, 0)),
                "argument \"sd\" is missing, with no default")
@@ -13,11 +13,16 @@ test_that("errors", {
                "argument \"n\" is missing, with no default")
 
   # passing bad arguments: *SHOULD BE AN ERROR*
-  #expect_error(ANOVA_design("2w*2b", n = 100, mu = c(0, 0, 0, 0), sd = -1), "?")
-  #expect_error(ANOVA_design("2F", n = 10, mu = 1:2, sd = 1), "?")
+  expect_error(ANOVA_design("2w*2b", n = 100, mu = c(0, 0, 0, 0), sd = -1),
+               "Standard deviation (sd) is less than or equal to zero; input a value greater than zero", fixed = TRUE)
+  expect_error(ANOVA_design("2F", n = 10, mu = 1:2, sd = 1),
+               "Problem in the string argument: must input number of levels as integer (2-99) and factor-type (between or within) as lower case b (between) or w (within)",
+               fixed = TRUE)
 
   # bad arguments
-  expect_error(ANOVA_design("wrong string"), "NA/NaN argument")
+  expect_error(ANOVA_design("wrong string"),
+               "Problem in the string argument: must input number of levels as integer (2-99) and factor-type (between or within) as lower case b (between) or w (within)",
+               fixed = TRUE)
   expect_error(ANOVA_design("2w*2b", n = "A", mu = 1:4, sd = 1),
                "non-numeric argument to binary operator")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = c("A", "B", "C", "D"), sd = 1),
@@ -27,7 +32,8 @@ test_that("errors", {
   expect_error(ANOVA_design("2w*2b", n = "A", mu = 1:4, sd = 1),
                "non-numeric argument to binary operator")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, r = "A"),
-               "object 'cor_mat' not found")
+               "If a single correlation (r) is entered it must be >= 0 and < 1",
+               fixed = TRUE)
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, labelnames = c("A", "B")),
                "Design \\(string\\) does not match the length of the labelnames")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1,
