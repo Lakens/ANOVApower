@@ -139,7 +139,7 @@ test_that("3b long", {
                      type="two.sample",
                      alternative="two.sided")$power
 
-  pmain <- pwr.anova.test(k = 3, n = 50, f = 0.1786086, sig.level = 0.05)$power #f obtained from GPower
+  pmain <- pwr::pwr.anova.test(k = 3, n = 50, f = 0.1786086, sig.level = 0.05)$power #f obtained from GPower
 
   expect_equal(p$main_results$power/100, pmain, tolerance = .02)
   expect_equal(p$pc_results$power/100, c(pc_1, pc_2, pc_3), tolerance = .02)
