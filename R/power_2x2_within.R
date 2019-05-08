@@ -54,6 +54,11 @@
 #'
 power_2x2_within <- function(design_result, alpha_level = 0.05){
 
+  #Error message if design other than 2x2 within is input
+  if(length(design_result$design) != 2 | any(design_result$design != 1) ){
+    stop("Only 2x2 within designs allowed for this function")
+  }
+
   mu <- design_result$mu
   m_A <- length(design_result$labelnames[[1]])
   m_B <- length(design_result$labelnames[[2]])

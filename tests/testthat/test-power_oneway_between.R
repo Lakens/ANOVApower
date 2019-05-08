@@ -25,7 +25,7 @@ test_that("2b and 3b", {
   design_result1 <- ANOVA_design(string = "2b",
                                 n = 100,
                                 mu = c(24,26.2),
-                                sd = 6.4)
+                                sd = 6.4, plot = FALSE)
 
   expect_equal(power_oneway_between(design_result1, alpha_level = 0.05)$power,
                pwr::pwr.t.test(d = 2.2/6.4,
@@ -38,7 +38,7 @@ test_that("2b and 3b", {
   design_result2 <- ANOVA_design(string = "3b",
                                  n = 50,
                                  mu = c(24, 26.2, 26.6),
-                                 sd = 6.4)
+                                 sd = 6.4, plot = FALSE)
   expect_equal(power_oneway_between(design_result2, alpha_level = 0.05)$power,
                pwr::pwr.anova.test(n = 50,
                               k = 3,

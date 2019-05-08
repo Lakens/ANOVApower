@@ -125,6 +125,11 @@
 #'
 power_threeway_between <- function(design_result, alpha_level=0.05){
 
+  #Error message if design other than 1-way between is input
+  if(length(design_result$design) != 3 | any(design_result$design != 0)){
+    stop("Only three-way between designs allowed for this function")
+  }
+
   mu_array <- array(design_result$mu, dim = c(length(design_result$labelnames[[1]]),
                                               length(design_result$labelnames[[2]]),
                                               length(design_result$labelnames[[3]])))

@@ -18,6 +18,8 @@
 
 plot_power_oneway_between <- function(design_result, max_n){
 
+
+
   string = design_result$string
   mu = design_result$mu
   sd <- design_result$sd

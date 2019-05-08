@@ -27,7 +27,7 @@ test_that("2w and 3w", {
                                  n = n,
                                  mu = mu,
                                  sd = sd,
-                                 r = r)
+                                 r = r, plot = FALSE)
 
   expect_equal(power_oneway_within(design_result1, alpha_level = 0.05)$power,
                pwr::pwr.t.test(d =  0.5,
@@ -51,7 +51,7 @@ test_that("2w and 3w", {
                                  n = n,
                                  mu = mu,
                                  sd = sd,
-                                 r = r)
+                                 r = r, plot = FALSE)
 
   #Formula used by G*Power for within design
   f <- 0.25 #Cohen's f

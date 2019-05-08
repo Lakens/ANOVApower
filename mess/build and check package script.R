@@ -7,7 +7,7 @@
 devtools::install()
 library(ANOVApower)
 devtools::test()
-devtools::check()
+#devtools::check()
 covr::package_coverage()
 
 

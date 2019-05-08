@@ -42,6 +42,12 @@
 #' @export
 #'
 power_oneway_between <- function(design_result, alpha_level=0.05){
+
+  #Error message if design other than 1-way between is input
+  if(length(design_result$design) != 1 | design_result$design != 0 ){
+    stop("Only one-way between designs allowed for this function")
+  }
+
   mean_mat <- t(matrix(design_result$mu,
                        nrow = length(design_result$mu)/design_result$factors,
                        ncol = design_result$factors)) #Create a mean matrix

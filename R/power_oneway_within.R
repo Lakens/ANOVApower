@@ -44,6 +44,13 @@
 #' @export
 #'
 power_oneway_within <- function(design_result, alpha_level=0.05){
+
+  #Error message if design other than 1-way within is input
+  if(length(design_result$design) != 1  | design_result$design != 1){
+    stop("Only one-way within designs allowed for this function")
+  }
+
+  factor_levels <- as.numeric(strsplit(design_result$string, "\\D+")[[1]])
   mean_mat <- t(matrix(design_result$mu,
                        nrow = length(design_result$mu)/design_result$factors,
                        ncol = design_result$factors)) #Create a mean matrix

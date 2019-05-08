@@ -19,11 +19,14 @@
 
 plot_power_oneway_within <- function(design_result, max_n){
 
+
+
   string = design_result$string
   mu = design_result$mu
   sd <- design_result$sd
   r <- design_result$r
   labelnames = c(design_result$factornames[[1]], design_result$labelnames[[1]])
+
 
   n_vec <- seq(from = 5, to = max_n)
 

@@ -67,6 +67,12 @@
 #' @export
 #'
 power_twoway_between <- function(design_result, alpha_level=0.05){
+
+  #Error message if design other than 1-way between is input
+  if(any(design_result$design != 0) | length(design_result$design) != 2 ){
+    stop("Only two-way between designs allowed for this function")
+  }
+
   mean_mat <- t(matrix(design_result$mu,
                        nrow = length(design_result$mu)/length(design_result$labelnames[[2]]),
                        ncol = length(design_result$labelnames[[1]]))) #Create a mean matrix
