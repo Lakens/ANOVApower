@@ -75,8 +75,11 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
   # Separate factors with a * (asterisk)
   # Thus "2b*3w) is a design with 2 between levels, and 3 within levels
 
-  #Check if design an means match up - if not, throw an error and stop
+  #Check if design and means match up - if not, throw an error and stop
   if(prod(factor_levels) != length(mu)){stop("the length of the vector with means does not match the study design")}
+
+  #Check if the design and sd match (either 1 or length of design)
+  #if(length(sd) != 1 && prod(factor_levels) != length(sd)){stop("The SD must be a length of 1 or match the length of the study design")}
 
   #Check if the factors are of an acceptable number of levels
   if(any(factor_levels <= 0) == TRUE | any(factor_levels > 99) ) {

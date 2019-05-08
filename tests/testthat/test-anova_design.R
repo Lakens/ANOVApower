@@ -44,6 +44,8 @@ test_that("errors", {
   # inconsistent arguments
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 0, sd = 1),
                "the length of the vector with means does not match the study design")
+  #expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = c(1,2)),
+  #             "The SD must be a length of 1 or match the length of the study design")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = c(1,1)),
                "the length of sd_for_sigma must be 1 or vars")
   expect_error(ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, r = c(.5, 0, .4)),

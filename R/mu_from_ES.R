@@ -13,6 +13,15 @@
 #' @export
 
 mu_from_ES <- function(K, ES){ # provides the vector of population means for a given population ES and nr of groups
+
+  if (ES >= 1 | ES <= 0  ) {
+    stop("the ES (partial eta squared) must be less than 1 and greater than zero")
+  }
+
+  if (K == 2 | K == 3 | K == 4 ){
+
+  } else{stop("Number of levels (k) must be 2, 3, or 4")}
+
   f2 <- ES/(1-ES)
   if(K == 2){
     a <- sqrt(f2)
