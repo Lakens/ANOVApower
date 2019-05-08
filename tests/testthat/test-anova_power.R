@@ -96,7 +96,7 @@ design <- ANOVA_design(string = "2b",
                        labelnames = c("condition", "control", "pet"),
                        plot = FALSE)
 system.time(
-  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 1000, verbose = FALSE)
+  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 1000, seed=644, verbose = FALSE)
 )
 
 p2 <- pwr::pwr.t.test(d = 2.2/6.4,
