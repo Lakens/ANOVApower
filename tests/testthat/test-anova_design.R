@@ -303,3 +303,113 @@ test_that("2b*2w", {
   expect_equal(d$labelnames, list(c("B1", "B2"), c("W1", "W2")))
   expect_equal(d$factornames, c("B", "W"))
 })
+
+#Add three way designs
+test_that("2b*2b*2b", {
+  d <- ANOVA_design("2b*2b*2b", n = 100, mu = 1:8, sd = 1)
+  expect_equal(d$design, c(0, 0, 0))
+  expect_equal(d$design_list, c("a1_b1_c1", "a1_b1_c2", "a1_b2_c1", "a1_b2_c2", "a2_b1_c1", "a2_b1_c2", "a2_b2_c1", "a2_b2_c2"))
+  expect_equal(d$factors, 3)
+  expect_equal(d$frml1, y ~ a * b * c + Error(1 | subject))
+  expect_equal(d$frml2, ~ a + b + c)
+  expect_equal(d$mu, 1:8)
+  expect_equal(d$sd, 1)
+  expect_equal(d$n, 100)
+
+
+  mat <- data.frame(
+    "a1_b1_c1" = c(1, 0, 0, 0, 0, 0, 0, 0),
+    "a1_b1_c2" = c(0, 1, 0, 0, 0, 0, 0, 0),
+    "a1_b2_c1" = c(0, 0, 1, 0, 0, 0, 0, 0),
+    "a1_b2_c2" = c(0, 0, 0, 1, 0, 0, 0, 0),
+    "a2_b1_c1" = c(0, 0, 0, 0, 1, 0, 0, 0),
+    "a2_b1_c2" = c(0, 0, 0, 0, 0, 1, 0, 0),
+    "a2_b2_c1" = c(0, 0, 0, 0, 0, 0, 1, 0),
+    "a2_b2_c2" = c(0, 0, 0, 0, 0, 0, 0, 1),
+    row.names = c("a1_b1_c1", "a1_b1_c2", "a1_b2_c1", "a1_b2_c2", "a2_b1_c1", "a2_b1_c2", "a2_b2_c1", "a2_b2_c2"))
+
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+  expect_true(dplyr::all_equal(d$sigmatrix, mat))
+
+  expect_equal(d$string, "2b*2b*2b")
+
+})
+
+test_that("2w*2w*2w", {
+  d <- ANOVA_design("2w*2w*2w", n = 100, mu = 1:8, sd = 2, r = .65)
+  expect_equal(d$design, c(1, 1, 1))
+  expect_equal(d$design_list, c("a1_b1_c1", "a1_b1_c2", "a1_b2_c1", "a1_b2_c2", "a2_b1_c1", "a2_b1_c2", "a2_b2_c1", "a2_b2_c2"))
+  expect_equal(d$factors, 3)
+  expect_equal(d$frml1, y ~ a * b * c + Error(subject/a * b * c))
+  expect_equal(d$frml2, ~ a + b + c)
+  expect_equal(d$mu, 1:8)
+  expect_equal(d$sd, 2)
+  expect_equal(d$n, 100)
+  expect_equal(d$r, 0.65)
+
+  mat <- data.frame(
+    "a1_b1_c1" = c(1.00, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65),
+    "a1_b1_c2" = c(0.65, 1.00, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65),
+    "a1_b2_c1" = c(0.65, 0.65, 1.00, 0.65, 0.65, 0.65, 0.65, 0.65),
+    "a1_b2_c2" = c(0.65, 0.65, 0.65, 1.00, 0.65, 0.65, 0.65, 0.65),
+    "a2_b1_c1" = c(0.65, 0.65, 0.65, 0.65, 1.00, 0.65, 0.65, 0.65),
+    "a2_b1_c2" = c(0.65, 0.65, 0.65, 0.65, 0.65, 1.00, 0.65, 0.65),
+    "a2_b2_c1" = c(0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 1.00, 0.65),
+    "a2_b2_c2" = c(0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 0.65, 1.00),
+    row.names = c("a1_b1_c1", "a1_b1_c2", "a1_b2_c1", "a1_b2_c2", "a2_b1_c1", "a2_b1_c2", "a2_b2_c1", "a2_b2_c2"))
+
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+
+  var <- (2)^2
+  covar <- var*as.numeric(0.65)
+
+  sig_mat <- data.frame(
+    "a1_b1_c1" = c(var, covar, covar, covar, covar, covar, covar, covar),
+    "a1_b1_c2" = c(covar, var, covar, covar, covar, covar, covar, covar),
+    "a1_b2_c1" = c(covar, covar, var, covar, covar, covar, covar, covar),
+    "a1_b2_c2" = c(covar, covar, covar, var, covar, covar, covar, covar),
+    "a2_b1_c1" = c(covar, covar, covar, covar, var, covar, covar, covar),
+    "a2_b1_c2" = c(covar, covar, covar, covar, covar, var, covar, covar),
+    "a2_b2_c1" = c(covar, covar, covar, covar, covar, covar, var, covar),
+    "a2_b2_c2" = c(covar, covar, covar, covar, covar, covar, covar, var),
+    row.names = c("a1_b1_c1", "a1_b1_c2", "a1_b2_c1", "a1_b2_c2", "a2_b1_c1", "a2_b1_c2", "a2_b2_c1", "a2_b2_c2"))
+  expect_true(dplyr::all_equal(d$sigmatrix, sig_mat))
+
+  expect_equal(d$string, "2w*2w*2w")
+
+})
+
+test_that("2b*2b*2w", {
+  d <- ANOVA_design("2b*2b*2w", n = 100, mu = 1:8, sd = 1.5, r = .68)
+  expect_equal(d$design, c(0, 0, 1))
+  expect_equal(d$design_list, c("a1_b1_c1", "a1_b1_c2", "a1_b2_c1", "a1_b2_c2", "a2_b1_c1", "a2_b1_c2", "a2_b2_c1", "a2_b2_c2"))
+  expect_equal(d$factors, 3)
+  expect_equal(d$frml1, y ~ a * b * c + Error(subject/c))
+  expect_equal(d$frml2, ~ a + b + c)
+  expect_equal(d$mu, 1:8)
+  expect_equal(d$sd, 1.5)
+  expect_equal(d$n, 100)
+  expect_equal(d$r, 0.68)
+
+  mat <- data.frame(
+    "a1_b1_c1" = c(1.00, 0.68, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00),
+    "a1_b1_c2" = c(0.68, 1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00),
+    "a1_b2_c1" = c(0.00, 0.00, 1.00, 0.68, 0.00, 0.00, 0.00, 0.00),
+    "a1_b2_c2" = c(0.00, 0.00, 0.68, 1.00, 0.00, 0.00, 0.00, 0.00),
+    "a2_b1_c1" = c(0.00, 0.00, 0.00, 0.00, 1.00, 0.68, 0.00, 0.00),
+    "a2_b1_c2" = c(0.00, 0.00, 0.00, 0.00, 0.68, 1.00, 0.00, 0.00),
+    "a2_b2_c1" = c(0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00, 0.68),
+    "a2_b2_c2" = c(0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.68, 1.00),
+    row.names = c("a1_b1_c1", "a1_b1_c2", "a1_b2_c1", "a1_b2_c2", "a2_b1_c1", "a2_b1_c2", "a2_b2_c1", "a2_b2_c2"))
+
+  expect_true(dplyr::all_equal(d$cor_mat, mat))
+
+  sig_mat <- mat
+  sig_mat[mat == 0.68] <- (1.5^2)*0.68
+  sig_mat[mat == 1.00] <- (1.5^2)
+
+  expect_true(dplyr::all_equal(d$sigmatrix, sig_mat))
+
+  expect_equal(d$string, "2b*2b*2w")
+
+})
