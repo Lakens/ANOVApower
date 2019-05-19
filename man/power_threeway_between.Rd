@@ -9,7 +9,7 @@ power_threeway_between(design_result, alpha_level = 0.05)
 \arguments{
 \item{design_result}{Output from the ANOVA_design function}
 
-\item{alpha_level}{Alpha level used to determine statistical significance}
+\item{alpha_level}{Alpha level used to determine statistical significance (default to 0.05)}
 }
 \value{
 mu = means
@@ -127,7 +127,7 @@ Analytic power calculation for three-way between designs.
 }
 \section{References}{
 
-too be added
+to be added
 }
 
 \examples{

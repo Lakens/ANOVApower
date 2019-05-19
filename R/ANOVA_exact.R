@@ -14,7 +14,7 @@
 #' design_result <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
 #'       sd = 2, r = 0.8, labelnames = c("condition", "cheerful",
 #'       "sad", "voice", "human", "robot"))
-#' power_result <- ANOVA_exact(design_result, alpha_level = 0.05,
+#' exact_result <- ANOVA_exact(design_result, alpha_level = 0.05,
 #'       p_adjust = "none")
 #' @section References:
 #' too be added
@@ -124,9 +124,6 @@ ANOVA_exact <- function(design_result, alpha_level, p_adjust = "none",
   sd <- design_result$sd #population standard deviation (currently assumes equal variances)
   r <- design_result$r # correlation between within factors (currently only 1 value can be entered)
 
-  ###############
-  # 2. Create Dataframe based on Design ----
-  ###############
 
   #Count number of factors in design
   factors <- design_result$factors
@@ -140,7 +137,7 @@ ANOVA_exact <- function(design_result, alpha_level, p_adjust = "none",
   dataframe <- design_result$dataframe
 
   ###############
-  # 3. Specify factors for formula ----
+  #Specify factors for formula ----
   ###############
 
   frml1 <- design_result$frml1
@@ -156,7 +153,7 @@ ANOVA_exact <- function(design_result, alpha_level, p_adjust = "none",
   design_list <- design_result$design_list
 
   ###############
-  # 5. Set up dataframe for simulation results
+  # Set up dataframe for storing empirical results
   ###############
 
   #How many possible planned comparisons are there (to store p and es)
@@ -203,6 +200,10 @@ ANOVA_exact <- function(design_result, alpha_level, p_adjust = "none",
     )))$value
   })
 
+
+  ####
+  #Trying to change the factor labels in the dataframe; currently breaks the dataframe.
+  ####
   #dataframe <- design_result$dataframe[,1:3]
   #
   #for(j in 1:factors){
@@ -268,38 +269,24 @@ ANOVA_exact <- function(design_result, alpha_level, p_adjust = "none",
   pc_results <- data.frame(pvalue_paired, es_paired)
   names(pc_results) = c("p_value","effect_size")
 
+
+  #Create plot
+
   if (factors == 1) {meansplot = ggplot(dataframe, aes_string(y = "y", x = factornames[1]))}
   if (factors == 2) {meansplot = ggplot(dataframe, aes_string(y = "y", x = factornames[1])) + facet_wrap(  paste("~",factornames[2],sep=""))}
-  if (factors == 3) {meansplot = ggplot(dataframe, aes_string(y = "y", x = factornames[1])) + facet_wrap(  paste("~",factornames[2],"*",factornames[3],sep=""))}
+  if (factors == 3) {meansplot = ggplot(dataframe, aes_string(y = "y", x = factornames[1])) + facet_grid(  paste(factornames[3],"~",factornames[2], sep=""))}
 
-  if (factors >= 2 && length(labelnameslist[[2]]) >= 9) {
+  meansplot2 = meansplot +
+    geom_jitter(position = position_jitter(0.2)) +
+    stat_summary(
+      fun.data = "mean_sdl",
+      fun.args = list(mult = 1),
+      geom = "crossbar",
+      color = "red"
+    ) +
+    coord_cartesian(ylim = c(min(dataframe$y), max(dataframe$y))) +
+    theme_bw()
 
-    meansplot2 = meansplot +
-      geom_jitter(position = position_jitter(0.2)) +
-      stat_summary(
-        fun.data = "mean_sdl",
-        fun.args = list(mult = 1),
-        geom = "crossbar",
-        color = "red"
-      ) +
-      coord_cartesian(ylim = c(min(dataframe$y), max(dataframe$y))) +
-      theme_bw(base_size = 16) +
-      scale_colour_brewer(palette = "Dark2")
-
-  } else {
-
-    meansplot2 = meansplot +
-      geom_jitter(position = position_jitter(0.2)) +
-      stat_summary(
-        fun.data = "mean_sdl",
-        fun.args = list(mult = 1),
-        geom = "crossbar",
-        color = "red"
-      ) +
-      coord_cartesian(ylim = c(min(dataframe$y), max(dataframe$y))) +
-      theme_bw()  +
-      scale_colour_brewer(palette = "Dark2")
-  }
   # Return results in list()
   invisible(list(dataframe = dataframe,
                  aov_result = aov_result,
