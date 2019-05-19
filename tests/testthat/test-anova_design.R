@@ -16,12 +16,15 @@ test_that("errors", {
   expect_error(ANOVA_design("2w*2b", n = 100, mu = c(0, 0, 0, 0), sd = -1),
                "Standard deviation (sd) is less than or equal to zero; input a value greater than zero", fixed = TRUE)
   expect_error(ANOVA_design("2F", n = 10, mu = 1:2, sd = 1),
-               "Problem in the string argument: must input number of levels as integer (2-99) and factor-type (between or within) as lower case b (between) or w (within)",
+               "Problem in the string argument: must input number of levels as integer (2-999) and factor-type (between or within) as lower case b (between) or w (within)",
+               fixed = TRUE)
+  expect_error(ANOVA_design("1001b", n = 10, mu = 1:1001, sd = 1),
+               "Problem in the string argument: must input number of levels as integer (2-999) and factor-type (between or within) as lower case b (between) or w (within)",
                fixed = TRUE)
 
   # bad arguments
   expect_error(ANOVA_design("wrong string"),
-               "Problem in the string argument: must input number of levels as integer (2-99) and factor-type (between or within) as lower case b (between) or w (within)",
+               "Problem in the string argument: must input number of levels as integer (2-999) and factor-type (between or within) as lower case b (between) or w (within)",
                fixed = TRUE)
   expect_error(ANOVA_design("2w*2b", n = "A", mu = 1:4, sd = 1),
                "non-numeric argument to binary operator")

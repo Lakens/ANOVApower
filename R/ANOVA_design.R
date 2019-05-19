@@ -30,8 +30,8 @@
 ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRUE){
 
 #Check String for an acceptable digits and factor (w or b)
-  if (grepl("^(\\d{1,2}(w|b)\\*){0,2}\\d{1,2}(w|b)$", string, ignore.case = FALSE, perl = TRUE) == FALSE) {
-    stop("Problem in the string argument: must input number of levels as integer (2-99) and factor-type (between or within) as lower case b (between) or w (within)")
+  if (grepl("^(\\d{1,3}(w|b)\\*){0,2}\\d{1,3}(w|b)$", string, ignore.case = FALSE, perl = TRUE) == FALSE) {
+    stop("Problem in the string argument: must input number of levels as integer (2-999) and factor-type (between or within) as lower case b (between) or w (within)")
   }
 
 #Ensure sd is greater than 0
