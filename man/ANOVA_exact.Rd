@@ -4,22 +4,19 @@
 \alias{ANOVA_exact}
 \title{Create an empirical data set from the design; alternative to simulation}
 \usage{
-ANOVA_exact(design_result, alpha_level, p_adjust = "none", seed = NULL,
-  verbose = TRUE)
+ANOVA_exact(design_result, alpha_level, seed = NULL, verbose = TRUE)
 }
 \arguments{
 \item{design_result}{Output from the ANOVA_design function}
 
 \item{alpha_level}{Alpha level used to determine statistical significance}
 
-\item{p_adjust}{Correction for multiple comparisons}
-
 \item{seed}{Set seed for reproducible results}
 
 \item{verbose}{Set to FALSE to not print results (default = TRUE)}
 }
 \value{
-Returns dataframe with simulation data (p-values and effect sizes), anova results and simple effect results, plot of exact data, p_adjust = p_adjust, and alpha_level.
+Returns dataframe with simulation data (power and effect sizes), anova results and simple effect results, plot of exact data, and alpha_level.
 }
 \description{
 Create an empirical data set from the design; alternative to simulation
@@ -38,6 +35,5 @@ too be added
 design_result <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
       sd = 2, r = 0.8, labelnames = c("condition", "cheerful",
       "sad", "voice", "human", "robot"))
-exact_result <- ANOVA_exact(design_result, alpha_level = 0.05,
-      p_adjust = "none")
+exact_result <- ANOVA_exact(design_result, alpha_level = 0.05)
 }
