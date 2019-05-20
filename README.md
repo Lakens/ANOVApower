@@ -16,7 +16,7 @@ Table of Contents
 An Introduction to ANOVApower
 =============================
 
-The goal of ANOVApower is to easily simulate ANOVA designs and calculate the observed power.
+The goal of ANOVApower is to easily simulate ANOVA designs and empirically calculate power using a simulation approach. This app is intended to be utilized for prospective (a priori) power analysis.
 
 Installation
 ------------
@@ -222,7 +222,7 @@ The result for the power simulation has two sections (which can be surpressed by
 
 The result for the power simulation reveal power is highest for the main effect of emotion. Remember that this is the within-subjects factor, and the means are highly correlated (0.8) - so we have high power for within comparisons. Power is lower for the interaction, and very low for the main effect of voice.
 
-An ANOVA is typically followed up with contrasts. A statistical hypothesis often predicts not just an interaction, but also the shape of an interaction. For example, when looking at the plot of our design above, we might be specifically interested in comparing the independent effect for the cheerful vs sad human voice assistant, and the difference for sad voice when they are robotic or human. The second table provides the power for *t*-tests for all comparisons, and the effect sizes (Cohen's d for between-subject contrasts, and Cohen's *d*<sub>*z*</sub> for within-subject contrasts, see [Lakens, 2013](https://www.frontiersin.org/articles/10.3389/fpsyg.2013.00863/full)).
+An ANOVA is typically followed up with contrasts. A statistical hypothesis often predicts not just an interaction, but also the shape of an interaction. For example, when looking at the plot of our design above, we might be specifically interested in comparing the independent effect for the cheerful vs sad human voice assistant, and the difference for sad voice when they are robotic or human. The second table provides the power for *t*-tests for all comparisons, and the effect sizes (Cohen's d for between-subject contrasts, and Cohen's ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z") for within-subject contrasts, see [Lakens, 2013](https://www.frontiersin.org/articles/10.3389/fpsyg.2013.00863/full)).
 
 Power is relatively high for the differences between within-participant conditions, and power is very low for the minor differences among the three similar means (1.03, 0.98, 1.01). In addition to the two tables, the ANOVA\_power function returns the raw simulation data (all p-values and effect sizes for each simulation, use simulation\_result$sim\_data) and a plot showing the *p*-value distributions for all tests in the ANOVA.
 
@@ -259,11 +259,11 @@ ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##                 power effect_size
-    ## anova_condition 67.38      0.0289
+    ## anova_condition 67.03      0.0287
     ## 
     ## Power and Effect sizes for contrasts
     ##                                   power effect_size
-    ## p_condition_control_condition_pet 67.38      0.3438
+    ## p_condition_control_condition_pet 67.03      0.3429
 
 ``` r
 #Note we do not specify any correlation in the ANOVA_design function (default r = 0), nor do we specify an alpha in the ANOVA_power function (default is 0.05)
@@ -287,7 +287,7 @@ pwr.t.test(d = 2.2/6.4,
 
     ## [1] 0.6768572
 
-We can also directly compute Cohen's f from Cohen's d for two groups, as Cohen (1988) describes, because f = $\\frac{1}{2}d$. So f = 0.5\*0.34375 = 0.171875. And indeed, power analysis using the pwr package yields the same result using the pwr.anova.test as the power.t.test.
+We can also directly compute Cohen's f from Cohen's d for two groups, as Cohen (1988) describes, because f = ![\\frac{1}{2}d](https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7B2%7Dd "\frac{1}{2}d"). So f = 0.5\*0.34375 = 0.171875. And indeed, power analysis using the pwr package yields the same result using the pwr.anova.test as the power.t.test.
 
 ``` r
 pwr.anova.test(n = 100,
@@ -323,11 +323,11 @@ power_result <- ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##                 power effect_size
-    ## anova_condition 89.73      0.0289
+    ## anova_condition 89.97      0.0289
     ## 
     ## Power and Effect sizes for contrasts
     ##                                   power effect_size
-    ## p_condition_control_condition_pet 89.73      0.3451
+    ## p_condition_control_condition_pet 89.97      0.3443
 
 Three between subject conditions
 --------------------------------
@@ -356,13 +356,13 @@ ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##                 power effect_size
-    ## anova_condition  47.9      0.0385
+    ## anova_condition 47.32      0.0379
     ## 
     ## Power and Effect sizes for contrasts
     ##                                   power effect_size
-    ## p_condition_control_condition_cat 39.62      0.3446
-    ## p_condition_control_condition_dog 52.24      0.4109
-    ## p_condition_cat_condition_dog      6.30      0.0658
+    ## p_condition_control_condition_cat 40.27      0.3487
+    ## p_condition_control_condition_dog 51.49      0.4081
+    ## p_condition_cat_condition_dog      5.71      0.0594
 
 The result shows that you would have quite low power with 50 participants, both for the overall ANOVA (just around 50% power), as for the follow up comparisons (approximately 40% power for the control vs cat condition, around 50% for the control vs dogs condition, and a really low power (around 6%, just above the Type 1 error rate of 5%) for the expected difference between cats and dogs. We can easily confirm the expected power for these simple comparisons using the pwr package. For our example, Cohen's d (the standardized mean difference) is 2.2/6.4, or d = 0.34375 for the difference between the control condition and cats, 2.6/6.4 of d = 0.40625 for the difference between the control condition and dogs, and 0.4/6.4 or d = 0.0625 for the difference between cats and dogs as pets.
 
@@ -403,23 +403,23 @@ In a repeated measures design multiple observations are collected from the same 
 
 ### Two within conditions
 
-To illustrate the effect of correlated observations, we start by simulating data for a medium effect size for a dependent (or paired, or within-subject) *t*-test. Let's first look at G\*power. If we want to perform an a-priori power analysis, we are asked to fill in the effect size *d*<sub>*z*</sub>. As Cohen (1988) writes, "The Z subscript is used to emphasize the fact that our raw score unit is no longer X or Y, but Z", where Z are the difference scores of X-Y.
+To illustrate the effect of correlated observations, we start by simulating data for a medium effect size for a dependent (or paired, or within-subject) *t*-test. Let's first look at G\*power. If we want to perform an a-priori power analysis, we are asked to fill in the effect size ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z"). As Cohen (1988) writes, "The Z subscript is used to emphasize the fact that our raw score unit is no longer X or Y, but Z", where Z are the difference scores of X-Y.
 
 <img src="vignettes/screenshots/gpower_9.png" width="600px" />
 
 Within designs can have greater power to detect differences than between designs because the values are correlated, and a within design requires less participants because each participant provides multiple observations. One difference between an independent *t*-test and a dependent *t*-test is that an independent *t*-test has 2(n-1) degrees of freedom, while a dependent *t*-test has (n-1) degrees of freedom. The sample size needed in a two-group within-design (NW) relative to the sample needed in two-group between-designs (NB), assuming normal distributions, and ignoring the difference in degrees of freedom between the two types of tests, is (from Maxwell & Delaney, 2004, p. 561, formula 45):
 
-$N\_{W}=\\frac{N\_{B}(1-\\rho)}{2}$
+![N\_{W}=\\frac{N\_{B}(1-\\rho)}{2}](https://latex.codecogs.com/png.latex?N_%7BW%7D%3D%5Cfrac%7BN_%7BB%7D%281-%5Crho%29%7D%7B2%7D "N_{W}=\frac{N_{B}(1-\rho)}{2}")
 
 The division by 2 in the equation is due to the fact that in a two-condition within design every participant provides two data-points. The extent to which this reduces the sample size compared to a between-subject design depends on the correlation (*r*) between the two dependent variables, as indicated by the 1-r part of the equation. If the correlation is 0, a within-subject design needs half as many participants as a between-subject design (e.g., 64 instead 128 participants), simply because every participants provides 2 datapoints. The higher the correlation, the larger the relative benefit of within designs, and whenever the correlation is negative (up to -1) the relative benefit disappears.
 
-Whereas in an independent *t*-test the two observations are uncorrelated, in a within design the observations are correlated. This has an effect on the standard deviation of the difference scores. In turn, because the standardized effect size is the mean difference divided by the standard deviation of the difference scores, the correlation has an effect on the standardized mean difference in a within design, Cohen's *d*<sub>*z*</sub>. The relation, as Cohen (1988, formula 2.3.7) explains, is:
+Whereas in an independent *t*-test the two observations are uncorrelated, in a within design the observations are correlated. This has an effect on the standard deviation of the difference scores. In turn, because the standardized effect size is the mean difference divided by the standard deviation of the difference scores, the correlation has an effect on the standardized mean difference in a within design, Cohen's ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z"). The relation, as Cohen (1988, formula 2.3.7) explains, is:
 
-$\\sigma\_{z}=\\sigma\\sqrt{2(1-\\rho)}$
+![\\sigma\_{z}=\\sigma\\sqrt{2(1-\\rho)}](https://latex.codecogs.com/png.latex?%5Csigma_%7Bz%7D%3D%5Csigma%5Csqrt%7B2%281-%5Crho%29%7D "\sigma_{z}=\sigma\sqrt{2(1-\rho)}")
 
-Therefore, the relation between dz and d is $\\sqrt{2(1-\\rho)}$. As Cohen (1988) writes: "In other words, a given difference between population means for matched (dependent) samples is standardized by a value which is $\\sqrt{2(1-\\rho)}$ as large as would be the case were they independent. If we enter a correlation of 0.5 in the formula, we get $\\sqrt{2(0.5)}=1$. When the correlation is 0.5, d = *d*<sub>*z*</sub>. When there is a strong correlation between dependent variables, for example r = 0.9, we get $d=d\_{z}\\sqrt{2(1-0.9)}$, and a *d*<sub>*z*</sub> of 1 would be a d = 0.45. Reversely, $d\_{z}=\\frac{d}{\\sqrt{2(1-r)}}$, so with a r = 0.9, a d of 1 would be a *d*<sub>*z*</sub> = 2.24. Some consider this increase in *d*<sub>*z*</sub> compared to d when observations are strongly correlated an 'inflation' when estimating effect sizes, but since the reduction in the standard deviation of the difference scores due to the correlation makes it easier to distinguish signal from noise in a hypothesis test, it leads to a clear power benefit.
+Therefore, the relation between dz and d is ![\\sqrt{2(1-\\rho)}](https://latex.codecogs.com/png.latex?%5Csqrt%7B2%281-%5Crho%29%7D "\sqrt{2(1-\rho)}"). As Cohen (1988) writes: "In other words, a given difference between population means for matched (dependent) samples is standardized by a value which is ![\\sqrt{2(1-\\rho)}](https://latex.codecogs.com/png.latex?%5Csqrt%7B2%281-%5Crho%29%7D "\sqrt{2(1-\rho)}") as large as would be the case were they independent. If we enter a correlation of 0.5 in the formula, we get ![\\sqrt{2(0.5)}=1](https://latex.codecogs.com/png.latex?%5Csqrt%7B2%280.5%29%7D%3D1 "\sqrt{2(0.5)}=1"). When the correlation is 0.5, d = ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z"). When there is a strong correlation between dependent variables, for example r = 0.9, we get ![d=d\_{z}\\sqrt{2(1-0.9)}](https://latex.codecogs.com/png.latex?d%3Dd_%7Bz%7D%5Csqrt%7B2%281-0.9%29%7D "d=d_{z}\sqrt{2(1-0.9)}"), and a ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z") of 1 would be a d = 0.45. Reversely, ![d\_{z}=\\frac{d}{\\sqrt{2(1-r)}}](https://latex.codecogs.com/png.latex?d_%7Bz%7D%3D%5Cfrac%7Bd%7D%7B%5Csqrt%7B2%281-r%29%7D%7D "d_{z}=\frac{d}{\sqrt{2(1-r)}}"), so with a r = 0.9, a d of 1 would be a ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z") = 2.24. Some consider this increase in ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z") compared to d when observations are strongly correlated an 'inflation' when estimating effect sizes, but since the reduction in the standard deviation of the difference scores due to the correlation makes it easier to distinguish signal from noise in a hypothesis test, it leads to a clear power benefit.
 
-There is no equivalent *f*<sub>*z*</sub> for Cohen's f for a within subject ANOVA. For two groups, we can directly compute Cohen's f from Cohen's d, as Cohen (1988) describes, because f = $\\frac{1}{2}d$. For a d = 0.5, f = 0.25. In G\*power we can run a 2 group within-subject power analysis for ANOVA. We plan for 80% power, and reproduce the anaysis above for the dependent *t*-test. This works because the correlation is set to 0.5, when d = *d*<sub>*z*</sub>, and thus the transformation of f=$\\frac{1}{2}d$ works.
+There is no equivalent ![f\_z](https://latex.codecogs.com/png.latex?f_z "f_z") for Cohen's f for a within subject ANOVA. For two groups, we can directly compute Cohen's f from Cohen's d, as Cohen (1988) describes, because f = ![\\frac{1}{2}d](https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7B2%7Dd "\frac{1}{2}d"). For a d = 0.5, f = 0.25. In G\*power we can run a 2 group within-subject power analysis for ANOVA. We plan for 80% power, and reproduce the anaysis above for the dependent *t*-test. This works because the correlation is set to 0.5, when d = ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z"), and thus the transformation of f=![\\frac{1}{2}d](https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7B2%7Dd "\frac{1}{2}d") works.
 
 <img src="vignettes/screenshots/gpower_1.png" width="600px" />
 
@@ -427,11 +427,11 @@ If we change the correlation to 0.7 and keep all other settings the same, the re
 
 <img src="vignettes/screenshots/gpower_11.png" width="600px" />
 
-To reproduce this analysis in G\*power with a dependent *t*-test we need to change *d*<sub>*z*</sub> following the formula above, $d\_{z}=\\frac{0.5}{\\sqrt{2(1-0.7)}}$, which yields *d*<sub>*z*</sub> = 0.6454972. If we enter this value in G\*power for an a-priori power analysis, we get the exact same results (as we should, since an repeated measures ANOVA with 2 groups equals a dependent *t*-test). This example illustrates that the correlation between dependent variables always factors into a power analysis, both for a dependent *t*-test, and for a repeated measures ANOVA. Because a dependent *t*-test uses *d*<sub>*z*</sub> the correlation might be less visible, but given the relation between d and *d*<sub>*z*</sub>, the correlation is always taken into account and can greatly improve power for within designs compared to between designs.
+To reproduce this analysis in G\*power with a dependent *t*-test we need to change ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z") following the formula above, ![d\_{z}=\\frac{0.5}{\\sqrt{2(1-0.7)}}](https://latex.codecogs.com/png.latex?d_%7Bz%7D%3D%5Cfrac%7B0.5%7D%7B%5Csqrt%7B2%281-0.7%29%7D%7D "d_{z}=\frac{0.5}{\sqrt{2(1-0.7)}}"), which yields ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z") = 0.6454972. If we enter this value in G\*power for an a-priori power analysis, we get the exact same results (as we should, since an repeated measures ANOVA with 2 groups equals a dependent *t*-test). This example illustrates that the correlation between dependent variables always factors into a power analysis, both for a dependent *t*-test, and for a repeated measures ANOVA. Because a dependent *t*-test uses ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z") the correlation might be less visible, but given the relation between d and ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z"), the correlation is always taken into account and can greatly improve power for within designs compared to between designs.
 
 <img src="vignettes/screenshots/gpower_10.png" width="600px" />
 
-We can perform both these power analyses using simulations as well. We set groups to 2 for the simulation, n = 34 (which should give 80.777 power, according to g\*power), a correlation among repeated measures of 0.5, and an alpha of 0.05. In this case, we simulate data with means -0.25 and 0.25, and set the sd to 1. This means we have a mean difference of 0.5, and a Cohen's d of 0.5/1 = 0.5. In the first example, we set the correlation to 0.5, and the result should be 80.77% power, and an effect size estimate of 0.5 for the simple effect. We also calculate partial eta-squared for the ANOVA, which equals $\\frac{f^2}{f^2+1}$, or 0.05882353.
+We can perform both these power analyses using simulations as well. We set groups to 2 for the simulation, n = 34 (which should give 80.777 power, according to g\*power), a correlation among repeated measures of 0.5, and an alpha of 0.05. In this case, we simulate data with means -0.25 and 0.25, and set the sd to 1. This means we have a mean difference of 0.5, and a Cohen's d of 0.5/1 = 0.5. In the first example, we set the correlation to 0.5, and the result should be 80.77% power, and an effect size estimate of 0.5 for the simple effect. We also calculate partial eta-squared for the ANOVA, which equals ![\\frac{f^2}{f^2+1}](https://latex.codecogs.com/png.latex?%5Cfrac%7Bf%5E2%7D%7Bf%5E2%2B1%7D "\frac{f^2}{f^2+1}"), or 0.05882353.
 
 ``` r
 K <- 2
@@ -468,15 +468,15 @@ ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##             power effect_size
-    ## anova_speed  81.7      0.2105
+    ## anova_speed 81.86      0.2094
     ## 
     ## Power and Effect sizes for contrasts
     ##                         power effect_size
-    ## p_speed_fast_speed_slow  81.7      0.5159
+    ## p_speed_fast_speed_slow 81.86      0.5155
 
-The results of the simulation are indeed very close to 80.777%. Note that the simulation calculates Cohen's *d*<sub>*z*</sub> effect sizes for paired comparisons - which here given the correlation of 0.5 is also 0.5 for a medium effect size.
+The results of the simulation are indeed very close to 80.777%. Note that the simulation calculates Cohen's ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z") effect sizes for paired comparisons - which here given the correlation of 0.5 is also 0.5 for a medium effect size.
 
-We should see a larger *d*<sub>*z*</sub> if we increase the correlation, keeping the sample size the same, following the example in Gpower above. We repeat the simulation, and the only difference is a correlation between dependent variables of 0.7. This should yield an effect size *d*<sub>*z*</sub> = 0.6454972.
+We should see a larger ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z") if we increase the correlation, keeping the sample size the same, following the example in Gpower above. We repeat the simulation, and the only difference is a correlation between dependent variables of 0.7. This should yield an effect size ![d\_z](https://latex.codecogs.com/png.latex?d_z "d_z") = 0.6454972.
 
 ``` r
 K <- 2
@@ -513,17 +513,17 @@ ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##             power effect_size
-    ## anova_speed  79.6      0.3088
+    ## anova_speed 80.36      0.3129
     ## 
     ## Power and Effect sizes for contrasts
     ##                         power effect_size
-    ## p_speed_fast_speed_slow  79.6       0.668
+    ## p_speed_fast_speed_slow 80.36      0.6727
 
 ### Power in Repeated Measures ANOVA with More than 2 Groups
 
 We will examine a repeated measures experiment with 3 within-participant conditions, to illustrate how a repeated measures ANOVA extends a dependent *t*-test. In the example for a two-group within design we provided a specific formula for the sample size benefit for two groups. The sample size needed in within-designs (NW) with more than 2 conditions, relative to the sample needed in between-designs (NB), assuming normal distributions and compound symmetry, and ignoring the difference in degrees of freedom between the two types of tests, is (from Maxwell & Delaney, 2004, p. 562, formula 47):
 
-$N\_{W}=\\frac{N\_{B}(1-\\rho)}{a}$
+![N\_{W}=\\frac{N\_{B}(1-\\rho)}{a}](https://latex.codecogs.com/png.latex?N_%7BW%7D%3D%5Cfrac%7BN_%7BB%7D%281-%5Crho%29%7D%7Ba%7D "N_{W}=\frac{N_{B}(1-\rho)}{a}")
 
 Where a is the number of within-subject levels.
 
@@ -531,7 +531,7 @@ Where a is the number of within-subject levels.
 
 Whereas in the case of a repeated measures ANOVA with 2 groups we could explain the principles of a power analysis by comparing our test against a *t*-test and Cohen's d, this becomes more difficult when we have more than 2 groups. It is more useful to explain how to directly calculate Cohen's f, the effect size used in power analyses for ANOVA. Cohen's f is calculated following Cohen, 1988, formula 8.2.1 and 8.2.2:
 
-$f = \\sqrt{\\frac{\\frac{\\sum(\\mu-\\overline{\\mu})^2)}N}\\sigma}$
+![f = \\sqrt{\\frac{\\frac{\\sum(\\mu-\\overline{\\mu})^2)}N}\\sigma}](https://latex.codecogs.com/png.latex?f%20%3D%20%5Csqrt%7B%5Cfrac%7B%5Cfrac%7B%5Csum%28%5Cmu-%5Coverline%7B%5Cmu%7D%29%5E2%29%7DN%7D%5Csigma%7D "f = \sqrt{\frac{\frac{\sum(\mu-\overline{\mu})^2)}N}\sigma}")
 
 Imagine we have a within-subject experiment with 3 conditions. We ask people what they mood is when their alarm clock wakes them up, when they wake up naturally on a week day, and when they wake up naturally on a weekend day. Based on pilot data, we expect the means (on a 7 point validated mood scale) are 3.8, 4.2, and 4.3. The standard deviation is 0.9, and the correlation between the dependent measurements is 0.7. We can calculate Cohen's f for the ANOVA, and Cohen's dz for the contrasts:
 
@@ -610,13 +610,13 @@ ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##             power effect_size
-    ## anova_speed 97.03      0.3458
+    ## anova_speed 96.51      0.3433
     ## 
     ## Power and Effect sizes for contrasts
     ##                           power effect_size
-    ## p_speed_fast_speed_medium 54.21      0.5065
-    ## p_speed_fast_speed_slow   98.71      1.0083
-    ## p_speed_medium_speed_slow 53.73      0.5020
+    ## p_speed_fast_speed_medium 53.94      0.5041
+    ## p_speed_fast_speed_slow   98.44      1.0081
+    ## p_speed_medium_speed_slow 53.20      0.4988
 
 The results of the simulation are indeed very close to 96.9%. We can see this is in line with the power estimate from Gpower:
 
@@ -659,18 +659,18 @@ simulation_result <- ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##           power effect_size
-    ## anova_B    5.11      0.0107
-    ## anova_A    5.03      0.0105
-    ## anova_B:A 91.33      0.2091
+    ## anova_B    5.25      0.0100
+    ## anova_A    4.65      0.0108
+    ## anova_B:A 91.45      0.2095
     ## 
     ## Power and Effect sizes for contrasts
     ##                       power effect_size
-    ## p_A_a1_B_b1_A_a1_B_b2 38.21      0.5081
-    ## p_A_a1_B_b1_A_a2_B_b1 62.73      0.5167
-    ## p_A_a1_B_b1_A_a2_B_b2  5.25     -0.0004
-    ## p_A_a1_B_b2_A_a2_B_b1  5.06      0.0016
-    ## p_A_a1_B_b2_A_a2_B_b2 63.07     -0.5187
-    ## p_A_a2_B_b1_A_a2_B_b2 38.75     -0.5099
+    ## p_A_a1_B_b1_A_a1_B_b2 38.70      0.5124
+    ## p_A_a1_B_b1_A_a2_B_b1 63.47      0.5200
+    ## p_A_a1_B_b1_A_a2_B_b2  5.47      0.0017
+    ## p_A_a1_B_b2_A_a2_B_b1  4.90     -0.0028
+    ## p_A_a1_B_b2_A_a2_B_b2 63.23     -0.5187
+    ## p_A_a2_B_b1_A_a2_B_b2 38.35     -0.5075
 
 We can simulate the same Two-Way ANOVA increasing the correlation to 0.7.
 
@@ -700,25 +700,25 @@ simulation_result <- ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##           power effect_size
-    ## anova_B    5.42      0.0106
-    ## anova_A    5.13      0.0109
-    ## anova_B:A 98.85      0.3057
+    ## anova_B    5.04      0.0104
+    ## anova_A    5.24      0.0106
+    ## anova_B:A 98.97      0.3046
     ## 
     ## Power and Effect sizes for contrasts
     ##                       power effect_size
-    ## p_A_a1_B_b1_A_a1_B_b2 38.20      0.5081
-    ## p_A_a1_B_b1_A_a2_B_b1 83.26      0.6650
-    ## p_A_a1_B_b1_A_a2_B_b2  5.21     -0.0030
-    ## p_A_a1_B_b2_A_a2_B_b1  5.03     -0.0013
-    ## p_A_a1_B_b2_A_a2_B_b2 84.15     -0.6728
-    ## p_A_a2_B_b1_A_a2_B_b2 38.31     -0.5086
+    ## p_A_a1_B_b1_A_a1_B_b2 38.13      0.5081
+    ## p_A_a1_B_b1_A_a2_B_b1 84.74      0.6712
+    ## p_A_a1_B_b1_A_a2_B_b2  4.96      0.0016
+    ## p_A_a1_B_b2_A_a2_B_b1  5.02      0.0018
+    ## p_A_a1_B_b2_A_a2_B_b2 83.43     -0.6637
+    ## p_A_a2_B_b1_A_a2_B_b2 37.73     -0.5083
 
 Two-way ANOVA, between participants Design
 ------------------------------------------
 
 The effect size for interactions in ANOVA designs depends on the pattern of means. Let's assume the researcher plans to perform an experiment where the voice of an artificial assistant sounds cheerful or sad, and as a second factor the voice sound more robotic or more human-like. Different patterns of results could be expected. Either the cheerful voices are appreciated more than sad voices for both human and robotic-sounding voice assistants. Or cheerful human voices are preferred above sad human voices, but no difference is expected for robotic voices, or the opposite effect is observed for robotic voices (a 'Marvin-the-Depressed-Robot Effect'). In the first case, we will only observe a main effect of voice, but in the other two scenarios there is an interaction effect between human-likeness of the voice and the emotional tone of the voice. We can start by simulating the power for a cross-over interaction for a 2x2 between-participant design with 80 participants in each group (see the figure below for the expected pattern of means).
 
-![Vizualization for the expected means and confidence intervals for a crossover interaction.](README_files/figure-markdown_github/mean-plot-1.png) Mathematically the interaction effect is computed as the cell mean minus the sum of the grand mean, the marginal mean in each row minus the grand mean, and the marginal mean in each column minus grand mean. For example, for the cheerful human-like voice condition this is 1 - (0.5 + (0.5) + (0.5)) = -0.5. Completing this for all four cells gives the values -0.5, 0.5, 0.5, -0.5. Cohen's f is then $f = \\frac { \\sqrt { \\frac { -0.5^2 + 0.5^2 + 0.5 + -0.5^2 } { 4 } }}{ 2 } = 0.25$. Simulations show we have 99.47% power when we collected 80 participants per condition. A cross-over (also called disordinal) interaction with two levels per factor has exactly the same power as the initial two-group design. if we halve the sample size per group for the cross-over interaction from 80 to 40. Power with 40 participants per condition is 88.02%. Main effects in an ANOVA are based on the means for one factor averaged over the other factors (e.g., the main effect of human-like versus robot-like voice, irrespective of whether it is cheerful or sad). The interaction effect, which can be contrast coded as 1, -1, -1, 1, is similarly a test of whether the effects are non-additive based on the scores in each cell, where the null-hypothesis of no additive effect can be rejected if the deviation expected when effects in each cell would be purely additive can be rejected. The key insight here is that not the sample size per condition, but the total sample size dover all other factor determines the power for the main effects and the interaction.
+![Vizualization for the expected means and confidence intervals for a crossover interaction.](README_files/figure-markdown_github/mean-plot-1.png) Mathematically the interaction effect is computed as the cell mean minus the sum of the grand mean, the marginal mean in each row minus the grand mean, and the marginal mean in each column minus grand mean. For example, for the cheerful human-like voice condition this is 1 - (0.5 + (0.5) + (0.5)) = -0.5. Completing this for all four cells gives the values -0.5, 0.5, 0.5, -0.5. Cohen's f is then ![f = \\frac { \\sqrt { \\frac { -0.5^2 + 0.5^2 + 0.5 + -0.5^2 } { 4 } }}{ 2 } = 0.25](https://latex.codecogs.com/png.latex?f%20%3D%20%5Cfrac%20%7B%20%5Csqrt%20%7B%20%5Cfrac%20%7B%20-0.5%5E2%20%2B%200.5%5E2%20%2B%200.5%20%2B%20-0.5%5E2%20%7D%20%7B%204%20%7D%20%7D%7D%7B%202%20%7D%20%3D%200.25 "f = \frac { \sqrt { \frac { -0.5^2 + 0.5^2 + 0.5 + -0.5^2 } { 4 } }}{ 2 } = 0.25"). Simulations show we have 99.47% power when we collected 80 participants per condition. A cross-over (also called disordinal) interaction with two levels per factor has exactly the same power as the initial two-group design. if we halve the sample size per group for the cross-over interaction from 80 to 40. Power with 40 participants per condition is 88.02%. Main effects in an ANOVA are based on the means for one factor averaged over the other factors (e.g., the main effect of human-like versus robot-like voice, irrespective of whether it is cheerful or sad). The interaction effect, which can be contrast coded as 1, -1, -1, 1, is similarly a test of whether the effects are non-additive based on the scores in each cell, where the null-hypothesis of no additive effect can be rejected if the deviation expected when effects in each cell would be purely additive can be rejected. The key insight here is that not the sample size per condition, but the total sample size dover all other factor determines the power for the main effects and the interaction.
 
 We can also examine the statistical power for a pattern of results that indicated that there was no difference in interacting with a cheerful of sad conversational agent with a robot voice. In this case, we expect an 'ordinal' interaction (the means for the human-like voice are never lower than the means for the robot-like voice, and thus there is no cross-over effect). The pattern of means is now 1, 0, 0, 0, with only a single mean that differs from the rest. These designs require larger samples sizes to have the same power to detect the interaction, compared to the two-group comparison. The reason for this is that the effect size is only half as large, with Cohen's f = 0.125 (compared to 0.25 in the cross-over interaction). By steadily increasing the sample size in the simulation, we see that to achieve the same power as for the two-group comparison, a total sample size of 635 is required, almost four times as large as the sample size for the two-group comparison (160).
 
@@ -752,48 +752,48 @@ power_result <- ANOVA_power(design_result, alpha_level = 0.05, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##                         power effect_size
-    ## anova_Factor_A          44.36      0.0312
-    ## anova_Factor_B          44.98      0.0310
-    ## anova_Factor_A:Factor_B 64.59      0.0650
+    ## anova_Factor_A          44.80      0.0312
+    ## anova_Factor_B          45.57      0.0318
+    ## anova_Factor_A:Factor_B 64.25      0.0658
     ## 
     ## Power and Effect sizes for contrasts
     ##                                                   power effect_size
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a1_Factor_B_b2  5.62      0.0010
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a1_Factor_B_b3  5.06      0.0010
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b1  5.08      0.0020
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b2  5.10     -0.0023
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b3  4.91     -0.0011
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b1  5.12      0.0032
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b2  4.68     -0.0019
-    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b3 87.06      1.0222
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a1_Factor_B_b3  5.46     -0.0004
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b1  5.19      0.0006
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b2  5.17     -0.0031
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b3  4.98     -0.0016
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b1  4.87      0.0018
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b2  5.39     -0.0029
-    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b3 86.95      1.0201
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b1  5.19      0.0013
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b2  5.01     -0.0028
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b3  5.08     -0.0013
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b1  5.02      0.0021
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b2  5.02     -0.0027
-    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b3 86.94      1.0192
-    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a2_Factor_B_b2  4.76     -0.0039
-    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a2_Factor_B_b3  4.98     -0.0029
-    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b1  5.15      0.0014
-    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b2  4.95     -0.0036
-    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b3 86.43      1.0205
-    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a2_Factor_B_b3  5.15      0.0011
-    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b1  4.64      0.0054
-    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b2  4.79      0.0002
-    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b3 87.00      1.0245
-    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b1  4.64      0.0043
-    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b2  4.80     -0.0008
-    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b3 87.01      1.0223
-    ## p_Factor_A_a3_Factor_B_b1_Factor_A_a3_Factor_B_b2  4.86     -0.0049
-    ## p_Factor_A_a3_Factor_B_b1_Factor_A_a3_Factor_B_b3 86.95      1.0193
-    ## p_Factor_A_a3_Factor_B_b2_Factor_A_a3_Factor_B_b3 87.24      1.0245
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a1_Factor_B_b2  4.80     -0.0024
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a1_Factor_B_b3  4.85      0.0037
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b1  4.87      0.0011
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b2  5.47      0.0015
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a2_Factor_B_b3  4.84      0.0036
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b1  5.36     -0.0011
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b2  5.03      0.0032
+    ## p_Factor_A_a1_Factor_B_b1_Factor_A_a3_Factor_B_b3 87.06      1.0205
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a1_Factor_B_b3  4.93      0.0061
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b1  5.37      0.0037
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b2  4.89      0.0041
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a2_Factor_B_b3  4.99      0.0058
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b1  4.99      0.0009
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b2  5.09      0.0051
+    ## p_Factor_A_a1_Factor_B_b2_Factor_A_a3_Factor_B_b3 86.84      1.0241
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b1  5.00     -0.0029
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b2  4.91     -0.0017
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a2_Factor_B_b3  4.79     -0.0001
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b1  5.03     -0.0049
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b2  4.68     -0.0009
+    ## p_Factor_A_a1_Factor_B_b3_Factor_A_a3_Factor_B_b3 86.92      1.0171
+    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a2_Factor_B_b2  5.06      0.0005
+    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a2_Factor_B_b3  4.90      0.0026
+    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b1  5.19     -0.0019
+    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b2  4.69      0.0016
+    ## p_Factor_A_a2_Factor_B_b1_Factor_A_a3_Factor_B_b3 87.17      1.0206
+    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a2_Factor_B_b3  5.06      0.0024
+    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b1  4.93     -0.0029
+    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b2  4.91      0.0016
+    ## p_Factor_A_a2_Factor_B_b2_Factor_A_a3_Factor_B_b3 87.81      1.0233
+    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b1  5.26     -0.0049
+    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b2  4.89     -0.0008
+    ## p_Factor_A_a2_Factor_B_b3_Factor_A_a3_Factor_B_b3 86.46      1.0199
+    ## p_Factor_A_a3_Factor_B_b1_Factor_A_a3_Factor_B_b2  4.88      0.0041
+    ## p_Factor_A_a3_Factor_B_b1_Factor_A_a3_Factor_B_b3 87.31      1.0223
+    ## p_Factor_A_a3_Factor_B_b2_Factor_A_a3_Factor_B_b3 86.61      1.0191
 
 We can check these against the analytic solution.
 
@@ -828,11 +828,11 @@ Variances were set to 1 (so all covariance matrices in their simulations were id
 
 Potvin & Schulz (2000) examine power for 2x2 within ANOVA designs and develop approximations of the error variance. For a design with 2 within factors (A and B) these are:
 
-For the main effect of A: $\\sigma \_ { e } ^ { 2 } = \\sigma ^ { 2 } ( 1 - \\overline { \\rho } \_ { A } ) + \\sigma ^ { 2 } ( q - 1 ) ( \\overline { \\rho } \_ { B } - \\overline { \\rho } \_ { AB } )$
+For the main effect of A: ![\\sigma \_ { e } ^ { 2 } = \\sigma ^ { 2 } ( 1 - \\overline { \\rho } \_ { A } ) + \\sigma ^ { 2 } ( q - 1 ) ( \\overline { \\rho } \_ { B } - \\overline { \\rho } \_ { AB } )](https://latex.codecogs.com/png.latex?%5Csigma%20_%20%7B%20e%20%7D%20%5E%20%7B%202%20%7D%20%3D%20%5Csigma%20%5E%20%7B%202%20%7D%20%28%201%20-%20%5Coverline%20%7B%20%5Crho%20%7D%20_%20%7B%20A%20%7D%20%29%20%2B%20%5Csigma%20%5E%20%7B%202%20%7D%20%28%20q%20-%201%20%29%20%28%20%5Coverline%20%7B%20%5Crho%20%7D%20_%20%7B%20B%20%7D%20-%20%5Coverline%20%7B%20%5Crho%20%7D%20_%20%7B%20AB%20%7D%20%29 "\sigma _ { e } ^ { 2 } = \sigma ^ { 2 } ( 1 - \overline { \rho } _ { A } ) + \sigma ^ { 2 } ( q - 1 ) ( \overline { \rho } _ { B } - \overline { \rho } _ { AB } )")
 
-For the main effectof B: $\\sigma \_ { e } ^ { 2 } = \\sigma ^ { 2 } ( 1 - \\overline { \\rho } \_ { B } ) + \\sigma ^ { 2 } ( p - 1 ) ( \\overline { \\rho } \_ { A } - \\overline { \\rho } \_ { A B } )$
+For the main effectof B: ![\\sigma \_ { e } ^ { 2 } = \\sigma ^ { 2 } ( 1 - \\overline { \\rho } \_ { B } ) + \\sigma ^ { 2 } ( p - 1 ) ( \\overline { \\rho } \_ { A } - \\overline { \\rho } \_ { A B } )](https://latex.codecogs.com/png.latex?%5Csigma%20_%20%7B%20e%20%7D%20%5E%20%7B%202%20%7D%20%3D%20%5Csigma%20%5E%20%7B%202%20%7D%20%28%201%20-%20%5Coverline%20%7B%20%5Crho%20%7D%20_%20%7B%20B%20%7D%20%29%20%2B%20%5Csigma%20%5E%20%7B%202%20%7D%20%28%20p%20-%201%20%29%20%28%20%5Coverline%20%7B%20%5Crho%20%7D%20_%20%7B%20A%20%7D%20-%20%5Coverline%20%7B%20%5Crho%20%7D%20_%20%7B%20A%20B%20%7D%20%29 "\sigma _ { e } ^ { 2 } = \sigma ^ { 2 } ( 1 - \overline { \rho } _ { B } ) + \sigma ^ { 2 } ( p - 1 ) ( \overline { \rho } _ { A } - \overline { \rho } _ { A B } )")
 
-For the interaction between A and B: $\\sigma \_ { e } ^ { 2 } = \\sigma ^ { 2 } ( 1 - \\rho \_ { \\max } ) - \\sigma ^ { 2 } ( \\overline { \\rho } \_ { \\min } - \\overline { \\rho } \_ { AB } )$
+For the interaction between A and B: ![\\sigma \_ { e } ^ { 2 } = \\sigma ^ { 2 } ( 1 - \\rho \_ { \\max } ) - \\sigma ^ { 2 } ( \\overline { \\rho } \_ { \\min } - \\overline { \\rho } \_ { AB } )](https://latex.codecogs.com/png.latex?%5Csigma%20_%20%7B%20e%20%7D%20%5E%20%7B%202%20%7D%20%3D%20%5Csigma%20%5E%20%7B%202%20%7D%20%28%201%20-%20%5Crho%20_%20%7B%20%5Cmax%20%7D%20%29%20-%20%5Csigma%20%5E%20%7B%202%20%7D%20%28%20%5Coverline%20%7B%20%5Crho%20%7D%20_%20%7B%20%5Cmin%20%7D%20-%20%5Coverline%20%7B%20%5Crho%20%7D%20_%20%7B%20AB%20%7D%20%29 "\sigma _ { e } ^ { 2 } = \sigma ^ { 2 } ( 1 - \rho _ { \max } ) - \sigma ^ { 2 } ( \overline { \rho } _ { \min } - \overline { \rho } _ { AB } )")
 
 We first simulate a within subjects 2x2 ANOVA design.
 
@@ -864,18 +864,18 @@ simulation_result <- ANOVA_power(design_result, nsims = nsims)
 
     ## Power and Effect sizes for ANOVA tests
     ##           power effect_size
-    ## anova_A   26.70      0.0987
-    ## anova_B   64.18      0.2466
-    ## anova_A:B 26.76      0.0999
+    ## anova_A   26.39      0.0989
+    ## anova_B   64.43      0.2427
+    ## anova_A:B 26.85      0.0971
     ## 
     ## Power and Effect sizes for contrasts
     ##                       power effect_size
-    ## p_A_a1_B_b1_A_a1_B_b2 27.10     -0.3307
-    ## p_A_a1_B_b1_A_a2_B_b1 39.65      0.4186
-    ## p_A_a1_B_b1_A_a2_B_b2  5.08      0.0007
-    ## p_A_a1_B_b2_A_a2_B_b1 64.50      0.5727
-    ## p_A_a1_B_b2_A_a2_B_b2 13.67      0.2097
-    ## p_A_a2_B_b1_A_a2_B_b2 76.55     -0.6591
+    ## p_A_a1_B_b1_A_a1_B_b2 26.94     -0.3317
+    ## p_A_a1_B_b1_A_a2_B_b1 39.59      0.4152
+    ## p_A_a1_B_b1_A_a2_B_b2  5.23     -0.0012
+    ## p_A_a1_B_b2_A_a2_B_b1 64.37      0.5704
+    ## p_A_a1_B_b2_A_a2_B_b2 13.75      0.2082
+    ## p_A_a2_B_b1_A_a2_B_b2 76.34     -0.6602
 
 We can use the analytic solution based on the formula in Potvin & Schutz (2000). I created a function 'power\_2x2\_within' that contains the calculations based on the formula above.
 
