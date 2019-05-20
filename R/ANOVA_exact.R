@@ -1,9 +1,10 @@
 #' Create an empirical data set from the design; alternative to simulation
 #' @param design_result Output from the ANOVA_design function
 #' @param alpha_level Alpha level used to determine statistical significance
+#' @param p_adjust Correction for multiple comparisons
 #' @param seed Set seed for reproducible results
 #' @param verbose Set to FALSE to not print results (default = TRUE)
-#' @return Returns dataframe with simulation data (power and effect sizes), anova results and simple effect results, plot of exact data, and alpha_level.
+#' @return Returns dataframe with simulation data (p-values and effect sizes), anova results and simple effect results, plot of exact data, p_adjust = p_adjust, and alpha_level.
 #' @examples
 #' ## Set up a within design with 2 factors, each with 2 levels,
 #' ## with correlation between observations of 0.8,
@@ -13,10 +14,11 @@
 #' design_result <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
 #'       sd = 2, r = 0.8, labelnames = c("condition", "cheerful",
 #'       "sad", "voice", "human", "robot"))
-#' exact_result <- ANOVA_exact(design_result, alpha_level = 0.05)
+#' exact_result <- ANOVA_exact(design_result, alpha_level = 0.05,
+#'       p_adjust = "none")
 #' @section References:
 #' too be added
-#' @importFrom stats pnorm pt qnorm qt as.formula median qf power.t.test
+#' @importFrom stats pnorm pt qnorm qt as.formula median p.adjust
 #' @importFrom utils combn
 #' @importFrom reshape2 melt
 #' @importFrom MASS mvrnorm
@@ -25,13 +27,12 @@
 #' @export
 #'
 
-ANOVA_exact <- function(design_result, alpha_level,
+ANOVA_exact <- function(design_result, alpha_level, p_adjust = "none",
                          seed = NULL, verbose = TRUE) {
 
-  #Unable to find way to reasonbly provide p-adjustment
-  #if (is.element(p_adjust, c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")) == FALSE ) {
-  #  stop("p_adjust must be of an acceptable adjustment method: see ?p.adjust")
-  #}
+  if (is.element(p_adjust, c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")) == FALSE ) {
+    stop("p_adjust must be of an acceptable adjustment method: see ?p.adjust")
+  }
 
 
   options(scipen = 999) # 'turn off' scientific notation
@@ -50,16 +51,13 @@ ANOVA_exact <- function(design_result, alpha_level,
     t_value <- m_diff / sqrt(sd_pooled^2 / n1 + sd_pooled^2 / n2)
     p_value = 2*pt(-abs(t_value),
                    df = df)
-    #Calculate power
-    power = power.t.test(n=n1, delta = m_diff, sd = sd_pooled, type = "two.sample", alternative = "two.sided")$power
 
     d <- m_diff / sd_pooled #Cohen's d
     d_unb <- d*j #Hedges g, of unbiased d
 
     invisible(list(d = d,
                    d_unb = d_unb,
-                   p_value = p_value,
-                   power = power))
+                   p_value = p_value))
   }
 
   effect_size_d_paired <- function(x, y, conf.level = 0.95){
@@ -80,8 +78,6 @@ ANOVA_exact <- function(design_result, alpha_level,
     p_value = 2 * pt(-abs(t_value),
                      df = df)
 
-    power = power.t.test(n=N, delta = m_diff, sd = s_diff, type = "one.sample", alternative = "two.sided")$power
-
     #Cohen's d_z, using s_diff as standardizer
     d_z <- t_value / sqrt(N)
     d_z_unb <- (1 - (3 / (4 * (N - 1) - 1))) * d_z
@@ -89,8 +85,7 @@ ANOVA_exact <- function(design_result, alpha_level,
     invisible(list(
       d_z = d_z,
       d_z_unb = d_z_unb,
-      p_value = p_value,
-      power = power
+      p_value = p_value
     ))
   }
 
@@ -150,7 +145,7 @@ ANOVA_exact <- function(design_result, alpha_level,
 
   aov_result <- suppressMessages({aov_car(frml1, #here we use frml1 to enter formula 1 as designed above on the basis of the design
                                           data = dataframe, include_aov = FALSE,
-                                          anova_table = list(es = "pes")) }) #This reports PES not GES
+                                          anova_table = list(es = "pes", p_adjust_method = p_adjust)) }) #This reports PES not GES
 
 
   ############################################
@@ -226,23 +221,8 @@ ANOVA_exact <- function(design_result, alpha_level,
   #Can be set to NICE to speed up, but required data grabbing from output the change.
   aov_result <- suppressMessages({aov_car(frml1, #here we use frml1 to enter fromula 1 as designed above on the basis of the design
                                           data = dataframe, include_aov = FALSE, #Need development code to get aov_include function
-                                          anova_table = list(es = "pes"))}) #This reports PES not GES
-
-
-  #Add additional statistics
-  #Create dataframe from afex results
-  Anova_tab <- as.data.frame(aov_result$anova_table)
-  colnames(Anova_tab) <- c("num_Df", "den_Df", "MSE", "F", "pes", "p")
-
-  #Calculate cohen's f
-  Anova_tab$f2 <- (Anova_tab$pes/(1-Anova_tab$pes))
-  #Calculate noncentrality
-  Anova_tab$lambda <- Anova_tab$f2*Anova_tab$den_Df
-
-  minusalpha<- 1-alpha_level
-  Anova_tab$Ft <- qf(minusalpha, Anova_tab$num_Df, Anova_tab$den_Df)
-  #Calculate power
-  Anova_tab$power <- (1-pf(Anova_tab$Ft, Anova_tab$num_Df, Anova_tab$den_Df, Anova_tab$lambda))*100
+                                          anova_table = list(es = "pes",
+                                                             p_adjust_method = p_adjust))}) #This reports PES not GES
 
   for (j in 1:possible_pc) {
     x <- dataframe$y[which(dataframe$cond == paired_tests[1,j])]
@@ -251,36 +231,43 @@ ANOVA_exact <- function(design_result, alpha_level,
     ifelse(within_between[j] == 0,
            t_test_res <- effect_size_d(x, y, conf.level = 1 - alpha_level),
            t_test_res <- effect_size_d_paired(x, y, conf.level = 1 - alpha_level))
-    paired_p[j] <- (t_test_res$power*100)
+    paired_p[j] <- t_test_res$p_value
     paired_d[j] <- ifelse(within_between[j] == 0,
                           t_test_res$d,
                           t_test_res$d_z)
   }
 
-  # store p-values and effect sizes for calculations
-  sim_data[1,] <- c(aov_result$anova_table[[6]], #p-value for ANOVA
+  # store p-values and effect sizes for calculations and plots.
+  sim_data <- c(aov_result$anova_table[[6]], #p-value for ANOVA
                     aov_result$anova_table[[5]], #partial eta squared
-                    paired_p, #power for paired comparisons, dropped correction for multiple comparisons
+                    p.adjust(paired_p, method = p_adjust), #p-values for paired comparisons, added correction for multiple comparisons
                     paired_d) #effect sizes
 
   ###############
-  #Sumary of power and effect sizes of main effects and contrasts ----
+  # 9. Sumary of power and effect sizes of main effects and contrasts ----
   ###############
-  main_results <- round(data.frame(Anova_tab$power, Anova_tab$pes, Anova_tab$f2, Anova_tab$lambda), round_dig)
-  rownames(main_results) <- rownames(Anova_tab)
-  colnames(main_results) <- c("power", "partial_eta_squared", "cohen_f", "non_centrality")
-  main_results$power <- round(main_results$power, 2)
+
+  #Main effects and interactions from the ANOVA
+  pvalue_anova = as.data.frame(apply(as.matrix(sim_data[(1:(2 ^ factors - 1))]), 2,
+                              function(x) x))
+
+  es = as.data.frame(apply(as.matrix(sim_data[((2^factors):(2 * (2 ^ factors - 1)))]), 2,
+                           function(x) round(x,round_dig)))
+
+  main_results <- data.frame(pvalue_anova,es)
+  names(main_results) = c("p_value","effect_size")
+
 
 
   #Data summary for pairwise comparisons
-  power_paired = as.data.frame(apply(as.matrix(sim_data[(2 * (2 ^ factors - 1) + 1):(2 * (2 ^ factors - 1) + possible_pc)]), 2,
-                                     function(x) round(x, 2)))
+  pvalue_paired = as.data.frame(apply(as.matrix(sim_data[(2 * (2 ^ factors - 1) + 1):(2 * (2 ^ factors - 1) + possible_pc)]), 2,
+                                     function(x) x))
 
   es_paired = as.data.frame(apply(as.matrix(sim_data[(2 * (2 ^ factors - 1) + possible_pc + 1):(2*(2 ^ factors - 1) + 2 * possible_pc)]), 2,
                                   function(x) round(x,round_dig)))
 
-  pc_results <- data.frame(power_paired, es_paired)
-  names(pc_results) = c("power","effect_size")
+  pc_results <- data.frame(pvalue_paired, es_paired)
+  names(pc_results) = c("p_value","effect_size")
 
 
   #Create plot
@@ -298,31 +285,16 @@ ANOVA_exact <- function(design_result, alpha_level,
       color = "red"
     ) +
     coord_cartesian(ylim = c(min(dataframe$y), max(dataframe$y))) +
-    theme_bw() +ggtitle("Exact data for each condition in the design")
-
-  #######################
-  # Return Results ----
-  #######################
-  if(verbose == TRUE){
-    # The section below should be blocked out when in Shiny
-    cat("Power and Effect sizes for ANOVA tests")
-    cat("\n")
-    print(main_results)
-    cat("\n")
-    cat("Power and Effect sizes for contrasts")
-    cat("\n")
-    print(pc_results)
-  }
+    theme_bw()
 
   # Return results in list()
   invisible(list(dataframe = dataframe,
                  aov_result = aov_result,
                  main_results = main_results,
                  pc_results = pc_results,
+                 p_adjust = p_adjust,
                  alpha_level = alpha_level,
-                 plot = meansplot2,
-                 sim_data = sim_data))
-
+                 plot = meansplot2))
 
 
 }
