@@ -17,6 +17,7 @@ test_that("2w", {
   design <- ANOVA_design(string = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
   p <- ANOVA_power(design, nsims = 50, seed = 8675309, verbose = FALSE)
 
+
   comp <- list()
   comp$main_results <- data.frame(
     power = c(68),
@@ -78,12 +79,16 @@ test_that("2w long", {
   system.time(
     p <- ANOVA_power(design, nsims = 1000, seed = 8675309, verbose = FALSE)
   )
+  pe <- ANOVA_exact(design, seed = 8675309, verbose = FALSE)
 
   p2 <- pwr::pwr.t.test(n = 100, d = 0.25, type = "paired")
 
   expect_equal(p$main_results$power/100, p2$power, tolerance = .02)
+  expect_equal(pe$main_results$power/100, p2$power, tolerance = .02)
   expect_equal(p$pc_results$power/100, p2$power, tolerance = .02)
+  expect_equal(pe$pc_results$power/100, p2$power, tolerance = .02)
   expect_equal(p$pc_results$effect_size, p2$d, tolerance = .02)
+  expect_equal(pe$pc_results$effect_size, p2$d, tolerance = .02)
 })
 
 #2b long simulation
@@ -96,16 +101,20 @@ design <- ANOVA_design(string = "2b",
                        labelnames = c("condition", "control", "pet"),
                        plot = FALSE)
 system.time(
-  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 1000, seed=644, verbose = FALSE)
+  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 1000, seed = 644, verbose = FALSE)
 )
+
+pe <- ANOVA_exact(design, seed = 644, verbose = FALSE)
 
 p2 <- pwr::pwr.t.test(d = 2.2/6.4,
                       n = 100,
                       sig.level = 0.05,
-                      type="two.sample",
-                      alternative="two.sided")$power
+                      type = "two.sample",
+                      alternative = "two.sided")$power
 
 expect_equal(p$main_results$power/100, p2, tolerance = .02)
+
+expect_equal(pe$main_results$power/100, p2, tolerance = .02)
 })
 
 #3b long simulation
@@ -120,7 +129,7 @@ test_that("3b long", {
   system.time(
     p <- ANOVA_power(design, alpha_level = 0.05, nsims = 5000, seed = 123, verbose = FALSE)
   )
-
+  pe <- ANOVA_exact(design, alpha_level = 0.05, verbose = FALSE)
   pc_1 <- pwr::pwr.t.test(d = 2.2/6.4,
                           n = 50,
                           sig.level = 0.05,
@@ -136,12 +145,14 @@ test_that("3b long", {
   pc_3 <- pwr::pwr.t.test(d = 0.4/6.4,
                      n = 50,
                      sig.level = 0.05,
-                     type="two.sample",
-                     alternative="two.sided")$power
+                     type = "two.sample",
+                     alternative = "two.sided")$power
 
   pmain <- pwr::pwr.anova.test(k = 3, n = 50, f = 0.1786086, sig.level = 0.05)$power #f obtained from GPower
 
   expect_equal(p$main_results$power/100, pmain, tolerance = .02)
+  expect_equal(p$main_results$power/100, pe$main_results$power/100, tolerance = .02)
+  expect_equal(p$pc_results$power/100, pe$pc_results$power/100, tolerance = .02)
   expect_equal(p$pc_results$power/100, c(pc_1, pc_2, pc_3), tolerance = .02)
 })
 
@@ -153,13 +164,14 @@ test_that("3 way between long", {
                   "Load", "pres", "abs") #
 
   design <- ANOVA_design(string = "2b*2b*2b",
-                         n = 50,
+                         n = 80,
                          mu = c(2, 2, 6, 1, 6, 6, 1, 8),
                          sd = 10,
                          labelnames = labelnames)
-  system.time(
-    p <- ANOVA_power(design, alpha_level = 0.05, nsims = 2000, seed = 8224, verbose = FALSE)
-  )
+
+  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 4000, seed = 8224, verbose = FALSE)
+
+  pe <- ANOVA_exact(design, alpha_level = 0.05, verbose = FALSE)
 
   power_analytic <- power_threeway_between(design)
 
@@ -169,6 +181,13 @@ test_that("3 way between long", {
                c(power_analytic$power_A, power_analytic$power_B, power_analytic$power_C,
                  power_analytic$power_AB, power_analytic$power_AC, power_analytic$power_BC,
                  power_analytic$power_ABC), tolerance = .02)
+  expect_equal(p$main_results$power/100,
+               pe$main_results$power/100, tolerance = .02)
+  expect_equal(p$pc_results$power/100,
+               pe$pc_results$power/100, tolerance = .02)
+
+  expect_equal(rownames(p$pc_results),
+               rownames(pe$pc_results))
 })
 
 
@@ -191,13 +210,14 @@ test_that("2x2 mixed long", {
                          r = r,
                          labelnames = labelnames,
                          plot = FALSE)
-  system.time(
-    p <- ANOVA_power(design, alpha_level = 0.05, nsims = 1000, seed = 435, verbose = FALSE)
-  )
+
+  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 1000, seed = 435, verbose = FALSE)
+  pe <- ANOVA_exact(design, verbose = FALSE)
 
 
 
   p_inter <- 0.9124984 #power obtained from GPower https://github.com/Lakens/ANOVA_power_simulation/blob/master/validation_files/3.1_validation_power_between_within_2x2.md
 
   expect_equal(p$main_results$power[3]/100, p_inter, tolerance = .02)
+  expect_equal(pe$main_results$power[3]/100, p$main_results$power[3]/100, tolerance = .02)
 })

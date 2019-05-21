@@ -51,7 +51,14 @@ ANOVA_exact <- function(design_result, alpha_level,
     p_value = 2*pt(-abs(t_value),
                    df = df)
     #Calculate power
-    power = power.t.test(n=n1, delta = m_diff, sd = sd_pooled, type = "two.sample", alternative = "two.sided")$power
+    power = power.t.test(
+      n = n1,
+      delta = m_diff,
+      sd = sd_pooled,
+      type = "two.sample",
+      alternative = "two.sided",
+      strict = TRUE
+    )$power
 
     d <- m_diff / sd_pooled #Cohen's d
     d_unb <- d*j #Hedges g, of unbiased d
@@ -80,7 +87,14 @@ ANOVA_exact <- function(design_result, alpha_level,
     p_value = 2 * pt(-abs(t_value),
                      df = df)
 
-    power = power.t.test(n=N, delta = m_diff, sd = s_diff, type = "one.sample", alternative = "two.sided")$power
+    power = power.t.test(
+      n = N,
+      delta = m_diff,
+      sd = s_diff,
+      type = "paired",
+      alternative = "two.sided",
+      strict = TRUE
+    )$power
 
     #Cohen's d_z, using s_diff as standardizer
     d_z <- t_value / sqrt(N)
