@@ -1,7 +1,6 @@
 #' Create an empirical data set from the design; alternative to simulation
 #' @param design_result Output from the ANOVA_design function
 #' @param alpha_level Alpha level used to determine statistical significance
-#' @param seed Set seed for reproducible results
 #' @param verbose Set to FALSE to not print results (default = TRUE)
 #' @return Returns dataframe with simulation data (power and effect sizes), anova results and simple effect results, plot of exact data, and alpha_level.
 #' @examples
@@ -13,9 +12,10 @@
 #' design_result <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
 #'       sd = 2, r = 0.8, labelnames = c("condition", "cheerful",
 #'       "sad", "voice", "human", "robot"))
+#'  set.seed(252)
 #' exact_result <- ANOVA_exact(design_result, alpha_level = 0.05)
 #' @section References:
-#' too be added
+#' to be added
 #' @importFrom stats pnorm pt qnorm qt as.formula median qf power.t.test
 #' @importFrom utils combn
 #' @importFrom reshape2 melt
@@ -25,8 +25,7 @@
 #' @export
 #'
 
-ANOVA_exact <- function(design_result, alpha_level,
-                        seed = NULL, verbose = TRUE) {
+ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
 
   #Unable to find way to reasonbly provide p-adjustment
   #if (is.element(p_adjust, c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")) == FALSE ) {
@@ -137,6 +136,11 @@ ANOVA_exact <- function(design_result, alpha_level,
 
   n <- design_result$n
 
+  #Errors with very small sample size; issue with mvrnorm function from MASS package
+  if(n < 8){
+    stop("ANOVA_exact cannot handle small sample sizes (n < 8) at this time; please pass this design_result to the ANOVA_power function to simulate power")
+  }
+
   # specify population means for each condition (so 2 values for 2b design, 6 for 2b*3w, etc)
   mu = design_result$mu # population means - should match up with the design
 
@@ -208,7 +212,6 @@ ANOVA_exact <- function(design_result, alpha_level,
 
   #We simulate a new y variable, melt it in long format, and add it to the dataframe (surpressing messages)
   #empirical set to true to create "exact" dataset
-  set.seed(seed)
 
   dataframe$y <- suppressMessages({
     melt(as.data.frame(mvrnorm(

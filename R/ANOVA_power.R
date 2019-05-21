@@ -3,7 +3,6 @@
 #' @param alpha_level Alpha level used to determine statistical significance
 #' @param p_adjust Correction for multiple comparisons
 #' @param nsims number of simulations to perform
-#' @param seed Set seed for reproducible results
 #' @param verbose Set to FALSE to not print results (default = TRUE)
 #' @return Returns dataframe with simulation data (p-values and effect sizes), anova results and simple effect results, plots of p-value distribution, p_adjust = p_adjust, nsims, and alpha_level.
 #' @examples
@@ -28,7 +27,7 @@
 #' @export
 #'
 
-ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 1000, seed = NULL, verbose = TRUE){
+ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 1000, verbose = TRUE){
 
   if (is.element(p_adjust, c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")) == FALSE ) {
     stop("p_adjust must be of an acceptable adjustment method: see ?p.adjust")
@@ -49,7 +48,7 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   # requireNamespace(reshape2, quietly = TRUE)
 
   options(scipen = 999) # 'turn off' scientific notation
-  set.seed(seed)
+
 
   effect_size_d <- function(x, y, conf.level = 0.95){
     sd1 <- sd(x) #standard deviation of measurement 1

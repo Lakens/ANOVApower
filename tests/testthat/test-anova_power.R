@@ -15,7 +15,10 @@ test_that("error messages", {
 #2w
 test_that("2w", {
   design <- ANOVA_design(string = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
-  p <- ANOVA_power(design, nsims = 50, seed = 8675309, verbose = FALSE)
+
+  set.seed(8675309)
+
+  p <- ANOVA_power(design, nsims = 50, verbose = FALSE)
 
 
   comp <- list()
@@ -43,7 +46,9 @@ test_that("2w*2w", {
                          labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"),
                          plot = FALSE)
 
-  p <- ANOVA_power(design, nsims = 50, seed = 8675309, verbose = FALSE)
+  set.seed(8675309)
+
+  p <- ANOVA_power(design, nsims = 50, verbose = FALSE)
 
   comp <- list()
   comp$main_results <- data.frame(
@@ -76,10 +81,13 @@ test_that("2w long", {
   skip_on_cran()
 
   design <- ANOVA_design(string = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
+
+  set.seed(8675309)
+
   system.time(
-    p <- ANOVA_power(design, nsims = 1000, seed = 8675309, verbose = FALSE)
+    p <- ANOVA_power(design, nsims = 1000, verbose = FALSE)
   )
-  pe <- ANOVA_exact(design, seed = 8675309, verbose = FALSE)
+  pe <- ANOVA_exact(design, verbose = FALSE)
 
   p2 <- pwr::pwr.t.test(n = 100, d = 0.25, type = "paired")
 
@@ -100,11 +108,12 @@ design <- ANOVA_design(string = "2b",
                        sd = 6.4,
                        labelnames = c("condition", "control", "pet"),
                        plot = FALSE)
+set.seed(644)
 system.time(
-  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 1000, seed = 644, verbose = FALSE)
+  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 1000, verbose = FALSE)
 )
 
-pe <- ANOVA_exact(design, seed = 644, verbose = FALSE)
+pe <- ANOVA_exact(design, verbose = FALSE)
 
 p2 <- pwr::pwr.t.test(d = 2.2/6.4,
                       n = 100,
@@ -126,8 +135,9 @@ test_that("3b long", {
                          sd = 6.4,
                          labelnames = c("condition", "control", "cat", "dog"),
                          plot = FALSE)
+  set.seed(123)
   system.time(
-    p <- ANOVA_power(design, alpha_level = 0.05, nsims = 5000, seed = 123, verbose = FALSE)
+    p <- ANOVA_power(design, alpha_level = 0.05, nsims = 5000, verbose = FALSE)
   )
   pe <- ANOVA_exact(design, alpha_level = 0.05, verbose = FALSE)
   pc_1 <- pwr::pwr.t.test(d = 2.2/6.4,
@@ -169,7 +179,9 @@ test_that("3 way between long", {
                          sd = 10,
                          labelnames = labelnames)
 
-  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 4000, seed = 8224, verbose = FALSE)
+  set.seed(8224)
+
+  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 4000, verbose = FALSE)
 
   pe <- ANOVA_exact(design, alpha_level = 0.05, verbose = FALSE)
 
@@ -211,7 +223,9 @@ test_that("2x2 mixed long", {
                          labelnames = labelnames,
                          plot = FALSE)
 
-  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 1000, seed = 435, verbose = FALSE)
+  set.seed(435)
+
+  p <- ANOVA_power(design, alpha_level = 0.05, nsims = 1000, verbose = FALSE)
   pe <- ANOVA_exact(design, verbose = FALSE)
 
 

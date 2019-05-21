@@ -4,9 +4,16 @@ context("test-anova_exact")
 
 # error messages
 test_that("error messages", {
-  design <- ANOVA_design(string = "2w", n = 10, mu = c(0, 0), sd = 1, plot = FALSE)
+  design <- ANOVA_design(string = "2b*4w",
+                         n = 7,
+                         mu = c(0,0,0,0,0.5,0.5,0.5,0.5),
+                         sd = 1,
+                         plot = FALSE)
 
   expect_error(ANOVA_exact(), "argument \"design_result\" is missing, with no default")
+  expect_error(ANOVA_exact(design, verbose = FALSE),
+               "ANOVA_exact cannot handle small sample sizes (n < 8) at this time; please pass this design_result to the ANOVA_power function to simulate power",
+               fixed = TRUE)
 
 })
 
@@ -78,3 +85,35 @@ test_that("4b", {
 
 })
 
+#2x4 repeated measures
+test_that("2b*4w", {
+  design <- ANOVA_design(string = "2b*4w", n = 8,
+                         mu = c(0.0, 0.0, 0.0, 0.0,
+                                0.5, 0.5, 0.5, 0.5),
+                         r = 0.71,
+                         sd = 2, plot = FALSE)
+
+
+  set.seed(7224)
+  p <- ANOVA_exact(design, verbose = FALSE)
+
+  expect_equal(p$main_results$power, c(8.24, 5, 5), tolerance = 0.1)
+
+
+})
+
+#3w
+test_that("3w", {
+
+  design <- ANOVA_design(string = "3w", n = 20,
+                         mu = c(-0.3061862, 0.0000000, 0.3061862),
+                         r = 0.8,
+                         sd = 1, plot = FALSE)
+
+
+  p <- ANOVA_exact(design, verbose = FALSE)
+
+  expect_equal(p$main_results$power, 96.9, tolerance = 0.1)
+
+
+})

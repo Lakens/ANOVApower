@@ -163,16 +163,15 @@ You can set the standard deviation by setting a value of sd. Note that there is 
 
 The ANOVA_power function takes the result from the ANOVA_design function, and simulates data nsims times using a specified alpha level. As output, it provides a table for the ANOVA results, and the results for all independent comparisons.
 
-It requires the following input: ANOVA_design, alpha_level, p_adjust, nsims, seed, and verbose. 
+It requires the following input: ANOVA_design, alpha_level, p_adjust, nsims, and verbose. 
 
 1. design_result: Output from the ANOVA_design function saved as an object
 2. alpha_level: Alpha level used to determine statistical significance
 3. p_adjust: Correction for multiple comparisons using the [p.adjust](https://www.rdocumentation.org/packages/stats/versions/3.5.3/topics/p.adjust) function 
 4. nsims: number of simulations to perform
-5. seed: Set seed for reproducible results
-6. verbose: Set to FALSE to not print results (default = TRUE)
+5. verbose: Set to FALSE to not print results (default = TRUE)
 
-Simulations typically take some time. Larger numbers of simulations yield more accurate results, but also take a long time. I recommend testing the set up with 10 simulations, and run 1000 if the set-up is correct (or 10000 if you are getting a coffee, or 100.000 if you are about accuracy to digits behind the decimal). 
+Simulations typically take some time. Larger numbers of simulations yield more accurate results, but also take a long time. I recommend testing the set up with 10 simulations, and run 1000 if the set-up is correct (or 10000 if you are getting a coffee, or 100.000 if you are about accuracy to digits behind the decimal). Also, to make the results reproducible make sure to use set.seed (see ?set.seed).
 
 ## An Example
 
@@ -188,10 +187,10 @@ design_result <- ANOVA_design(string = "2b*2w",
                    r=0.8, 
                    labelnames = c("voice", "human", "robot", "emotion", "cheerful", "sad"))
 
+set.seed(1234)
 power_result <- ANOVA_power(design_result, 
                                  alpha = 0.05, 
-                                 nsims = nsims, 
-                                 seed = 1234)
+                                 nsims = nsims)
 
 ```
 
@@ -224,6 +223,7 @@ design_result <- ANOVA_design(string = string,
                               sd = sd, 
                               labelnames = labelnames)
 
+set.seed(5491)
 ANOVA_power(design_result, nsims = nsims)
 
 #Note we do not specify any correlation in the ANOVA_design function (default r = 0), nor do we specify an alpha in the ANOVA_power function (default is 0.05)
@@ -267,6 +267,7 @@ design_result <- ANOVA_design(string = string,
                    sd = sd, 
                    labelnames = labelnames)
 
+set.seed(38362)
 power_result <- ANOVA_power(design_result, nsims = nsims)
 ```
 
@@ -287,6 +288,7 @@ design_result <- ANOVA_design(string = string,
                    sd = sd, 
                    labelnames = labelnames)
 
+set.seed(79888)
 ANOVA_power(design_result, nsims = nsims)
 ```
 
@@ -379,6 +381,7 @@ design_result <- ANOVA_design(string = string,
                               r = r, 
                               labelnames = labelnames)
 
+set.seed(85918)
 ANOVA_power(design_result, nsims = nsims)
 ```
 
@@ -407,6 +410,7 @@ design_result <- ANOVA_design(string = string,
                               r = r, 
                               labelnames = labelnames)
 
+set.seed(24731)
 ANOVA_power(design_result, nsims = nsims)
 ```
 
@@ -468,6 +472,7 @@ design_result <- ANOVA_design(string = string,
                               r = r, 
                               labelnames = labelnames)
 
+set.seed(34532)
 ANOVA_power(design_result, nsims = nsims)
 
 ```
@@ -509,7 +514,7 @@ design_result <- ANOVA_design(string = string,
                               r = r, 
                               labelnames = labelnames)
 
-
+set.seed(28748)
 simulation_result <- ANOVA_power(design_result, nsims = nsims)
 
 ```
@@ -535,6 +540,7 @@ design_result <- ANOVA_design(string = string,
                               r = r, 
                               labelnames = labelnames)
 
+set.seed(14895)
 simulation_result <- ANOVA_power(design_result, nsims = nsims)
 ```
 
@@ -550,11 +556,13 @@ In the first case, we will only observe a main effect of voice, but in the other
 
 design_result_cross_80 <- ANOVA_design(string = "2b*2b", n = 80, mu = c(1, 0, 0, 1), sd = 2, labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"))
 
-power_result_cross_80 <- ANOVA_power(design_result_cross_80, alpha_level = 0.05, p_adjust = "none", nsims = nsims, seed = 2019, verbose = FALSE)
+set.seed(2019)
+power_result_cross_80 <- ANOVA_power(design_result_cross_80, alpha_level = 0.05, p_adjust = "none", nsims = nsims, verbose = FALSE)
 
 design_result_cross_40 <- ANOVA_design(string = "2b*2b", n = 40, mu = c(1, 0, 0, 1), sd = 2, labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"), plot = FALSE)
 
-power_result_cross_40 <- ANOVA_power(design_result_cross_40, alpha_level = 0.05, p_adjust = "none", nsims = nsims, seed = 2019, verbose = FALSE)
+set.seed(2019)
+power_result_cross_40 <- ANOVA_power(design_result_cross_40, alpha_level = 0.05, p_adjust = "none", nsims = nsims, verbose = FALSE)
 #Analytic solution
 power_twoway_between(design_result_cross_40)$power_A
 power_twoway_between(design_result_cross_40)$power_B
@@ -574,7 +582,8 @@ The key insight here is that not the sample size per condition, but the total sa
 
 ```{r sim-interaction-2, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 design_result_ordinal <- ANOVA_design(string = "2b*2b", n = 160, mu = c(1, 0, 0, 0), sd = 2, labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"))
-power_result_ordinal <- ANOVA_power(design_result_ordinal, alpha_level = 0.05, p_adjust = "none", seed = 2019, nsims = nsims)
+set.seed(2019)
+power_result_ordinal <- ANOVA_power(design_result_ordinal, alpha_level = 0.05, p_adjust = "none", nsims = nsims)
 
 #Analytic solution
 power_twoway_between(design_result_ordinal)$power_A
@@ -629,6 +638,7 @@ design_result <- ANOVA_design(string = string,
                    sd = sd, 
                    labelnames = labelnames)
 
+set.seed(9102)
 power_result <- ANOVA_power(design_result, alpha_level = 0.05, nsims = nsims)
 
 ```
@@ -686,7 +696,7 @@ design_result <- ANOVA_design(string = string,
                               sd = sd, 
                               r = r, 
                               labelnames = labelnames)
-
+set.seed(1992)
 simulation_result <- ANOVA_power(design_result, nsims = nsims)
 ```
 

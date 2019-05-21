@@ -5,7 +5,7 @@
 \title{Simulation function used to perform the simulation}
 \usage{
 ANOVA_power(design_result, alpha_level = 0.05, p_adjust = "none",
-  nsims = 1000, seed = NULL, verbose = TRUE)
+  nsims = 1000, verbose = TRUE)
 }
 \arguments{
 \item{design_result}{Output from the ANOVA_design function}
@@ -15,8 +15,6 @@ ANOVA_power(design_result, alpha_level = 0.05, p_adjust = "none",
 \item{p_adjust}{Correction for multiple comparisons}
 
 \item{nsims}{number of simulations to perform}
-
-\item{seed}{Set seed for reproducible results}
 
 \item{verbose}{Set to FALSE to not print results (default = TRUE)}
 }
