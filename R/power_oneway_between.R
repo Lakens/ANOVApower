@@ -44,7 +44,7 @@
 power_oneway_between <- function(design_result, alpha_level=0.05){
 
   #Error message if design other than 1-way between is input
-  if(length(design_result$design) != 1 | design_result$design != 0 ){
+  if(length(design_result$design_factors) != 1 | design_result$design_factors != 0 ){
     stop("Only one-way between designs allowed for this function")
   }
 
