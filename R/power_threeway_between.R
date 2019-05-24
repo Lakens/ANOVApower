@@ -126,7 +126,7 @@
 power_threeway_between <- function(design_result, alpha_level=0.05){
 
   #Error message if design other than 1-way between is input
-  if(length(design_result$design) != 3 | any(design_result$design != 0)){
+  if(length(design_result$design_factors) != 3 | any(design_result$design_factors != 0)){
     stop("Only three-way between designs allowed for this function")
   }
 
