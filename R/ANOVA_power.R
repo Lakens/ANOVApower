@@ -97,12 +97,22 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   }
 
   ###############
-  # 2. Read in Envirnoment Data ----
+  # 2. Read in Environment Data ----
   ###############
 
-  list2env(design_result, envir = environment())
+  string <- design_result$string #String used to specify the design
+  factornames <- design_result$factornames #Get factor names
+  n <- design_result$n
+  mu = design_result$mu # population means - should match up with the design
+  sd <- design_result$sd #population standard deviation (currently assumes equal variances)
+  r <- design_result$r # correlation between within factors (currently only 1 value can be entered)
+  factors <- design_result$factors
+  design <- design_result$design
+  sigmatrix <- design_result$sigmatrix
+  dataframe <- design_result$dataframe
+  design_list <- design_result$design_list
 
-  ###############
+    ###############
   # 3. Specify factors for formula ----
   ###############
 
