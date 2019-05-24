@@ -46,7 +46,7 @@
 power_oneway_within <- function(design_result, alpha_level=0.05){
 
   #Error message if design other than 1-way within is input
-  if(length(design_result$design) != 1  | design_result$design != 1){
+  if(length(design_result$design_factors) != 1  | design_result$design_factors != 1){
     stop("Only one-way within designs allowed for this function")
   }
 
