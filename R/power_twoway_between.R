@@ -69,7 +69,7 @@
 power_twoway_between <- function(design_result, alpha_level=0.05){
 
   #Error message if design other than 1-way between is input
-  if(any(design_result$design != 0) | length(design_result$design) != 2 ){
+  if(any(design_result$design_factors != 0) | length(design_result$design_factors) != 2 ){
     stop("Only two-way between designs allowed for this function")
   }
 
