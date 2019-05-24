@@ -1,5 +1,5 @@
 #' Design function used to specify the parameters used in the simulation
-#' @param string String specifying the ANOVA design.
+#' @param design String specifying the ANOVA design.
 #' @param n Sample size in each condition
 #' @param mu Vector specifying mean for each condition
 #' @param sd standard deviation for all conditions
@@ -13,7 +13,7 @@
 #' ## 40 participants (who do all conditions), and standard deviation of 2
 #' ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
 #' ## 'voice', with names for levels of "cheerful", "sad", and "human", "robot"
-#' ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0), sd = 2, r = 0.8,
+#' ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0), sd = 2, r = 0.8,
 #'       labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"))
 #' @section References:
 #' too be added
@@ -27,11 +27,11 @@
 #' @export
 #'
 
-ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRUE){
+ANOVA_design <- function(design, n, mu, sd, r = 0, labelnames = NULL, plot = TRUE){
 
 #Check String for an acceptable digits and factor (w or b)
-  if (grepl("^(\\d{1,3}(w|b)\\*){0,2}\\d{1,3}(w|b)$", string, ignore.case = FALSE, perl = TRUE) == FALSE) {
-    stop("Problem in the string argument: must input number of levels as integer (2-999) and factor-type (between or within) as lower case b (between) or w (within)")
+  if (grepl("^(\\d{1,3}(w|b)\\*){0,2}\\d{1,3}(w|b)$", design, ignore.case = FALSE, perl = TRUE) == FALSE) {
+    stop("Problem in the design argument: must input number of levels as integer (2-999) and factor-type (between or within) as lower case b (between) or w (within)")
   }
 
 #Ensure sd is greater than 0
@@ -51,7 +51,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
 
   #If labelnames are not provided, they are generated.
   #Store factor levels (used many times in the script, calculate once)
-  factor_levels <- as.numeric(strsplit(string, "\\D+")[[1]])
+  factor_levels <- as.numeric(strsplit(design, "\\D+")[[1]])
 
   if (is.null(labelnames)) {
     for(i1 in 1:length(factor_levels)){
@@ -63,7 +63,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
   }
 
   if (length(labelnames) != length(factor_levels) + sum(factor_levels)) {
-    stop("Design (string) does not match the length of the labelnames")
+    stop("Variable 'design' does not match the length of the labelnames")
   }
 
   ###############
@@ -111,8 +111,8 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
   if(factors == 3){factornames <- c(factornames1,factornames2,factornames3)}
 
   #Specify within/between factors in design: Factors that are within are 1, between 0
-  design <- strsplit(gsub("[^A-Za-z]","",string),"",fixed = TRUE)[[1]]
-  design <- as.numeric(design == "w") #if within design, set value to 1, otherwise to 0
+  design_factors <- strsplit(gsub("[^A-Za-z]","",design),"",fixed = TRUE)[[1]]
+  design_factors <- as.numeric(design_factors == "w") #if within design, set value to 1, otherwise to 0
 
   #Specify design list (similar as below)
   xxx <- data.frame(matrix(NA, nrow = prod(factor_levels), ncol = 0))
@@ -230,9 +230,9 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
   for(i1 in 1:length(design_list)){
     design_list_split <- unlist(strsplit(design_list[i1],"_"))
     #current_factor <- design_list_split[c(2,4,6)[1:length(design)]] #this creates a string of 2, 2,4 or 2,4,6 depending on the length of the design for below
-    for(i2 in 1:length(design)){
+    for(i2 in 1:length(design_factors)){
       #We set each number that is within to a wildcard, so that all within participant factors are matched
-      if(design[i2]==1){design_list_split[i2] <- "\\w+"}
+      if(design_factors[i2]==1){design_list_split[i2] <- "\\w+"}
     }
     sigmatrix[i1,]<-as.numeric(grepl(paste0(design_list_split, collapse="_"), design_list)) # compare factors that match with current factor, given wildcard, save list to sigmatrix
   }
@@ -282,12 +282,12 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
   #Create subject column
   subject <- 1:n #Set subject to 1 to the number of subjects collected
 
-  for(j2 in length(design):1){ #for each factor in the design, from last to first
+  for(j2 in length(design_factors):1){ #for each factor in the design, from last to first
     #if w: repeat current string as often as the levels in the current factor (e.g., 3)
     #id b: repeat current string + max of current subject
-    if(design[j2] == 1){subject <- rep(subject,factor_levels[j2])}
+    if(design_factors[j2] == 1){subject <- rep(subject,factor_levels[j2])}
     subject_length <- length(subject) #store current length - to append to string of this length below
-    if(design[j2] == 0){
+    if(design_factors[j2] == 0){
       for(j3 in 2:factor_levels[j2]){
         subject <- append(subject,subject[1:subject_length]+max(subject))
       }
@@ -311,25 +311,25 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
   ###############
   # 5. Specify factors for formula ----
   ###############
-  if(factors == 1 & sum(design) == 1){frml1 <- as.formula(paste("y ~ ",factornames[1]," + Error(subject/",factornames[1],")",sep=""))}
-  if(factors == 1 & sum(design) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1]," + Error(1 | subject)",sep=""))}
+  if(factors == 1 & sum(design_factors) == 1){frml1 <- as.formula(paste("y ~ ",factornames[1]," + Error(subject/",factornames[1],")",sep=""))}
+  if(factors == 1 & sum(design_factors) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1]," + Error(1 | subject)",sep=""))}
 
   if(factors == 2){
-    if(sum(design) == 2){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[1],"*",factornames[2],")"))}
-    if(sum(design) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"  + Error(1 | subject)"))}
-    if(all(design == c(1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[1],")"))}
-    if(all(design == c(0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[2],")"))}
+    if(sum(design_factors) == 2){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[1],"*",factornames[2],")"))}
+    if(sum(design_factors) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"  + Error(1 | subject)"))}
+    if(all(design_factors == c(1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[1],")"))}
+    if(all(design_factors == c(0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2]," + Error(subject/",factornames[2],")"))}
   }
 
   if(factors == 3){
-    if(sum(design) == 3){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[2],"*",factornames[3],")"))}
-    if(sum(design) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(1 | subject)"))}
-    if(all(design == c(1, 0, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],")"))}
-    if(all(design == c(0, 1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[2],")"))}
-    if(all(design == c(0, 0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[3],")"))}
-    if(all(design == c(1, 1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[2],")"))}
-    if(all(design == c(0, 1, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[2],"*",factornames[3],")"))}
-    if(all(design == c(1, 0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[3],")"))}
+    if(sum(design_factors) == 3){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[2],"*",factornames[3],")"))}
+    if(sum(design_factors) == 0){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(1 | subject)"))}
+    if(all(design_factors == c(1, 0, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],")"))}
+    if(all(design_factors == c(0, 1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[2],")"))}
+    if(all(design_factors == c(0, 0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[3],")"))}
+    if(all(design_factors == c(1, 1, 0)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[2],")"))}
+    if(all(design_factors == c(0, 1, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[2],"*",factornames[3],")"))}
+    if(all(design_factors == c(1, 0, 1)) == TRUE){frml1 <- as.formula(paste("y ~ ",factornames[1],"*",factornames[2],"*",factornames[3]," + Error(subject/",factornames[1],"*",factornames[3],")"))}
   }
 
   #Specify second formula used for plotting
@@ -409,7 +409,7 @@ ANOVA_design <- function(string, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
                  n = n,
                  cor_mat = cor_mat,
                  sigmatrix = sigmatrix,
-                 string = string,
+                 design_factors = design_factors,
                  labelnames = labelnameslist,
                  factornames = factornames,
                  meansplot = meansplot2))

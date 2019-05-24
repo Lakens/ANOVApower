@@ -30,7 +30,7 @@ to be added
 ## 40 participants (woh do all conditions), and standard deviation of 2
 ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
 ## 'voice', with names for levels of "cheerful", "sad", amd "human", "robot"
-design_result <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
+design_result <- ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
       sd = 2, r = 0.8, labelnames = c("condition", "cheerful",
       "sad", "voice", "human", "robot"))
  set.seed(252)

@@ -11,7 +11,7 @@
 #' ## 40 participants (woh do all conditions), and standard deviation of 2
 #' ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
 #' ## 'voice', with names for levels of "cheerful", "sad", amd "human", "robot"
-#' design_result <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
+#' design_result <- ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
 #'       sd = 2, r = 0.8, labelnames = c("condition", "cheerful",
 #'       "sad", "voice", "human", "robot"))
 #' power_result <- ANOVA_power(design_result, alpha_level = 0.05,
@@ -37,18 +37,7 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
     stop("The number of repetitions in simulation must be at least 10; suggested at least 1000 for accurate results")
   }
 
-
-  # #Require necessary packages
-  # requireNamespace(mvtnorm, quietly = TRUE)
-  # requireNamespace(MASS, quietly = TRUE)
-  # requireNamespace(afex, quietly = TRUE)
-  # requireNamespace(emmeans, quietly = TRUE)
-  # requireNamespace(ggplot2, quietly = TRUE)
-  # requireNamespace(gridExtra, quietly = TRUE)
-  # requireNamespace(reshape2, quietly = TRUE)
-
   options(scipen = 999) # 'turn off' scientific notation
-
 
   effect_size_d <- function(x, y, conf.level = 0.95){
     sd1 <- sd(x) #standard deviation of measurement 1
@@ -58,12 +47,9 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
     df <- n1 + n2 - 2
     m_diff <- mean(y - x)
     sd_pooled <- (sqrt((((n1 - 1) * ((sd1^2))) + (n2 - 1) * ((sd2^2))) / ((n1 + n2 - 2)))) #pooled standard deviation
-    #Calculate Hedges' correction. Uses gamma, unless this yields a nan (huge n), then uses approximation
-    j <- (1 - 3/(4 * (n1 + n2 - 2) - 1))
+    j <- (1 - 3/(4 * (n1 + n2 - 2) - 1)) #Calculate Hedges' correction.
     t_value <- m_diff / sqrt(sd_pooled^2 / n1 + sd_pooled^2 / n2)
-    p_value = 2*pt(-abs(t_value),
-                   df = df)
-
+    p_value = 2*pt(-abs(t_value), df = df)
     d <- m_diff / sd_pooled #Cohen's d
     d_unb <- d*j #Hedges g, of unbiased d
 
@@ -87,8 +73,7 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
 
     #get the t-value for the CI
     t_value <- m_diff / (s_diff / sqrt(N))
-    p_value = 2 * pt(-abs(t_value),
-                     df = df)
+    p_value = 2 * pt(-abs(t_value), df = df)
 
     #Cohen's d_z, using s_diff as standardizer
     d_z <- t_value / sqrt(N)
@@ -111,38 +96,11 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
     stop("alpha_level must be less than 1 and greater than zero")
   }
 
-  string <- design_result$string #String used to specify the design
-
-  factornames <- design_result$factornames #Get factor names
-
-  # Specify the parameters you expect in your data (sd, r for within measures)
-
-  #number of subjects you will collect (for each between factor)
-  # For an all within design, this is total N
-  # For a 2b*2b design, this is the number of people in each between condition, so in each of 2*2 = 4 groups
-
-  n <- design_result$n
-
-  # specify population means for each condition (so 2 values for 2b design, 6 for 2b*3w, etc)
-  mu = design_result$mu # population means - should match up with the design
-
-  sd <- design_result$sd #population standard deviation (currently assumes equal variances)
-  r <- design_result$r # correlation between within factors (currently only 1 value can be entered)
-
   ###############
-  # 2. Create Dataframe based on Design ----
+  # 2. Read in Envirnoment Data ----
   ###############
 
-  #Count number of factors in design
-  factors <- design_result$factors
-
-  #Specify within/between factors in design: Factors that are within are 1, between 0
-  design <- design_result$design
-
-  sigmatrix <- design_result$sigmatrix
-
-  #Create the data frame. This will be re-used in the simulation (y variable is overwritten) but created only once to save time in the simulation
-  dataframe <- design_result$dataframe
+  list2env(design_result, envir = environment())
 
   ###############
   # 3. Specify factors for formula ----
@@ -155,19 +113,14 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
                                          data = dataframe, include_aov = FALSE,
                                          anova_table = list(es = "pes", p_adjust_method = p_adjust)) }) #This reports PES not GES
 
-
-  ############################################
-  #Specify factors for formula ###############
-  design_list <- design_result$design_list
-
   ###############
   # 5. Set up dataframe for simulation results
   ###############
 
   #How many possible planned comparisons are there (to store p and es)
   possible_pc <- (((prod(
-    as.numeric(strsplit(string, "\\D+")[[1]])
-  )) ^ 2) - prod(as.numeric(strsplit(string, "\\D+")[[1]])))/2
+    as.numeric(strsplit(design, "\\D+")[[1]])
+  )) ^ 2) - prod(as.numeric(strsplit(design, "\\D+")[[1]])))/2
 
   #create empty dataframe to store simulation results
   #number of columns for ANOVA results and planned comparisons, times 2 (p-values and effect sizes)
@@ -311,8 +264,6 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
 
   main_results <- data.frame(power,es)
   names(main_results) = c("power","effect_size")
-
-
 
   #Data summary for pairwise comparisons
   power_paired = as.data.frame(apply(as.matrix(sim_data[(2 * (2 ^ factors - 1) + 1):(2 * (2 ^ factors - 1) + possible_pc)]), 2,

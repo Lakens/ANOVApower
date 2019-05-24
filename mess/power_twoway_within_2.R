@@ -52,7 +52,7 @@
 #' @importFrom stats pf qf
 #' @export
 #'
-power_twoway_within <- function(design_result, alpha_level = 0.05){
+power_twoway_within_2 <- function(design_result, alpha_level = 0.05){
 
   mu <- design_result$mu
   m_A <- length(design_result$labelnames[[1]])

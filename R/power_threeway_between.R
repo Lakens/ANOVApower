@@ -113,7 +113,7 @@
 #' mean_mat = matrix of the means
 #'
 #' @examples
-#' design_result <- ANOVA_design(string = "2b*2b*2b", n = 40,
+#' design_result <- ANOVA_design(design = "2b*2b*2b", n = 40,
 #'       mu = c(1, 0, 1, 0, 0, 1, 1, 0), sd = 2,
 #'       labelnames = c("condition", "cheerful", "sad",
 #'       "voice", "human", "robot", "color", "green", "red"))

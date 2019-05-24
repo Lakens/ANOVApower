@@ -34,7 +34,7 @@
 #' ## 40 participants (who do all conditions), and standard deviation of 2
 #' ## with a mean pattern of 1, 0, 1, conditions labeled 'condition' and
 #' ## 'voice', with names for levels of "cheerful", "neutral", "sad".
-#' design_result <- ANOVA_design(string = "3w", n = 40, r = 0.8,
+#' design_result <- ANOVA_design(design = "3w", n = 40, r = 0.8,
 #'       mu = c(1, 0, 1), sd = 2,
 #'       labelnames = c("condition", "cheerful", "neutral", "sad"))
 #' power_result <- power_oneway_within(design_result, alpha_level = 0.05)
@@ -50,7 +50,7 @@ power_oneway_within <- function(design_result, alpha_level=0.05){
     stop("Only one-way within designs allowed for this function")
   }
 
-  factor_levels <- as.numeric(strsplit(design_result$string, "\\D+")[[1]])
+  factor_levels <- as.numeric(strsplit(design_result$design, "\\D+")[[1]])
   mean_mat <- t(matrix(design_result$mu,
                        nrow = length(design_result$mu)/design_result$factors,
                        ncol = design_result$factors)) #Create a mean matrix

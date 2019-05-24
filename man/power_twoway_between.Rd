@@ -75,7 +75,7 @@ too be added
 }
 
 \examples{
-design_result <- ANOVA_design(string = "2b*2b", n = 40, mu = c(1, 0, 1, 0),
+design_result <- ANOVA_design(design = "2b*2b", n = 40, mu = c(1, 0, 1, 0),
      sd = 2, labelnames = c("condition", "cheerful", "sad",
      "voice", "human", "robot"))
 power_result <- power_twoway_between(design_result, alpha_level = 0.05)

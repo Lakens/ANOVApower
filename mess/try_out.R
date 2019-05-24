@@ -98,10 +98,21 @@ power_res$power_A
 power_res$power_B
 power_res$power_AB
 
-design_result <- ANOVA_design(string = "2w*2w", n = 20, mu = c(4, 2, 1, 2), sd = 2, r = 0.6^2, labelnames = labelnames)
-power_res <- power_2x2_within(design_result)
+design_result <- ANOVA_design(string = "2w*2w", n = 20, mu = c(1, 0, 0, 0), sd = 2, r = 0.6)
+power_res <- power_twoway_within_2(design_result)
 power_res$mean_mat
 power_res$power_A
 power_res$power_B
 power_res$power_AB
-power_result <- ANOVA_power(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 30000)
+power_result <- ANOVA_power(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 1000)
+
+ANOVA_exact(design_result)
+
+library(ANOVApower)
+design_result <- ANOVA_design(design = "2w*2w", n = 20, mu = c(1, 0, 0, 0), sd = 2, r = 0.6)
+ANOVA_exact(design_result)
+power_res <- power_2x2_within(design_result)
+power_res$power_A
+power_res$power_B
+power_res$power_AB
+ANOVA_power(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 100)

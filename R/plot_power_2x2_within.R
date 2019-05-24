@@ -3,7 +3,7 @@
 #' @param max_n Maximum sample size in power curve.
 #' @return Returns plots with power curves for the effects, and a dataframe with the summary data.
 #' @examples
-#' design_result <- ANOVA_design(string = "2w*2w",
+#' design_result <- ANOVA_design(design = "2w*2w",
 #'                              n = 20,
 #'                              mu = c(0,0,0,0.3),
 #'                              sd = 1,
@@ -22,7 +22,7 @@
 #'
 plot_power_2x2_within <- function(design_result, max_n){
 
-  string = design_result$string
+  design = design_result$design
   mu = design_result$mu
   sd <- design_result$sd
   r <- design_result$r
@@ -35,7 +35,7 @@ plot_power_2x2_within <- function(design_result, max_n){
   power_AB <- numeric(length(n_vec))
 
   for (i in 1:length(n_vec)){
-    design_result <- ANOVA_design(string = string,
+    design_result <- ANOVA_design(design = design,
                                   n = n_vec[i],
                                   mu = mu,
                                   sd = sd,

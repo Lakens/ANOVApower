@@ -61,7 +61,7 @@ to be added
 }
 
 \examples{
-design_result <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
+design_result <- ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
      sd = 2, r = 0.8, labelnames = c("condition", "cheerful", "sad",
      "voice", "human", "robot"))
 power_result <- power_2x2_within(design_result)

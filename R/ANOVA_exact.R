@@ -9,7 +9,7 @@
 #' ## 40 participants (woh do all conditions), and standard deviation of 2
 #' ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
 #' ## 'voice', with names for levels of "cheerful", "sad", amd "human", "robot"
-#' design_result <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
+#' design_result <- ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
 #'       sd = 2, r = 0.8, labelnames = c("condition", "cheerful",
 #'       "sad", "voice", "human", "robot"))
 #'  set.seed(252)
@@ -32,9 +32,7 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   #  stop("p_adjust must be of an acceptable adjustment method: see ?p.adjust")
   #}
 
-
   options(scipen = 999) # 'turn off' scientific notation
-
 
   effect_size_d <- function(x, y, conf.level = 0.95){
     sd1 <- sd(x) #standard deviation of measurement 1
@@ -44,11 +42,9 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
     df <- n1 + n2 - 2
     m_diff <- mean(y - x)
     sd_pooled <- (sqrt((((n1 - 1) * ((sd1^2))) + (n2 - 1) * ((sd2^2))) / ((n1 + n2 - 2)))) #pooled standard deviation
-    #Calculate Hedges' correction. Uses gamma, unless this yields a nan (huge n), then uses approximation
-    j <- (1 - 3/(4 * (n1 + n2 - 2) - 1))
+    j <- (1 - 3/(4 * (n1 + n2 - 2) - 1))  #Calculate Hedges' correction.
     t_value <- m_diff / sqrt(sd_pooled^2 / n1 + sd_pooled^2 / n2)
-    p_value = 2*pt(-abs(t_value),
-                   df = df)
+    p_value = 2*pt(-abs(t_value), df = df)
     #Calculate power
     power = power.t.test(
       n = n1,
@@ -83,8 +79,7 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
 
     #get the t-value for the CI
     t_value <- m_diff / (s_diff / sqrt(N))
-    p_value = 2 * pt(-abs(t_value),
-                     df = df)
+    p_value = 2 * pt(-abs(t_value), df = df)
 
     power = power.t.test(
       n = N,
@@ -117,47 +112,13 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
     stop("alpha_level must be less than 1 and greater than zero")
   }
 
-
-  labelnameslist <- design_result$labelnames
-
-
-  factor_levels <- as.numeric(strsplit(design_result$string, "\\D+")[[1]])
-
-
-  string <- design_result$string #String used to specify the design
-
-  factornames <- design_result$factornames #Get factor names
-
-  # Specify the parameters you expect in your data (sd, r for within measures)
-
-  #number of subjects you will collect (for each between factor)
-  # For an all within design, this is total N
-  # For a 2b*2b design, this is the number of people in each between condition, so in each of 2*2 = 4 groups
-
-  n <- design_result$n
+  #Read in all variables from the design_result object
+  list2env(design_result, envir = environment())
 
   #Errors with very small sample size; issue with mvrnorm function from MASS package
   if(n < 8){
     stop("ANOVA_exact cannot handle small sample sizes (n < 8) at this time; please pass this design_result to the ANOVA_power function to simulate power")
   }
-
-  # specify population means for each condition (so 2 values for 2b design, 6 for 2b*3w, etc)
-  mu = design_result$mu # population means - should match up with the design
-
-  sd <- design_result$sd #population standard deviation (currently assumes equal variances)
-  r <- design_result$r # correlation between within factors (currently only 1 value can be entered)
-
-
-  #Count number of factors in design
-  factors <- design_result$factors
-
-  #Specify within/between factors in design: Factors that are within are 1, between 0
-  design <- design_result$design
-
-  sigmatrix <- design_result$sigmatrix
-
-  #Create the data frame. This will be re-used in the simulation (y variable is overwritten) but created only once to save time in the simulation
-  dataframe <- design_result$dataframe
 
   ###############
   #Specify factors for formula ----
@@ -170,19 +131,14 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
                                           data = dataframe, include_aov = FALSE,
                                           anova_table = list(es = "pes")) }) #This reports PES not GES
 
-
-  ############################################
-  #Specify factors for formula ###############
-  design_list <- design_result$design_list
-
   ###############
   # Set up dataframe for storing empirical results
   ###############
 
   #How many possible planned comparisons are there (to store p and es)
   possible_pc <- (((prod(
-    as.numeric(strsplit(string, "\\D+")[[1]])
-  )) ^ 2) - prod(as.numeric(strsplit(string, "\\D+")[[1]])))/2
+    as.numeric(strsplit(design, "\\D+")[[1]])
+  )) ^ 2) - prod(as.numeric(strsplit(design, "\\D+")[[1]])))/2
 
   #create empty dataframe to store simulation results
   #number of columns for ANOVA results and planned comparisons, times 2 (p-values and effect sizes)
@@ -248,18 +204,18 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
 
   #Add additional statistics
   #Create dataframe from afex results
-  Anova_tab <- as.data.frame(aov_result$anova_table)
-  colnames(Anova_tab) <- c("num_Df", "den_Df", "MSE", "F", "pes", "p")
+  anova_table <- as.data.frame(aov_result$anova_table)
+  colnames(anova_table) <- c("num_Df", "den_Df", "MSE", "F", "pes", "p")
 
   #Calculate cohen's f
-  Anova_tab$f2 <- (Anova_tab$pes/(1-Anova_tab$pes))
+  anova_table$f2 <- (anova_table$pes/(1-anova_table$pes))
   #Calculate noncentrality
-  Anova_tab$lambda <- Anova_tab$f2*Anova_tab$den_Df
+  anova_table$lambda <- anova_table$f2*anova_table$den_Df
 
-  minusalpha<- 1-alpha_level
-  Anova_tab$Ft <- qf(minusalpha, Anova_tab$num_Df, Anova_tab$den_Df)
+  #minusalpha<- 1-alpha_level
+  anova_table$Ft <- qf((1-alpha_level), anova_table$num_Df, anova_table$den_Df)
   #Calculate power
-  Anova_tab$power <- (1-pf(Anova_tab$Ft, Anova_tab$num_Df, Anova_tab$den_Df, Anova_tab$lambda))*100
+  anova_table$power <- (1-pf(anova_table$Ft, anova_table$num_Df, anova_table$den_Df, anova_table$lambda))*100
 
   for (j in 1:possible_pc) {
     x <- dataframe$y[which(dataframe$cond == paired_tests[1,j])]
@@ -283,11 +239,10 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   ###############
   #Sumary of power and effect sizes of main effects and contrasts ----
   ###############
-  main_results <- round(data.frame(Anova_tab$power, Anova_tab$pes, Anova_tab$f2, Anova_tab$lambda), round_dig)
-  rownames(main_results) <- rownames(Anova_tab)
+  main_results <- round(data.frame(anova_table$power, anova_table$pes, anova_table$f2, anova_table$lambda), round_dig)
+  rownames(main_results) <- rownames(anova_table)
   colnames(main_results) <- c("power", "partial_eta_squared", "cohen_f", "non_centrality")
   main_results$power <- round(main_results$power, 2)
-
 
   #Data summary for pairwise comparisons
   power_paired = as.data.frame(apply(as.matrix(sim_data[(2 * (2 ^ factors - 1) + 1):(2 * (2 ^ factors - 1) + possible_pc)]), 2,
@@ -298,7 +253,6 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
 
   pc_results <- data.frame(power_paired, es_paired)
   names(pc_results) = c("power","effect_size")
-
 
   #Create plot
 
@@ -338,7 +292,4 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
                  pc_results = pc_results,
                  alpha_level = alpha_level,
                  plot = meansplot2))
-
-
-
 }

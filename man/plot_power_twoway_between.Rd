@@ -23,7 +23,7 @@ too be added
 }
 
 \examples{
-design_result <- ANOVA_design(string = "2b*2b",
+design_result <- ANOVA_design(design = "2b*2b",
                              n = 20,
                              mu = c(0,0,0,0.3),
                              sd = 1,

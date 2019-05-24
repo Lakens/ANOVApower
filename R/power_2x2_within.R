@@ -43,7 +43,7 @@
 #' mean_mat = matrix of the means
 #'
 #' @examples
-#' design_result <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
+#' design_result <- ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
 #'      sd = 2, r = 0.8, labelnames = c("condition", "cheerful", "sad",
 #'      "voice", "human", "robot"))
 #' power_result <- power_2x2_within(design_result)
@@ -55,7 +55,7 @@
 power_2x2_within <- function(design_result, alpha_level = 0.05){
 
   #Error message if design other than 2x2 within is input
-  if(length(design_result$design) != 2 | any(design_result$design != 1) ){
+  if(length(design_result$design_factors) != 2 | any(design_result$design_factors != 1) ){
     stop("Only 2x2 within designs allowed for this function")
   }
 

@@ -33,7 +33,7 @@
 #' ## 40 participants (woh do all conditions), and standard deviation of 2
 #' ## with a mean pattern of 1, 0, 1, conditions labeled 'condition'
 #' ## with names for levels of "cheerful", "neutral", "sad"
-#' design_result <- ANOVA_design(string = "3b", n = 40, mu = c(1, 0, 1),
+#' design_result <- ANOVA_design(design = "3b", n = 40, mu = c(1, 0, 1),
 #'       sd = 2, labelnames = c("condition", "cheerful", "neutral", "sad"))
 #' power_result <- power_oneway_between(design_result, alpha_level = 0.05)
 #' @section References:

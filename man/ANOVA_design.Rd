@@ -4,11 +4,11 @@
 \alias{ANOVA_design}
 \title{Design function used to specify the parameters used in the simulation}
 \usage{
-ANOVA_design(string, n, mu, sd, r = 0, labelnames = NULL,
+ANOVA_design(design, n, mu, sd, r = 0, labelnames = NULL,
   plot = TRUE)
 }
 \arguments{
-\item{string}{String specifying the ANOVA design.}
+\item{design}{String specifying the ANOVA design.}
 
 \item{n}{Sample size in each condition}
 
@@ -39,6 +39,6 @@ too be added
 ## 40 participants (who do all conditions), and standard deviation of 2
 ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
 ## 'voice', with names for levels of "cheerful", "sad", and "human", "robot"
-ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0), sd = 2, r = 0.8,
+ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0), sd = 2, r = 0.8,
       labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"))
 }
