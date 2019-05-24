@@ -3,12 +3,12 @@ context("test-power_oneway_between")
 # error messages
 test_that("error messages", {
 
-  string <- "2b"
+  design <- "2b"
   n <- 100
   mu <- c(24, 26.2)
   sd <- 6.4
 
-  design_result <- ANOVA_design(string = string,
+  design_result <- ANOVA_design(design = design,
                                 n = n,
                                 mu = mu,
                                 sd = sd,
@@ -22,7 +22,7 @@ test_that("error messages", {
 #Function check
 test_that("2b and 3b", {
 
-  design_result1 <- ANOVA_design(string = "2b",
+  design_result1 <- ANOVA_design(design = "2b",
                                 n = 100,
                                 mu = c(24,26.2),
                                 sd = 6.4, plot = FALSE)
@@ -35,7 +35,7 @@ test_that("2b and 3b", {
                           alternative="two.sided")$power,
                tolerance = .001) #example from validation files
 
-  design_result2 <- ANOVA_design(string = "3b",
+  design_result2 <- ANOVA_design(design = "3b",
                                  n = 50,
                                  mu = c(24, 26.2, 26.6),
                                  sd = 6.4, plot = FALSE)

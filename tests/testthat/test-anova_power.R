@@ -4,7 +4,7 @@ context("test-anova_power")
 
 # error messages
 test_that("error messages", {
-  design <- ANOVA_design(string = "2w", n = 10, mu = c(0, 0), sd = 1, plot = FALSE)
+  design <- ANOVA_design(design = "2w", n = 10, mu = c(0, 0), sd = 1, plot = FALSE)
 
   expect_error(ANOVA_power(), "argument \"design_result\" is missing, with no default")
   expect_error(ANOVA_power(design, nsims = -1), "The number of repetitions in simulation must be at least 10; suggested at least 1000 for accurate results")
@@ -14,7 +14,7 @@ test_that("error messages", {
 
 #2w
 test_that("2w", {
-  design <- ANOVA_design(string = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
+  design <- ANOVA_design(design = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
 
   set.seed(8675309)
 
@@ -42,7 +42,7 @@ test_that("2w", {
 
 # 2w*2w
 test_that("2w*2w", {
-  design <- ANOVA_design(string = "2w*2w", n = 40, mu = c(1, 0, 1, 0), sd = 2, r = 0.8,
+  design <- ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0), sd = 2, r = 0.8,
                          labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"),
                          plot = FALSE)
 
@@ -80,7 +80,7 @@ test_that("2w*2w", {
 test_that("2w long", {
   skip_on_cran()
 
-  design <- ANOVA_design(string = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
+  design <- ANOVA_design(design = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
 
   set.seed(8675309)
 
@@ -102,7 +102,7 @@ test_that("2w long", {
 #2b long simulation
 test_that("2b long", {
   skip_on_cran()
-design <- ANOVA_design(string = "2b",
+design <- ANOVA_design(design = "2b",
                        n = 100,
                        mu = c(24, 26.2),
                        sd = 6.4,
@@ -129,7 +129,7 @@ expect_equal(pe$main_results$power/100, p2, tolerance = .02)
 #3b long simulation
 test_that("3b long", {
   skip_on_cran()
-  design <- ANOVA_design(string = "3b",
+  design <- ANOVA_design(design = "3b",
                          n = 50,
                          mu = c(24, 26.2, 26.6),
                          sd = 6.4,
@@ -173,7 +173,7 @@ test_that("3 way between long", {
   labelnames <- c("Size", "b", "s", "Color", "g", "r",
                   "Load", "pres", "abs") #
 
-  design <- ANOVA_design(string = "2b*2b*2b",
+  design <- ANOVA_design(design = "2b*2b*2b",
                          n = 80,
                          mu = c(2, 2, 6, 1, 6, 6, 1, 8),
                          sd = 10,
@@ -211,11 +211,11 @@ test_that("2x2 mixed long", {
   n <- 23
   sd <- 1
   r <- 0.5
-  string = "2w*2b"
+  design = "2w*2b"
   alpha_level <- 0.05
   p_adjust = "none"
   labelnames = c("age", "old", "young", "color", "blue", "red")
-  design <- ANOVA_design(string = string,
+  design <- ANOVA_design(design = design,
                          n = n,
                          mu = mu,
                          sd = sd,

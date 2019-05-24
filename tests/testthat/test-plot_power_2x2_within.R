@@ -5,7 +5,7 @@ context("test-plot_power_2x2_within")
 # error messages
 test_that("error messages", {
 
-  design_result1 <- ANOVA_design(string = "2w*2w",
+  design_result1 <- ANOVA_design(design = "2w*2w",
                                  n = 100,
                                  mu = c(24,26,25,27),
                                  sd = 6.4,

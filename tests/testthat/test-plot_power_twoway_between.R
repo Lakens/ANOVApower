@@ -5,7 +5,7 @@ context("test-plot_power_twoway_between")
 # error messages
 test_that("error messages", {
 
-  design_result1 <- ANOVA_design(string = "2b*2b",
+  design_result1 <- ANOVA_design(design = "2b*2b",
                                  n = 100,
                                  mu = c(24,26,25,27),
                                  sd = 6.4,

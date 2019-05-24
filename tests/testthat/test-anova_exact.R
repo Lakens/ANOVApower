@@ -4,7 +4,7 @@ context("test-anova_exact")
 
 # error messages
 test_that("error messages", {
-  design <- ANOVA_design(string = "2b*4w",
+  design <- ANOVA_design(design = "2b*4w",
                          n = 7,
                          mu = c(0,0,0,0,0.5,0.5,0.5,0.5),
                          sd = 1,
@@ -20,7 +20,7 @@ test_that("error messages", {
 
 #2w null
 test_that("2w null", {
-  design <- ANOVA_design(string = "2w", n = 100, mu = c(0, 0), sd = 1, r = 0.5, plot = FALSE)
+  design <- ANOVA_design(design = "2w", n = 100, mu = c(0, 0), sd = 1, r = 0.5, plot = FALSE)
   p <- ANOVA_exact(design, verbose = FALSE)
 
   expect_equal(p$main_results$power, 5)
@@ -30,7 +30,7 @@ test_that("2w null", {
 
 #2b null
 test_that("2b null", {
-  design <- ANOVA_design(string = "2b", n = 100, mu = c(0, 0), sd = 1, plot = FALSE)
+  design <- ANOVA_design(design = "2b", n = 100, mu = c(0, 0), sd = 1, plot = FALSE)
   p <- ANOVA_exact(design, verbose = FALSE)
 
   expect_equal(p$main_results$power, 5)
@@ -41,7 +41,7 @@ test_that("2b null", {
 
 #2w moderate effect
 test_that("2w", {
-  design <- ANOVA_design(string = "2w", n = 21, mu = c(0, 0.65), sd = 1, r = 0.55, plot = FALSE)
+  design <- ANOVA_design(design = "2w", n = 21, mu = c(0, 0.65), sd = 1, r = 0.55, plot = FALSE)
   p <- ANOVA_exact(design, verbose = FALSE)
 
   expect_equal(p$main_results$power, 84.7, tolerance = 0.1)
@@ -51,7 +51,7 @@ test_that("2w", {
 
 #2b moderate effect
 test_that("2b", {
-  design <- ANOVA_design(string = "2b", n = 22, mu = c(0, 0.65), sd = 1, plot = FALSE)
+  design <- ANOVA_design(design = "2b", n = 22, mu = c(0, 0.65), sd = 1, plot = FALSE)
   p <- ANOVA_exact(design, verbose = FALSE)
 
   expect_equal(p$main_results$power, 55.8, tolerance = 0.1)
@@ -61,7 +61,7 @@ test_that("2b", {
 
 #3w null
 test_that("3w null", {
-  design <- ANOVA_design(string = "3w", n = 100,
+  design <- ANOVA_design(design = "3w", n = 100,
                          mu = c(0, 0, 0), sd = 1, r = 0.5, plot = FALSE)
   p <- ANOVA_exact(design, verbose = FALSE)
 
@@ -72,7 +72,7 @@ test_that("3w null", {
 
 #4b low power
 test_that("4b", {
-  design <- ANOVA_design(string = "4b", n = 15,
+  design <- ANOVA_design(design = "4b", n = 15,
                          mu = c(0, 0.25, 0.33, 0.44),
                          sd = 1, plot = FALSE)
 
@@ -87,7 +87,7 @@ test_that("4b", {
 
 #2x4 repeated measures
 test_that("2b*4w", {
-  design <- ANOVA_design(string = "2b*4w", n = 8,
+  design <- ANOVA_design(design = "2b*4w", n = 8,
                          mu = c(0.0, 0.0, 0.0, 0.0,
                                 0.5, 0.5, 0.5, 0.5),
                          r = 0.71,
@@ -105,7 +105,7 @@ test_that("2b*4w", {
 #3w
 test_that("3w", {
 
-  design <- ANOVA_design(string = "3w", n = 20,
+  design <- ANOVA_design(design = "3w", n = 20,
                          mu = c(-0.3061862, 0.0000000, 0.3061862),
                          r = 0.8,
                          sd = 1, plot = FALSE)

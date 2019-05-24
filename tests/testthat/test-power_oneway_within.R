@@ -21,9 +21,9 @@ test_that("2w and 3w", {
 
   mu <- mu_from_ES(K = K, ES = ES)
 
-  string = paste(K,"w",sep="")
+  design = paste(K,"w",sep="")
 
-  design_result1 <- ANOVA_design(string = string,
+  design_result1 <- ANOVA_design(design = design,
                                  n = n,
                                  mu = mu,
                                  sd = sd,
@@ -45,9 +45,9 @@ test_that("2w and 3w", {
   f2 <- f^2
   ES <- f2/(f2+1)
   mu <- mu_from_ES(K = K, ES = ES)
-  string = paste(K,"w",sep = "")
+  design = paste(K,"w",sep = "")
 
-  design_result2 <- ANOVA_design(string = string,
+  design_result2 <- ANOVA_design(design = design,
                                  n = n,
                                  mu = mu,
                                  sd = sd,

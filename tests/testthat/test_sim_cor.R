@@ -3,7 +3,7 @@ library(ANOVApower)
 library(reshape2)
 
 test_that("simulated correlations fit expected values", {
-  design_result <- ANOVA_design(string = "2b*2w",
+  design_result <- ANOVA_design(design = "2b*2w",
                                 n = 1000000,
                                 mu = c(0, 0, 0, 0),
                                 sd = 2,

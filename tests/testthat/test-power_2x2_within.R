@@ -6,7 +6,7 @@ test_that("error messages", {
 
   expect_error(power_2x2_within(), "argument \"design_result\" is missing, with no default" )
 
-  design_result1 <- ANOVA_design(string = "2b*2b*2w",
+  design_result1 <- ANOVA_design(design = "2b*2b*2w",
                                 n = 100,
                                 mu = c(24, 26.2, 27, 28,
                                        24, 26.2, 27, 28),
@@ -17,7 +17,7 @@ test_that("error messages", {
 
   expect_error(power_2x2_within(design_result1), "Only 2x2 within designs allowed for this function")
 
-  design_result2 <- ANOVA_design(string = "2w*2b",
+  design_result2 <- ANOVA_design(design = "2w*2b",
                                 n = 100,
                                 mu = c(24, 26.2, 27, 28),
                                 sd = 6.4,
@@ -33,7 +33,7 @@ test_that("error messages", {
 
   #From ANOVA_power_simulation validation file https://github.com/Lakens/ANOVA_power_simulation/blob/master/validation_files/3.2_validation_power_within_within_2x2_Amsel.md
 
- # design_result <- ANOVA_design(string = "2w*2w",
+ # design_result <- ANOVA_design(design = "2w*2w",
   #                              n = 25,
    #                             mu = c(700, 670, 670, 700),
     #                            sd = 150,
