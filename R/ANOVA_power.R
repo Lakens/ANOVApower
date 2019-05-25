@@ -278,20 +278,20 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
 
   #Main effects and interactions from the ANOVA
   power = as.data.frame(apply(as.matrix(sim_data[(1:(2 ^ factors - 1))]), 2,
-                              function(x) round(mean(ifelse(x < alpha_level, 1, 0) * 100),round_dig)))
+                              function(x) mean(ifelse(x < alpha_level, 1, 0) * 100)))
 
   es = as.data.frame(apply(as.matrix(sim_data[((2^factors):(2 * (2 ^ factors - 1)))]), 2,
-                           function(x) round(median(x),round_dig)))
+                           function(x) mean(x)))
 
   main_results <- data.frame(power,es)
   names(main_results) = c("power","effect_size")
 
   #Data summary for pairwise comparisons
   power_paired = as.data.frame(apply(as.matrix(sim_data[(2 * (2 ^ factors - 1) + 1):(2 * (2 ^ factors - 1) + possible_pc)]), 2,
-                                     function(x) round(mean(ifelse(x < alpha_level, 1, 0) * 100),round_dig)))
+                                     function(x) mean(ifelse(x < alpha_level, 1, 0) * 100)))
 
   es_paired = as.data.frame(apply(as.matrix(sim_data[(2 * (2 ^ factors - 1) + possible_pc + 1):(2*(2 ^ factors - 1) + 2 * possible_pc)]), 2,
-                                  function(x) round(mean(x),round_dig)))
+                                  function(x) mean(x)))
 
   pc_results <- data.frame(power_paired, es_paired)
   names(pc_results) = c("power","effect_size")

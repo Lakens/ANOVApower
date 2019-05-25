@@ -24,13 +24,13 @@ test_that("2w", {
   comp <- list()
   comp$main_results <- data.frame(
     power = c(68),
-    effect_size = c(0.0563),
+    effect_size = c(0.06720467),
     row.names = c("anova_a")
   )
 
   comp$pc_results <- data.frame(
     power = c(68),
-    effect_size = c(0.2518),
+    effect_size = c(0.2517969),
     row.names = c("p_a_a1_a_a2")
   )
 
@@ -53,13 +53,13 @@ test_that("2w*2w", {
   comp <- list()
   comp$main_results <- data.frame(
     power = c(6, 100, 6),
-    effect_size = c(0.0125, 0.5402, 0.0144),
+    effect_size = c(0.02226488, 0.54204284, 0.02393630),
     row.names = c("anova_condition", "anova_voice", "anova_condition:voice")
   )
 
   comp$pc_results <- data.frame(
     power = c(100, 4, 100, 100, 4, 100),
-    effect_size = c(-0.7665, 0.0095, -0.7500, 0.8036, 0.0244, -0.7950),
+    effect_size = c(-0.766498975, 0.009485897, -0.750025879, 0.803554808, 0.024381057, -0.794985335),
     row.names = c(
       "p_condition_cheerful_voice_human_condition_cheerful_voice_robot",
       "p_condition_cheerful_voice_human_condition_sad_voice_human",
