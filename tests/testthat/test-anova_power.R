@@ -15,11 +15,8 @@ test_that("error messages", {
 #2w
 test_that("2w", {
   design <- ANOVA_design(design = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
-
   set.seed(8675309)
-
   p <- ANOVA_power(design, nsims = 50, verbose = FALSE)
-
 
   comp <- list()
   comp$main_results <- data.frame(
@@ -82,7 +79,7 @@ test_that("2w long", {
 
   design <- ANOVA_design(design = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
 
-  set.seed(8675309)
+  set.seed(86753)
 
   system.time(
     p <- ANOVA_power(design, nsims = 1000, verbose = FALSE)
@@ -177,7 +174,8 @@ test_that("3 way between long", {
                          n = 80,
                          mu = c(2, 2, 6, 1, 6, 6, 1, 8),
                          sd = 10,
-                         labelnames = labelnames)
+                         labelnames = labelnames,
+                         plot = FALSE)
 
   set.seed(8224)
 
