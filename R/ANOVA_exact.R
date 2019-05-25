@@ -216,7 +216,7 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   colnames(anova_table) <- c("num_Df", "den_Df", "MSE", "F", "pes", "p")
 
   #Calculate cohen's f
-  anova_table$f2 <- (anova_table$pes/(1-anova_table$pes))
+  anova_table$f2 <- sqrt(anova_table$pes/(1-anova_table$pes))
   #Calculate noncentrality
   anova_table$lambda <- anova_table$f2*anova_table$den_Df
 
