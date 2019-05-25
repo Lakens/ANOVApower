@@ -216,7 +216,7 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   colnames(anova_table) <- c("num_Df", "den_Df", "MSE", "F", "pes", "p")
 
   #Calculate cohen's f
-  anova_table$f2 <- sqrt(anova_table$pes/(1-anova_table$pes))
+  anova_table$f2 <- anova_table$pes/(1-anova_table$pes)
   #Calculate noncentrality
   anova_table$lambda <- anova_table$f2*anova_table$den_Df
 
@@ -247,7 +247,7 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   ###############
   #Sumary of power and effect sizes of main effects and contrasts ----
   ###############
-  main_results <- round(data.frame(anova_table$power, anova_table$pes, anova_table$f2, anova_table$lambda), round_dig)
+  main_results <- round(data.frame(anova_table$power, anova_table$pes, sqrt(anova_table$f2), anova_table$lambda), round_dig)
   rownames(main_results) <- rownames(anova_table)
   colnames(main_results) <- c("power", "partial_eta_squared", "cohen_f", "non_centrality")
   main_results$power <- round(main_results$power, 2)
