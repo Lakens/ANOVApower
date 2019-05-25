@@ -99,8 +99,6 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
     ))
   }
 
-  round_dig <- 4 #Set digits to which you want to round the output.
-
   if (missing(alpha_level)) {
     alpha_level <- 0.05
   }
@@ -305,11 +303,11 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
     # The section below should be blocked out when in Shiny
     cat("Power and Effect sizes for ANOVA tests")
     cat("\n")
-    print(main_results)
+    print(main_results, digits = 4)
     cat("\n")
     cat("Power and Effect sizes for contrasts")
     cat("\n")
-    print(pc_results)
+    print(pc_results, digits = 4)
   }
 
   # Return results in list()
