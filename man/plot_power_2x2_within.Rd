@@ -34,5 +34,5 @@ design_result <- ANOVA_design(design = "2w*2w",
                              labelnames = c("condition", "cheerful", "sad",
      "voice", "human", "robot"))
 
-plot_power_2x2_within(design_result, max_n = 100)
+plot_power_2x2_within(design_result, max_n = 30)
 }

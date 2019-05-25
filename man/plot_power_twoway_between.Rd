@@ -30,5 +30,5 @@ design_result <- ANOVA_design(design = "2b*2b",
                              labelnames = c("condition", "cheerful", "sad",
      "voice", "human", "robot"))
 
-plot_power_twoway_between(design_result, max_n = 100)
+plot_power_twoway_between(design_result, max_n = 30)
 }

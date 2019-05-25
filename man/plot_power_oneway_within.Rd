@@ -31,5 +31,5 @@ design_result <- ANOVA_design(design = "3w",
                              labelnames = c("condition",
                              "cheerful", "neutral", "sad"))
 
-plot_power_oneway_within(design_result, max_n = 100)
+plot_power_oneway_within(design_result, max_n = 30)
 }
