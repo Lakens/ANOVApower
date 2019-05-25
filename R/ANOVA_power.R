@@ -27,7 +27,7 @@
 #' @export
 #'
 
-ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 1000, verbose = TRUE){
+ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", nsims = 1000, seed = NULL, verbose = TRUE){
 
   if (is.element(p_adjust, c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")) == FALSE ) {
     stop("p_adjust must be of an acceptable adjustment method: see ?p.adjust")
@@ -37,7 +37,19 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
     stop("The number of repetitions in simulation must be at least 10; suggested at least 1000 for accurate results")
   }
 
-  options(scipen = 999) # 'turn off' scientific notation
+  #Set seed, from sim_design function by Lisa DeBruine
+  if (!is.null(seed)) {
+    # reinstate system seed after simulation
+    sysSeed <- .GlobalEnv$.Random.seed
+    on.exit({
+      if (!is.null(sysSeed)) {
+        .GlobalEnv$.Random.seed <- sysSeed
+      } else {
+        rm(".Random.seed", envir = .GlobalEnv)
+      }
+    })
+    set.seed(seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  }
 
   effect_size_d <- function(x, y, conf.level = 0.95){
     sd1 <- sd(x) #standard deviation of measurement 1
