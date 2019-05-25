@@ -32,8 +32,6 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   #  stop("p_adjust must be of an acceptable adjustment method: see ?p.adjust")
   #}
 
-  options(scipen = 999) # 'turn off' scientific notation
-
   effect_size_d <- function(x, y, conf.level = 0.95){
     sd1 <- sd(x) #standard deviation of measurement 1
     sd2 <- sd(y) #standard deviation of measurement 2
