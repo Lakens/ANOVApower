@@ -5,7 +5,7 @@
 \title{Simulation function used to perform the simulation}
 \usage{
 ANOVA_power(design_result, alpha_level = 0.05, p_adjust = "none",
-  nsims = 1000, verbose = TRUE)
+  nsims = 1000, seed = NULL, verbose = TRUE)
 }
 \arguments{
 \item{design_result}{Output from the ANOVA_design function}
@@ -15,6 +15,8 @@ ANOVA_power(design_result, alpha_level = 0.05, p_adjust = "none",
 \item{p_adjust}{Correction for multiple comparisons}
 
 \item{nsims}{number of simulations to perform}
+
+\item{seed}{Set seed for reproducible results}
 
 \item{verbose}{Set to FALSE to not print results (default = TRUE)}
 }
@@ -32,12 +34,12 @@ too be added
 \examples{
 ## Set up a within design with 2 factors, each with 2 levels,
 ## with correlation between observations of 0.8,
-## 40 participants (woh do all conditions), and standard deviation of 2
+## 40 participants (who do all conditions), and standard deviation of 2
 ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
 ## 'voice', with names for levels of "cheerful", "sad", amd "human", "robot"
 design_result <- ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
       sd = 2, r = 0.8, labelnames = c("condition", "cheerful",
       "sad", "voice", "human", "robot"))
 power_result <- ANOVA_power(design_result, alpha_level = 0.05,
-      p_adjust = "none", nsims = 10)
+      p_adjust = "none", seed = 2019, nsims = 10)
 }

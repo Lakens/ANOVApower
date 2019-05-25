@@ -14,7 +14,7 @@
 #'                              labelnames = c("condition", "cheerful", "sad",
 #'      "voice", "human", "robot"))
 #'
-#' plot_power_2x2_within(design_result, max_n = 100)
+#' plot_power_2x2_within(design_result, max_n = 30)
 #' @section References:
 #' to be added
 #' @import ggplot2

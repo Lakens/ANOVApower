@@ -10,7 +10,7 @@
 #'                              labelnames = c("condition", "cheerful", "sad",
 #'      "voice", "human", "robot"))
 #'
-#' plot_power_twoway_between(design_result, max_n = 100)
+#' plot_power_twoway_between(design_result, max_n = 30)
 #' @section References:
 #' too be added
 #' @import ggplot2

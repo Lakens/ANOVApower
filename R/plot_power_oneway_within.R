@@ -11,7 +11,7 @@
 #'                              labelnames = c("condition",
 #'                              "cheerful", "neutral", "sad"))
 #'
-#' plot_power_oneway_within(design_result, max_n = 100)
+#' plot_power_oneway_within(design_result, max_n = 30)
 #' @section References:
 #' too be added
 #' @import ggplot2
