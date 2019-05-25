@@ -3,19 +3,20 @@
 #' @param alpha_level Alpha level used to determine statistical significance
 #' @param p_adjust Correction for multiple comparisons
 #' @param nsims number of simulations to perform
+#' @param seed Set seed for reproducible results
 #' @param verbose Set to FALSE to not print results (default = TRUE)
 #' @return Returns dataframe with simulation data (p-values and effect sizes), anova results and simple effect results, plots of p-value distribution, p_adjust = p_adjust, nsims, and alpha_level.
 #' @examples
 #' ## Set up a within design with 2 factors, each with 2 levels,
 #' ## with correlation between observations of 0.8,
-#' ## 40 participants (woh do all conditions), and standard deviation of 2
+#' ## 40 participants (who do all conditions), and standard deviation of 2
 #' ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
 #' ## 'voice', with names for levels of "cheerful", "sad", amd "human", "robot"
 #' design_result <- ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
 #'       sd = 2, r = 0.8, labelnames = c("condition", "cheerful",
 #'       "sad", "voice", "human", "robot"))
 #' power_result <- ANOVA_power(design_result, alpha_level = 0.05,
-#'       p_adjust = "none", nsims = 10)
+#'       p_adjust = "none", seed = 2019, nsims = 10)
 #' @section References:
 #' too be added
 #' @importFrom stats pnorm pt qnorm qt as.formula median p.adjust
@@ -112,14 +113,14 @@ ANOVA_power <- function(design_result, alpha_level = 0.05, p_adjust = "none", ns
   # 2. Read in Environment Data ----
   ###############
 
-  string <- design_result$string #String used to specify the design
+  design <- design_result$design #String used to specify the design
   factornames <- design_result$factornames #Get factor names
   n <- design_result$n
   mu = design_result$mu # population means - should match up with the design
   sd <- design_result$sd #population standard deviation (currently assumes equal variances)
   r <- design_result$r # correlation between within factors (currently only 1 value can be entered)
   factors <- design_result$factors
-  design <- design_result$design
+  design_factors <- design_result$design_factors
   sigmatrix <- design_result$sigmatrix
   dataframe <- design_result$dataframe
   design_list <- design_result$design_list
