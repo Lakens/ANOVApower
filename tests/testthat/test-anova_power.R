@@ -15,24 +15,24 @@ test_that("error messages", {
 #2w
 test_that("2w", {
   design <- ANOVA_design(design = "2w", n = 100, mu = c(0, 0.25), sd = 1, r = 0.5, plot = FALSE)
-  set.seed(8675309)
+  set.seed(86753)
   p <- ANOVA_power(design, nsims = 50, verbose = FALSE)
 
   comp <- list()
   comp$main_results <- data.frame(
-    power = c(68),
-    effect_size = c(0.06720467),
+    power = c(70),
+    effect_size = c(0.06913817),
     row.names = c("anova_a")
   )
 
   comp$pc_results <- data.frame(
-    power = c(68),
-    effect_size = c(0.2517969),
+    power = c(70),
+    effect_size = c(0.2545745),
     row.names = c("p_a_a1_a_a2")
   )
 
-    expect_equal(p$main_results, comp$main_results)
-    expect_equal(p$pc_results, comp$pc_results)
+    expect_equal(p$main_results, comp$main_results, tolerance = .02)
+    expect_equal(p$pc_results, comp$pc_results, tolerance = .02)
     expect_equal(p$p_adjust, "none")
     expect_equal(p$nsims, 50)
 })

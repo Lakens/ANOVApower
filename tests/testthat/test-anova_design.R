@@ -191,7 +191,7 @@ test_that("2b set r & labels", {
 # 4w
 test_that("4w", {
   d <- ANOVA_design("4w", n = 100, mu = 1:4, sd = 1:4, r = 0.5,
-                    labelnames = c("W", "W1", "W2", "W3", "W4"))
+                    labelnames = c("W", "W1", "W2", "W3", "W4"), plot = FALSE)
   expect_equal(d$design_factors, 1)
   expect_equal(d$design_list, c("W1", "W2", "W3", "W4"))
   expect_equal(d$factors, 1)
@@ -221,7 +221,7 @@ test_that("4w", {
 # 4b
 test_that("4b", {
   d <- ANOVA_design("4b", n = 100, mu = 1:4, sd = 1:4, r = 0.5,
-                    labelnames = c("B", "B1", "B2", "B3", "B4"))
+                    labelnames = c("B", "B1", "B2", "B3", "B4"), plot = FALSE)
   expect_equal(d$design_factors, 0)
   expect_equal(d$design_list, c("B1", "B2", "B3", "B4"))
   expect_equal(d$factors, 1)
@@ -252,7 +252,7 @@ test_that("4b", {
 # 2w*2b----
 test_that("2w*2b", {
   d <- ANOVA_design("2w*2b", n = 100, mu = 1:4, sd = 1, r = 0.5,
-                    labelnames = c("W", "W1", "W2", "B", "B1", "B2"))
+                    labelnames = c("W", "W1", "W2", "B", "B1", "B2"), plot = FALSE)
   expect_equal(d$design_factors, c(1, 0))
   expect_equal(d$design_list, c("W1_B1", "W1_B2", "W2_B1", "W2_B2"))
   expect_equal(d$factors, 2)
@@ -281,7 +281,7 @@ test_that("2w*2b", {
 # 2b*2w----
 test_that("2b*2w", {
   d <- ANOVA_design("2b*2w", n = 100, mu = 1:4, sd = 1, r = 0.5,
-                    labelnames = c("B", "B1", "B2", "W", "W1", "W2"))
+                    labelnames = c("B", "B1", "B2", "W", "W1", "W2"), plot = FALSE)
   expect_equal(d$design_factors, c(0, 1))
   expect_equal(d$design_list, c("B1_W1", "B1_W2", "B2_W1", "B2_W2"))
   expect_equal(d$factors, 2)
@@ -309,7 +309,7 @@ test_that("2b*2w", {
 
 #Add three way designs
 test_that("2b*2b*2b", {
-  d <- ANOVA_design("2b*2b*2b", n = 100, mu = 1:8, sd = 1)
+  d <- ANOVA_design("2b*2b*2b", n = 100, mu = 1:8, sd = 1, plot = FALSE)
   expect_equal(d$design_factors, c(0, 0, 0))
   expect_equal(d$design_list, c("a1_b1_c1", "a1_b1_c2", "a1_b2_c1", "a1_b2_c2", "a2_b1_c1", "a2_b1_c2", "a2_b2_c1", "a2_b2_c2"))
   expect_equal(d$factors, 3)
@@ -339,7 +339,7 @@ test_that("2b*2b*2b", {
 })
 
 test_that("2w*2w*2w", {
-  d <- ANOVA_design("2w*2w*2w", n = 100, mu = 1:8, sd = 2, r = .65)
+  d <- ANOVA_design("2w*2w*2w", n = 100, mu = 1:8, sd = 2, r = .65, plot = FALSE)
   expect_equal(d$design_factors, c(1, 1, 1))
   expect_equal(d$design_list, c("a1_b1_c1", "a1_b1_c2", "a1_b2_c1", "a1_b2_c2", "a2_b1_c1", "a2_b1_c2", "a2_b2_c1", "a2_b2_c2"))
   expect_equal(d$factors, 3)
@@ -383,7 +383,7 @@ test_that("2w*2w*2w", {
 })
 
 test_that("2b*2b*2w", {
-  d <- ANOVA_design("2b*2b*2w", n = 100, mu = 1:8, sd = 1.5, r = .68)
+  d <- ANOVA_design("2b*2b*2w", n = 100, mu = 1:8, sd = 1.5, r = .68, plot = FALSE)
   expect_equal(d$design_factors, c(0, 0, 1))
   expect_equal(d$design_list, c("a1_b1_c1", "a1_b1_c2", "a1_b2_c1", "a1_b2_c2", "a2_b1_c1", "a2_b1_c2", "a2_b2_c1", "a2_b2_c2"))
   expect_equal(d$factors, 3)
