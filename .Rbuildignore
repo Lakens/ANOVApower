@@ -9,3 +9,5 @@
 ^.travis.yml$
 ^\.Rproj\.user$
 ^codecov\.yml$
+^vignettes/sim_data$
+^vignettes/screenshots$
