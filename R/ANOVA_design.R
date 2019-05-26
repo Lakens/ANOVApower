@@ -6,7 +6,7 @@
 #' @param r Correlation between dependent variables (single value or matrix)
 #' @param labelnames Optional vector to specifying factor and condition names (recommended, if not used factors and levels are indicated by letters and numbers)
 #' @param plot Should means plot be printed (defaults to TRUE)
-#' @return Returns Single data-frame with simulated data, design, design list, factor names, formulas for ANOVA, means, sd, correlation, sample size per condition, correlation matrix, covariance matrix, design string, label names, factor names, meansplot
+#' @return Returns Single data-frame with simulated data, design, design list, factor names, formulas for ANOVA, means, sd, correlation, sample size per condition, correlation matrix, covariance matrix, design string, labelnames, labelnameslist, factor names, meansplot
 #' @examples
 #' ## Set up a within design with 2 factors, each with 2 levels,
 #' ## with correlation between observations of 0.8,
@@ -410,7 +410,8 @@ ANOVA_design <- function(design, n, mu, sd, r = 0, labelnames = NULL, plot = TRU
                  cor_mat = cor_mat,
                  sigmatrix = sigmatrix,
                  design_factors = design_factors,
-                 labelnames = labelnameslist,
+                 labelnames = labelnames,
+                 labelnameslist = labelnameslist,
                  factornames = factornames,
                  meansplot = meansplot2))
 }
