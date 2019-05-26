@@ -1,4 +1,4 @@
-#' Create an empirical data set from the design; alternative to simulation
+#' Simulates on exact empirical data set from the design to calculate power
 #' @param design_result Output from the ANOVA_design function
 #' @param alpha_level Alpha level used to determine statistical significance
 #' @param verbose Set to FALSE to not print results (default = TRUE)
@@ -6,7 +6,7 @@
 #' @examples
 #' ## Set up a within design with 2 factors, each with 2 levels,
 #' ## with correlation between observations of 0.8,
-#' ## 40 participants (woh do all conditions), and standard deviation of 2
+#' ## 40 participants (who do all conditions), and standard deviation of 2
 #' ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
 #' ## 'voice', with names for levels of "cheerful", "sad", amd "human", "robot"
 #' design_result <- ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
@@ -26,11 +26,6 @@
 #'
 
 ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
-
-  #Unable to find way to reasonbly provide p-adjustment
-  #if (is.element(p_adjust, c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")) == FALSE ) {
-  #  stop("p_adjust must be of an acceptable adjustment method: see ?p.adjust")
-  #}
 
   effect_size_d <- function(x, y, conf.level = 0.95){
     sd1 <- sd(x) #standard deviation of measurement 1
@@ -185,23 +180,6 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
       empirical = TRUE
     )))$value
   })
-
-
-  ####
-  #Trying to change the factor labels in the dataframe; currently breaks the dataframe.
-  ####
-  #dataframe <- design_result$dataframe[,1:3]
-  #
-  #for(j in 1:factors){
-  #  dataframe <- cbind(dataframe, as.factor(unlist(rep(as.list(paste(labelnameslist[[j]],
-  #                                                                   sep="_")),
-  #                                                     each = n*prod(factor_levels)/prod(factor_levels[1:j]),
-  #                                                     times = prod(factor_levels)/prod(factor_levels[j:factors])
-  #  ))))
-  #}
-
-  #Rename the factor variables that were just created
-  #names(dataframe)[4:(3+factors)] <- factornames[1:factors]
 
   # We perform the ANOVA using AFEX
   #Can be set to NICE to speed up, but required data grabbing from output the change.
