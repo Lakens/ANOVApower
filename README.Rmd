@@ -16,11 +16,12 @@ output:
     
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-nsims = 10000
+nsims = 100000
 library(ANOVApower)
 ```
 
-[![Build Status](https://travis-ci.com/Lakens/ANOVApower.png)](https://travis-ci.com/Lakens/ANOVApower)
+[![Development Status](https://travis-ci.com/Lakens/ANOVApower.png)](https://travis-ci.com/Lakens/ANOVApower)
+[![](vignettes/screenshots/maturing.svg)
 
 # An Introduction to ANOVApower
 

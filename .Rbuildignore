@@ -8,3 +8,4 @@
 ^ANOVApower\.Rproj$
 ^.travis.yml$
 ^\.Rproj\.user$
+^codecov\.yml$

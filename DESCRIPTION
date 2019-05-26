@@ -29,6 +29,7 @@ Suggests:
     rmarkdown,
     pwr,
     testthat,
-    dplyr
+    dplyr,
+    covr
 VignetteBuilder: 
     knitr
