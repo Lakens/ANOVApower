@@ -1,6 +1,6 @@
 ---
 title: "Introduction to ANOVApower"
-author: "Daniel Lakens"
+author: "Daniel Lakens & Aaron C. Caldwell"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -17,7 +17,8 @@ nsims = 100
 
 # An Introduction to ANOVApower
 
-The goal of ANOVApower is to easily simulate ANOVA designs and calculate the observed power.
+The goal of ANOVApower is to easily simulate ANOVA designs and empirically calculate power using a simulation approach. 
+This app is intended to be utilized for prospective (a priori) power analysis.
 
 ## Installation
 
@@ -28,14 +29,14 @@ devtools::install_github("Lakens/ANOVApower")
 ```
 ## ANOVA_design function
 
-Currently the ANOVA_design function can create designs up three factors, for both within, between, and mixed designs. It requires the following input: design, n, mu, sd, r, and labelnames. 
+Currently the ANOVA_design function can create designs up three factors, for both within, between, and mixed designs. It requires the following input: design, n, mu, sd, r, and optionally allows you to set labelnames. 
 
 1. design: string that specifies the design (see below).
 2. n: the sample size for each between subject condition.
 3. mu: a vector with the means for each condition.
 4. sd: the population standard deviation. Assumes homogeneity of variances (only one standard deviation can be provided).
 5. r: the correlation for within designs (or 0 for between designs).
-6. labelnames: This is a vector of words that indicate factor names and level names (see below).
+6. labelnames: This is an optonal vector of words that indicates factor names and level names (see below).
 7. A final optional setting is to specify if you want to output a plot or not (plot = TRUE or FALSE)
 
 ### Specifying the design using 'design'
@@ -67,7 +68,7 @@ If your design has just one factor, just enter the means in the same order as th
 7. a2 b2 c1
 8. a2 b2 c2
 
-So if you enter the means 1, 2, 3, 4, 5, 6, 7, 8 the first 4 means correspond to level 1 of factor 1, the second 4 means correspond to level 2 of factor 1. Within the first 4 means, the first 2 correspond to level 1 of factor 2, and within those 2 means, the first corresponds to level 1 of factor 3. 
+So if you enter the means 1, 2, 3, 4, 5, 6, 7, 8 the first 4 means correspond to level 1 of factor 1, the second 4 means correspond to level 2 of factor 1. Within the first 4 means, the first 2 correspond to level 1 of factor 2, and within those 2 means, the first corresponds to level 1 of factor 3.
 
 The plot below visualizes means from 1 to 8 being entered in a vector: mu = c(1, 2, 3, 4, 5, 6, 7, 8) so you can see how the basic ordering works.
 
@@ -76,24 +77,32 @@ design_result <- ANOVA_design(design = "2b*2w*2b",
                               n = 10, 
                               mu = c(1, 2, 3, 4, 5, 6, 7, 8), 
                               sd = 1, 
-                              r = 0.9, 
-                              labelnames = c("factor1", "a1", "a2", "factor2", "b1", "b2", "factor3", "c1", "c2"))
+                              r = 0.9)
 
 ```
 
 ### Specifying label names
 
-To make sure the plots and tables with simulation results are easy to interpret, it really helps to name all factors and levels. You can enter the labels in the 'labelnames' variable.
+To make sure the plots and tables with simulation results are easy to interpret, it really helps to name all factors and levels. You can enter the labels in the 'labelnames' variable. You can also choose not to specify names. Then all factors are indicated by letters (a, b, c) and all levels by numbers (a1, a2, a3).
 
 For the 2x3 design we have been using as an example, where there are 2 factors (condition and time of measurement), the first with 2 levels (placebo vs. medicine) and the second with three levels (time1, time2, and time3) we would enter the labels as follows: 
 
 c("condition", "placebo", "medicine", "time", "time1", "time2", "time3")
 
-As you can see, you follow the order of the design (2b*3w), and first write the FACTOR label (condition) followed by the levels of that factor (placebo and medicine). Then you write the second factor name (time) followed by the three labels for each level (time1, time2, time3). **Do not use spaces in the names (so not "time 1" but "time1" or "time_1").**
+As you can see, you follow the order of the design (2b*3w), and first write the **FACTOR** label (condition) followed by the levels of that factor (placebo and medicine). Then you write the second factor name (time) followed by the three labels for each **LEVEL** (time1, time2, time3). **Do not use spaces in the names (so not "time 1" but "time1" or "time_1").**
+
+Some examples:
+
+1. One within factor (time with 2 levels), 2w: 
+  + `c("time", "morning", "evening")`
+2. Two between factors (time and group, each with 2 levels), 2b*2b: 
+  + `c("time", "morning", "evening", "group", "control", "experimental")`
+3. Two between factors (time and group, first with 4 levels, second with 2 levels), 4b*2b: 
+  + `c("time", "morning", "afternoon" ,"evening", "night", "group", "control", "experimental")`
 
 ### Specifying the correlation 
 
-Depending on whether factors are manipulated within or between, variables are correlated, or not. You can set the correlation for within-participant factors. You can either assume all factors have the same correlation (e.g., r = 0.7), or enter the correlations for each pair of observations seperately by specifying a correlation matrix.
+Depending on whether factors are manipulated within or between, variables are correlated, or not. You can set the correlation for within-participant factors. You can either assume all factors have the same correlation (e.g., r = 0.7), or enter the correlations for each pair of observations separately by specifying a correlation matrix.
 
 #### Specifying the correlation matrix.
 
@@ -140,9 +149,7 @@ design_result <- ANOVA_design(design = "2w*2w",
                               n = 80,
                               mu = c(1.1, 1.2, 1.3, 1.4),
                               sd = 2,
-                              r <- c(0.91, 0.92, 0.93, 0.94, 0.95, 0.96),
-                              labelnames = c("A", "a1", "a2", "B", "b1", "b2"))
-
+                              r <- c(0.91, 0.92, 0.93, 0.94, 0.95, 0.96))
 ```
 
 We can check the correlation matrix by asking for it from the design_result object to check if it was entered the way we wanted:
@@ -151,27 +158,46 @@ We can check the correlation matrix by asking for it from the design_result obje
 design_result$cor_mat
 ```
 
+Note that we did not specify the labelnames, and thus they are automatically created. 
+
 ### Specifying the sample size
 
-You can set the sample size **per condition** by setting a value for n. The assumption is that you will collect equal sample sizes in all conditions.
+You can set the sample size **per condition** by setting a value for n. The assumption is that you will collect equal sample sizes in all conditions [expanding ANOVApower to allow different sample sizes in each group is a planned future option].
 
 ### Specifying the standard deviation
 
-You can set the standard deviation by setting a value of sd. Note that there is always some uncertainty in which values you can expect in the study you are planning. It is therefore useful to perform sensitivity analyses (e.g., running the simulation with the expected standard deviation, but also with more conservative or even worst-case-scenario values).
+You can set the standard deviation by setting a value of sd. Currently ANOVApower only allows you to perform calculations under the assumption of homogeneity of variances (the standard deviation is the same across conditions). Note that there is always some uncertainty in which values you can expect in the study you are planning. It is therefore useful to perform sensitivity analyses (e.g., running the simulation with the expected standard deviation, but also with more conservative or even worst-case-scenario values).
+
+# Simulation-based power calculations
+
+There are two ways to calculate the statistical power of an ANOVA design based on simulations. The first is to repeatedly simulate data for each condition based on the means, sample size, standard deviation, and correlation, under specific statistical assumptions (i.e., normaly distributed data). The `ANOVA_power` function allows you to perform power analyses based on repeatedly simulating normaly distributed data. A second approach is to simulate a dataset that has *exactly* the desired properties - every cell of the design has n datapoints that have the desired mean and standard deviation, and correlation between groups (for a within design). By performing an ANOVA on this dataset, we can calculate the required statistics from the ANOVA result used to calculate the statistical power. The `ANOVA_exact` function allows you to calculate power based on this approach. The `ANOVA_power` function is a bit more flexible (e.g., we can use different ways to correct for multiple comparisons, or in future versions of the package allow you to simulate more realistic datasets that are not normally distributed), but the `ANOVA_exact` function is much faster (and takes seconds, instead of minutes or hours for a large number of simulations). 
 
 ## The ANOVA_power function
 
 The ANOVA_power function takes the result from the ANOVA_design function, and simulates data nsims times using a specified alpha level. As output, it provides a table for the ANOVA results, and the results for all independent comparisons.
 
-It requires the following input: ANOVA_design, alpha_level, p_adjust, nsims, and verbose. 
+It requires the following input: ANOVA_design, alpha_level, p_adjust, nsims, seed, and verbose. 
 
 1. design_result: Output from the ANOVA_design function saved as an object
 2. alpha_level: Alpha level used to determine statistical significance
 3. p_adjust: Correction for multiple comparisons using the [p.adjust](https://www.rdocumentation.org/packages/stats/versions/3.5.3/topics/p.adjust) function 
 4. nsims: number of simulations to perform
-5. verbose: Set to FALSE to not print results (default = TRUE)
+5. seed: Set seed for reproducible results
+6. verbose: Set to FALSE to not print results (default = TRUE)
 
-Simulations typically take some time. Larger numbers of simulations yield more accurate results, but also take a long time. I recommend testing the set up with 10 simulations, and run 1000 if the set-up is correct (or 10000 if you are getting a coffee, or 100.000 if you are about accuracy to digits behind the decimal). Also, to make the results reproducible make sure to use set.seed (see ?set.seed).
+Simulations typically take some time. Larger numbers of simulations yield more accurate results, but also take a long time. We recommend testing the set up with 100 simulations, and run 1000 if the set-up is correct (or 10000 if you are getting a coffee, or 100.000 if you are about accuracy to digits behind the decimal). 
+
+## The ANOVA_exact function
+
+The ANOVA_exact function takes the result from the ANOVA_design function, and simulates one dataset that exactly matches the desired properties (using the `mvrnorm` function from the `MASS` package, using the setting `empirical = TRUE`). This dataset is used to perform a single ANOVA, and the results are used to compute power (thanks to Chris Aberson for inspiring this approach).
+
+ANOVA_exact requires the following input: ANOVA_design, alpha_level, and verbose. 
+
+1. design_result: Output from the ANOVA_design function saved as an object
+2. alpha_level: Alpha level used to determine statistical significance
+3. verbose: Set to FALSE to not print results (default = TRUE)
+
+Compared to the ANOVA_power function, the ANOVA_exact approach is much faster (it requires simulating only a single dataset). Currently the only difference is that ANOVA_exact does not allow you to examine the consequences of correcting for multiple comparisons (there is no `p_adjust` option).
 
 ## An Example
 
@@ -187,23 +213,25 @@ design_result <- ANOVA_design(design = "2b*2w",
                    r=0.8, 
                    labelnames = c("voice", "human", "robot", "emotion", "cheerful", "sad"))
 
-set.seed(1234)
-power_result <- ANOVA_power(design_result, 
-                                 alpha = 0.05, 
-                                 nsims = nsims)
+# power_result_vig_1 <- ANOVA_power(design_result, 
+#                                   alpha = 0.05, 
+#                                   nsims = nsims, 
+#                                   seed = 1234)
+# saveRDS(power_result_vig_1, file = "sim_data/power_result_vig_1.rds")
+power_result_vig_1 <- readRDS(file = "sim_data/power_result_vig_1.rds")
 
 ```
 
-The result for the power simulation has two sections (which can be surpressed by setting verbose = FALSE). The first table provides power (from 0 to 100%) and effect sizes (partial eta-squared) for the ANOVA result. We see the results for the main effects of factor voice, emotion, and the voice*emotion interaction. 
+The result for the power simulation is printed, and has two sections (which can be surpressed by setting verbose = FALSE). The first table provides power (from 0 to 100%) and effect sizes (partial eta-squared) for the ANOVA result. We see the results for the main effects of factor voice, emotion, and the voice*emotion interaction. 
 
 The result for the power simulation reveal power is highest for the main effect of emotion. Remember that this is the within-subjects factor, and the means are highly correlated (0.8) - so we have high power for within comparisons. Power is lower for the interaction, and very low for the main effect of voice.
 
 An ANOVA is typically followed up with contrasts. A statistical hypothesis often predicts not just an interaction, but also the shape of an interaction. For example, when looking at the plot of our design above, we might be specifically interested in comparing the independent effect for the cheerful vs sad human voice assistant, and the difference for sad voice when they are robotic or human. The second table provides the power for *t*-tests for all comparisons, and the effect sizes (Cohen's d for between-subject contrasts, and Cohen's $d_z$ for within-subject contrasts, see [Lakens, 2013](https://www.frontiersin.org/articles/10.3389/fpsyg.2013.00863/full)).
 
-Power is relatively high for the differences between within-participant conditions, and power is very low for the minor differences among the three similar means (1.03, 0.98, 1.01). In addition to the two tables, the ANOVA_power function returns the raw simulation data (all p-values and effect sizes for each simulation, use simulation_result$sim_data) and a plot showing the *p*-value distributions for all tests in the ANOVA.
+Power is relatively high for the differences between within-participant conditions, and power is very low for the minor differences among the three similar means (1.03, 0.98, 1.01). In addition to the two tables, the ANOVA_power function returns the raw simulation data (all *p*-values and effect sizes for each simulation, see simulation_result$sim_data) and a plot showing the *p*-value distributions for all tests in the ANOVA.
 
 ```{r, fig.width=7, fig.height=4}
-power_result$plot1
+power_result_vig_1$plot1
 ```
 
 ## Power in a Two Group One-Way ANOVA
@@ -223,8 +251,10 @@ design_result <- ANOVA_design(design = design,
                               sd = sd, 
                               labelnames = labelnames)
 
-set.seed(5491)
-ANOVA_power(design_result, nsims = nsims)
+# power_result_vig_2 <- ANOVA_power(design_result, nsims = nsims, seed = 1234)
+# 
+# saveRDS(power_result_vig_2, file = "sim_data/power_result_vig_2.rds")
+power_result_vig_2 <- readRDS(file = "sim_data/power_result_vig_2.rds")
 
 #Note we do not specify any correlation in the ANOVA_design function (default r = 0), nor do we specify an alpha in the ANOVA_power function (default is 0.05)
 
@@ -251,29 +281,53 @@ pwr.anova.test(n = 100,
                sig.level = 0.05)$power
 ```
 
-This analysis tells us that running the study with 100 participants in each condition is too likely to *not* yield a significant test result, even if our expected pattern of differences is true.  This is not optimal. 
+This analysis tells us that running the study with 100 participants in each condition is too likely to *not* yield a significant test result, even if our expected pattern of differences is true. This is clearly not optimal. IF we perform a study, we would like to get informative results - which means we should be likely to detect effect we expect or care about, if they are there, and not find effects, if they are absent. 
 
-How many participants do we need for sufficient power? Given the expected difference and standard deviation, d = 0.34375, and f = 0.171875, we can increase the number of participants and run the simulation until we are content. We need 179 participants in each group, or 358 in total, to have 90% power.
+How many participants do we need for sufficient power? Given the expected difference and standard deviation, d = 0.34375, and f = 0.171875, we can increase the number of participants and run the simulation until we are content. The desired power depends on the cost of a Type 2 error. Cohen recommended to aim for 80% power, or a Type 2 error rate of 20%. I personally find a 20% Type 2 error rate too high, and not balanced enough compared to a much stricter Type 1 error rate (often by default 5%, although you should justify your alpha, for example by [reducing it as a function of the sample size](http://daniellakens.blogspot.com/2018/12/testing-whether-observed-data-should.html), or by [balancing error rates](http://daniellakens.blogspot.com/2019/05/justifying-your-alpha-by-minimizing-or.html)). Let's say we want to aim for 90% power.
+
+Especially when you are increasing the sample size in your design to figure out how many participants you would need, it is much more efficient to use the `ANOVA_exact` function. You can see in the code below that we slowly increase the sample size and find that 180 participants give a bit more than 90% power. 
 
 ```{r, fig.width=7, fig.height=4}
-design <- "2b"
-n <- 179
-mu <- c(24, 26.2)
-sd <- 6.4
-labelnames <- c("condition", "control", "pet") #
-design_result <- ANOVA_design(design = design,
-                   n = n, 
-                   mu = mu, 
-                   sd = sd, 
-                   labelnames = labelnames)
+design_result <- ANOVA_design(design = "2b",
+                   n = 100, 
+                   mu = c(24, 26.2), 
+                   sd = 6.4, 
+                   labelnames = c("condition", "control", "pet"))
 
-set.seed(38362)
-power_result <- ANOVA_power(design_result, nsims = nsims)
+ANOVA_exact(design_result)$main_results$power
+# power of 67.7 is a bit low. Let's increase it a bit to n = 150 to see if we are closer to our goal of 90% power.
+
+design_result <- ANOVA_design(design = "2b",
+                   n = 150, 
+                   mu = c(24, 26.2), 
+                   sd = 6.4, 
+                   labelnames = c("condition", "control", "pet"))
+
+ANOVA_exact(design_result)$main_results$power
+# Close, but not there yet. Let's try n = 175 
+
+design_result <- ANOVA_design(design = "2b",
+                   n = 175, 
+                   mu = c(24, 26.2), 
+                   sd = 6.4, 
+                   labelnames = c("condition", "control", "pet"))
+
+ANOVA_exact(design_result)$main_results$power
+#Very close. Let's add a few more and try n = 180
+
+design_result <- ANOVA_design(design = "2b",
+                   n = 180, 
+                   mu = c(24, 26.2), 
+                   sd = 6.4, 
+                   labelnames = c("condition", "control", "pet"))
+
+ANOVA_exact(design_result)$main_results$power
+
 ```
 
 ## Three between subject conditions
 
-Imagine we aim to design a study to test the hypothesis that giving people a pet to take care of will increase their life satisfaction. We have a control condition, a 'cat' pet condition, and a 'dog' pet condition. We can simulate a One-Way ANOVA with a specified alpha, sample size, and effect size, on see the statistical power we would have for the ANOVA and the follow-up comparisons. We expect all pets to increase life-satisfaction compared to the control condition. Obviously, we also expect the people who are in the 'dog' pet condition to have even greater life-satisfaction than people in the 'cat' pet condition. Based on work by Pavot and Diener (1993) we believe that we can expect responses on the life-satisfaction scale to have a mean of approximately 24 in our population, with a standard deviation of 6.4. We expect having a pet increases life satisfaction with approximately 2.2 scale points for participants who get a cat, and 2.6 scale points for participants who get a dog. We initially consider collecting data from 150 participants in total, with 50 participants in each condition. But before we proceed with the data collection, we examine the statistical power our design would have to detect the differences we predict.
+Imagine we aim to design a study to test the hypothesis that giving people a pet to take care of will increase their life satisfaction. We have a control condition, a 'cat' pet condition, and a 'dog' pet condition. We can simulate a One-Way ANOVA with a specified alpha, sample size, and effect size, and see the statistical power we would have for the ANOVA and the follow-up comparisons. We expect all pets to increase life-satisfaction compared to the control condition. Obviously, we also expect the people who are in the 'dog' pet condition to have even greater life-satisfaction than people in the 'cat' pet condition. Based on work by Pavot and Diener (1993) we again assume that we can expect responses on the life-satisfaction scale to have a mean of approximately 24 in our population, with a standard deviation of 6.4. We expect having a pet increases life satisfaction with approximately 2.2 scale points for participants who get a cat, and 2.6 scale points for participants who get a dog. We initially consider collecting data from 150 participants in total, with 50 participants in each condition. But before we proceed with the data collection, we examine the statistical power our design would have to detect the differences we predict.
 
 ```{r, fig.width=7, fig.height=4}
 design <- "3b"
@@ -288,11 +342,10 @@ design_result <- ANOVA_design(design = design,
                    sd = sd, 
                    labelnames = labelnames)
 
-set.seed(79888)
-ANOVA_power(design_result, nsims = nsims)
+ANOVA_exact(design_result)
 ```
 
-The result shows that you would have quite low power with 50 participants, both for the overall ANOVA (just around 50% power), as for the follow up comparisons (approximately 40% power for the control vs cat condition, around 50% for the control vs dogs condition, and a really low power (around 6%, just above the Type 1 error rate of 5%) for the expected difference between cats and dogs. We can easily confirm the expected power for these simple comparisons using the pwr package.
+The result shows that you would have quite low power with 50 participants, both for the overall ANOVA (just below 50% power), as for the follow up comparisons (approximately 40% power for the control vs cat condition, just above 50% for the control vs dogs condition, and a really low power (around 6%, just above the Type 1 error rate of 5%) for the expected difference between cats and dogs. We can easily confirm the expected power for these simple comparisons using the pwr package.
 For our example, Cohen's d (the standardized mean difference) is 2.2/6.4, or d = 0.34375 for the difference between the control condition and cats, 2.6/6.4 of d = 0.40625 for the difference between the control condition and dogs, and 0.4/6.4 or d = 0.0625 for the difference between cats and dogs as pets. 
 
 ```{r}
@@ -313,6 +366,46 @@ pwr.t.test(d = 0.4/6.4,
            sig.level = 0.05,
            type="two.sample",
            alternative="two.sided")$power
+
+```
+
+It is clear we would need to collect more participants in each group to increase our power. Steadily increasing the sample size, we see 134 participants give us good power for the ANOVA. But power for the comparison of the control condition and the cat condition is then only 80%. If we want to aim for 90% power for follow up tests, we need more participants. 180 participants provides good power for the follow-up comparison between control and cats. But power for the difference between cats and dogs is incredibly low. We would need 5380 participants to have 90% power for that comparison. This is possible if you can easily collect data, but might make this specific question impossible to reliably answer if data collection is costly. Realizing you can not reliably study a question is an important aspect of a-priori power analysis.
+
+```{r, fig.width=7, fig.height=4}
+design <- "3b"
+n <- 134
+mu <- c(24, 26.2, 26.6)
+sd <- 6.4
+labelnames <- c("condition", "control", "cat", "dog") #
+
+design_result <- ANOVA_design(design = design,
+                   n = n, 
+                   mu = mu, 
+                   sd = sd, 
+                   labelnames = labelnames,
+                   plot = FALSE) #do not print the plot (same as above)
+
+ANOVA_exact(design_result)
+
+n <- 180
+design_result <- ANOVA_design(design = design,
+                   n = n, 
+                   mu = mu, 
+                   sd = sd, 
+                   labelnames = labelnames,
+                   plot = FALSE) #do not print the plot (same as above)
+
+ANOVA_exact(design_result)
+
+n <- 5380
+design_result <- ANOVA_design(design = design,
+                   n = n, 
+                   mu = mu, 
+                   sd = sd, 
+                   labelnames = labelnames,
+                   plot = FALSE) #do not print the plot (same as above)
+
+ANOVA_exact(design_result)
 
 ```
 
@@ -358,7 +451,7 @@ To reproduce this analysis in G\*power with a dependent *t*-test we need to chan
 knitr::include_graphics("screenshots/gpower_10.png")
 ```
 
-We can perform both these power analyses using simulations as well. We set groups to 2 for the simulation, n = 34 (which should give 80.777 power, according to g\*power), a correlation among repeated measures of 0.5, and an alpha of 0.05. In this case, we simulate data with means -0.25  and 0.25, and set the sd to 1. This means we have a mean difference of 0.5, and a Cohen's d of 0.5/1 = 0.5. In the first example, we set the correlation to 0.5, and the result should be 80.77% power, and an effect size estimate of 0.5 for the simple effect. We also calculate partial eta-squared for the ANOVA, which equals $\frac{f^2}{f^2+1}$, or 0.05882353.
+We can perform both these power analyses using simulations as well. We set groups to 2 for the simulation, n = 34 (which should give 80.777 power, according to g\*power), a correlation among repeated measures of 0.5, and an alpha of 0.05. In this case, we simulate data with means -0.25  and 0.25, and set the sd to 1. This means we have a mean difference of 0.5, and a Cohen's d of 0.5/1 = 0.5. In the first example, we set the correlation to 0.5, and the result should be 80.777% power, and an effect size estimate of 0.5 for the simple effect. We also calculate partial eta-squared for the ANOVA, which equals $\frac{f^2}{f^2+1}$, or 0.05882353.
 
 ```{r, fig.width=7, fig.height=4}
 K <- 2
@@ -381,17 +474,16 @@ design_result <- ANOVA_design(design = design,
                               r = r, 
                               labelnames = labelnames)
 
-set.seed(85918)
-ANOVA_power(design_result, nsims = nsims)
+ANOVA_exact(design_result)
 ```
 
-The results of the simulation are indeed very close to 80.777%. Note that the simulation calculates Cohen's $d_z$ effect sizes for paired comparisons - which here given the correlation of 0.5 is also 0.5 for a medium effect size. 
+The results of the exact simulation approach are indeed to 80.777%. Note that the simulation calculates Cohen's $d_z$ effect sizes for paired comparisons - which here given the correlation of 0.5 is also 0.5 for a medium effect size. 
 
 We should see a larger $d_z$ if we increase the correlation, keeping the sample size the same, following the example in Gpower above. We repeat the simulation, and the only difference is a correlation between dependent variables of 0.7. This should yield an effect size $d_z$ = `r 0.5/sqrt(2*(1-0.7))`.
 
 ```{r, fig.width=7, fig.height=4}
 K <- 2
-n <- 21
+n <- 34
 sd <- 1
 r <- 0.7
 alpha = 0.05
@@ -410,8 +502,7 @@ design_result <- ANOVA_design(design = design,
                               r = r, 
                               labelnames = labelnames)
 
-set.seed(24731)
-ANOVA_power(design_result, nsims = nsims)
+ANOVA_exact(design_result)
 ```
 
 ### Power in Repeated Measures ANOVA with More than 2 Groups
@@ -446,7 +537,7 @@ r <- 0.7
 The relation between Cohen's d or dz and Cohen's f becomes more difficult when there are multiple groups, because the relationship depends on the pattern of the means. Cohen (1988) presents calculations for three patterns, minimal variability (for example, for 5 means: -0.25, 0, 0, 0, 0.25), medium variability (for example, for 5 means: -0.25, -0.25, 0.25, 0.25, 0.25 or -0.25, -0.25, -0.25, 0.25, 0.25). For these three patterns, formula's are available that compute Cohen's f from Cohen's d, where d is the effect size calculated for the difference between the largest and smallest mean (if the largest mean is 0.25 and the smallest mean is -0.25, 0.25 - -0.25 = 0.5, so d is 0.5 divided by the standard deviation of 0.9). In our example, d would be (4.3-3.8)/0.9 = 0.5555556. If we divide this value by sqrt(2*(1-r)) we have dz = 0.5555556/0.7745967 = 0.7172191. 
 If the means and standard deviation is known, it is best to calculate Cohen's f directly from these values.
 
-We can perform power analyses for within designs using simulations. We set groups to 3 for the simulation, n = 20, and the correlation between dependent variables to 0.8. If the true effect size is f = 0.25, and the alpha level is 0.05, the power is 96.6%. 
+We can perform power analyses for within designs using simulations. We set groups to 3 for the simulation, n = 20, and the correlation between dependent variables to 0.8. If the true effect size is f = 0.25, and the alpha level is 0.05, the power is 96.9%. 
 
 In this case, we simulate data with means -0.3061862, 0.0000000, and 0.3061862, and set the sd to 1. 
 
@@ -472,8 +563,9 @@ design_result <- ANOVA_design(design = design,
                               r = r, 
                               labelnames = labelnames)
 
-set.seed(34532)
-ANOVA_power(design_result, nsims = nsims)
+# power_result_vig_3 <- ANOVA_power(design_result, nsims = nsims)
+# saveRDS(power_result_vig_3, file = "sim_data/power_result_vig_3.rds")
+power_result_vig_3 <- readRDS(file = "sim_data/power_result_vig_3.rds")
 
 ```
 
@@ -497,7 +589,7 @@ We can simulate a two-way ANOVA with a specific alpha, sample size and effect si
 knitr::include_graphics("screenshots/gpower_5.png")
 ```
 
-For the 2-way interaction, the result should be a power of 91.25% is we have a total samplesize of 46. Since we have 2 groups in the between factor that means the sample size per group is 2 (and both these groups collect 2 repeated measures). 
+For the 2-way interaction, the result should be a power of 91.25% is we have a total sample size of 46. Since we have 2 groups in the between factor that means the sample size per group is 2 (and both these groups collect 2 repeated measures). 
 
 ```{r}
 mu <- c(-0.25, 0.25, 0.25, -0.25)
@@ -505,21 +597,17 @@ n <- 23
 sd <- 1
 r <- 0.5
 design = "2w*2b"
-alpha_level <- 0.05
-labelnames = c("A", "a1", "a2", "B", "b1", "b2")
 design_result <- ANOVA_design(design = design,
                               n = n, 
                               mu = mu, 
                               sd = sd, 
-                              r = r, 
-                              labelnames = labelnames)
+                              r = r)
 
-set.seed(28748)
-simulation_result <- ANOVA_power(design_result, nsims = nsims)
+ANOVA_exact(design_result)
 
 ```
 
-We can simulate the same Two-Way ANOVA increasing the correlation to 0.7. 
+We can simulate the same Two-Way ANOVA increasing the correlation to 0.7. Power should be 98.98% 
 
 ```{r, out.width = "600px", echo=FALSE}
 knitr::include_graphics("screenshots/gpower_6.png")
@@ -531,17 +619,13 @@ n <- 23
 sd <- 1
 r <- 0.7
 design = "2w*2b"
-alpha_level <- 0.05
-labelnames = c("A", "a1", "a2", "B", "b1", "b2")
 design_result <- ANOVA_design(design = design,
                               n = n, 
                               mu = mu, 
                               sd = sd, 
-                              r = r, 
-                              labelnames = labelnames)
+                              r = r)
 
-set.seed(14895)
-simulation_result <- ANOVA_power(design_result, nsims = nsims)
+ANOVA_exact(design_result)
 ```
 
 ## Two-way ANOVA, between participants Design
@@ -554,20 +638,24 @@ In the first case, we will only observe a main effect of voice, but in the other
 
 ```{r mean-plot, fig.width=7, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.cap="Vizualization for the expected means and confidence intervals for a crossover interaction."}
 
+# To save time compiling this vignette, we ran these simulations once, and stored them
 design_result_cross_80 <- ANOVA_design(design = "2b*2b", n = 80, mu = c(1, 0, 0, 1), sd = 2, labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"))
+# 
+# power_result_cross_80 <- ANOVA_exact(design_result_cross_80, alpha_level = 0.05, verbose = FALSE)
+power_result_cross_80 <- readRDS(file = "sim_data/power_result_cross_80.rds")
 
-set.seed(2019)
-power_result_cross_80 <- ANOVA_power(design_result_cross_80, alpha_level = 0.05, p_adjust = "none", nsims = nsims, verbose = FALSE)
-
+# To save time compiling this vignette, we ran these simulations once, and stored them
 design_result_cross_40 <- ANOVA_design(design = "2b*2b", n = 40, mu = c(1, 0, 0, 1), sd = 2, labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"), plot = FALSE)
+# 
+# power_result_cross_40 <- ANOVA_exact(design_result_cross_40, alpha_level = 0.05, verbose = FALSE)
+power_result_cross_40 <- readRDS(file = "sim_data/power_result_cross_40.rds")
 
-set.seed(2019)
-power_result_cross_40 <- ANOVA_power(design_result_cross_40, alpha_level = 0.05, p_adjust = "none", nsims = nsims, verbose = FALSE)
 #Analytic solution
 power_twoway_between(design_result_cross_40)$power_A
 power_twoway_between(design_result_cross_40)$power_B
 power_twoway_between(design_result_cross_40)$power_AB
 ```
+
 Mathematically the interaction effect is computed as the cell mean minus the sum of the grand mean, the marginal mean in each row minus the grand mean, and the marginal mean in each column minus grand mean. 
 For example, for the cheerful human-like voice condition this is 1 - (0.5 + (0.5) + (0.5)) = -0.5.
 Completing this for all four cells gives the values -0.5, 0.5, 0.5, -0.5.
@@ -577,13 +665,16 @@ A cross-over (also called disordinal) interaction with two levels per factor has
 Power with 40 participants per condition is `r power_result_cross_40$main_results$power[3]`%.
 Main effects in an ANOVA are based on the means for one factor averaged over the other factors (e.g., the main effect of human-like versus robot-like voice, irrespective of whether it is cheerful or sad).
 The interaction effect, which can be contrast coded as 1, -1, -1, 1, is similarly a test of whether the effects are non-additive based on the scores in each cell, where the null-hypothesis of no additive effect can be rejected if the deviation expected when effects in each cell would be purely additive can be rejected. 
-The key insight here is that not the sample size per condition, but the total sample size dover all other factor determines the power for the main effects and the interaction.
-
+The key insight here is that not the sample size per condition, but the total sample size over all other factor determines the power for the main effects and the interaction.
 
 ```{r sim-interaction-2, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+# To save time compiling this vignette, we ran these simulations once, and stored them
 design_result_ordinal <- ANOVA_design(design = "2b*2b", n = 160, mu = c(1, 0, 0, 0), sd = 2, labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot"))
-set.seed(2019)
-power_result_ordinal <- ANOVA_power(design_result_ordinal, alpha_level = 0.05, p_adjust = "none", nsims = nsims)
+# 
+# power_result_ordinal <- ANOVA_power(design_result_ordinal, alpha_level = 0.05, p_adjust = "none", seed = 2019, nsims = nsims)
+power_result_ordinal <- readRDS(file = "sim_data/power_result_ordinal.rds")
+power_result_ordinal
 
 #Analytic solution
 power_twoway_between(design_result_ordinal)$power_A
@@ -607,6 +698,7 @@ power_twoway_between(design_result)$power_B
 power_twoway_between(design_result)$power_AB
 power_twoway_between(design_result)$Cohen_f_AB
 power_twoway_between(design_result)$eta_p_2_AB
+
 design_result <- ANOVA_design(design = "2b*2b*2b", n = 20, mu = c(4, 0, 0, 0, 0, 0, 0, 0), sd = 2, labelnames = c("condition", "cheerful", "sad", "voice", "human", "robot", "factor_c", "c1", "c2"))
 power_threeway_between(design_result)$power_ABC
 power_threeway_between(design_result)$Cohen_f_ABC
@@ -638,8 +730,7 @@ design_result <- ANOVA_design(design = design,
                    sd = sd, 
                    labelnames = labelnames)
 
-set.seed(9102)
-power_result <- ANOVA_power(design_result, alpha_level = 0.05, nsims = nsims)
+ANOVA_exact(design_result, alpha_level = 0.05)
 
 ```
 
@@ -696,19 +787,17 @@ design_result <- ANOVA_design(design = design,
                               sd = sd, 
                               r = r, 
                               labelnames = labelnames)
-set.seed(1992)
-simulation_result <- ANOVA_power(design_result, nsims = nsims)
+
+# power_result_vig_4 <- ANOVA_power(design_result, nsims = nsims)
+# saveRDS(power_result_vig_4, file = "sim_data/power_result_vig_4.rds")
+power_result_vig_4 <- readRDS(file = "sim_data/power_result_vig_4.rds")
+power_result_vig_4$main_results
 ```
 
-We can use the analytic solution based on the formula in Potvin & Schutz (2000). I created a function 'power_2x2_within' that contains the calculations based on the formula above.
+We can use the exact simulation as well.
 
 ```{r}
-power_res <- power_2x2_within(design_result = design_result)
-
-power_res$power_A
-power_res$power_B
-power_res$power_AB
-
+ANOVA_exact(design_result = design_result)
 ```
 
-We see the 26.9 and 64.2, and 26.9 correspond to the results of the simulation quite closely. 
+We see the 26.9 and 64.2, and 26.9 correspond to the results of the exact simulation. 
