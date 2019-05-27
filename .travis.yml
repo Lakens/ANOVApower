@@ -1,4 +1,4 @@
 language: r
-r_check_args: "--no-vignettes"
+r_check_args: "--no-build-vignettes"
 after_success:
   - Rscript -e 'covr::codecov()'
