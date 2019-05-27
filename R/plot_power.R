@@ -1,5 +1,6 @@
 #' Convenience function to plot power across a range of sample sizes.
 #' @param design_result Output from the ANOVA_design function
+#' @param min_n Minimum sample size in power curve.
 #' @param max_n Maximum sample size in power curve.
 #' @param plot Should power plot be printed (defaults to TRUE)
 #' @return Returns plot with power curves for the ANOVA, and a dataframe with the summary data.
@@ -17,7 +18,7 @@
 #' @import ggplot2
 #' @export
 
-plot_power <- function(design_result, max_n, plot = TRUE){
+plot_power <- function(design_result, min_n = 7, max_n = 100, plot = TRUE){
   design = design_result$design
   mu = design_result$mu
   sd <- design_result$sd
@@ -27,14 +28,14 @@ plot_power <- function(design_result, max_n, plot = TRUE){
   #Do one ANOVA to get number of power columns
   length_power <- length(ANOVA_exact(design_result, verbose = FALSE)$main_results$power)
 
-  power_df <- as.data.frame(matrix(0, ncol = length_power+1, nrow = max_n-7))
-  power_df[,1] <- c(8:max_n)
+  power_df <- as.data.frame(matrix(0, ncol = length_power+1, nrow = max_n+1-min_n))
+  power_df[,1] <- c((min_n):max_n)
 
   colnames(power_df) <- c("n", row.names(ANOVA_exact(design_result, verbose = FALSE)$main_results))
 
-  for (i in 1:(max_n-7)){
+  for (i in 1:(max_n+1-min_n)){
     design_result <- ANOVA_design(design = design,
-                                  n = i+7,
+                                  n = i+min_n,
                                   mu = mu,
                                   sd = sd,
                                   r = r,
@@ -47,10 +48,10 @@ plot_power <- function(design_result, max_n, plot = TRUE){
 
   p1 <- ggplot(data=plot_data, aes(x = n, y = value)) +
     geom_line( size=1.5) +
-    scale_x_continuous(limits = c(0, max(max_n))) +
+    scale_x_continuous(limits = c(min_n, max_n)) +
     scale_y_continuous(limits = c(0, 100), breaks = seq(0,100,10)) +
     theme_bw() +
-    labs(x="Sample size", y = "Power") +
+    labs(x="Sample size per condition", y = "Power") +
     facet_grid(variable ~ .)
 
   if(plot == TRUE){
