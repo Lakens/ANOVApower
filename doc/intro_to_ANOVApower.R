@@ -1,7 +1,7 @@
 ## ----setup, include=FALSE------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 library(ANOVApower)
-nsims = 100
+nsims = 100000
 
 ## ---- fig.width=7, fig.height=4, echo=FALSE, message=FALSE, warning=FALSE----
 design_result <- ANOVA_design(design = "2b*2w*2b",
@@ -96,7 +96,8 @@ design_result <- ANOVA_design(design = "2b",
                    n = 150, 
                    mu = c(24, 26.2), 
                    sd = 6.4, 
-                   labelnames = c("condition", "control", "pet"))
+                   labelnames = c("condition", "control", "pet"),
+                   plot = FALSE)
 
 ANOVA_exact(design_result)$main_results$power
 # Close, but not there yet. Let's try n = 175 
@@ -105,7 +106,8 @@ design_result <- ANOVA_design(design = "2b",
                    n = 175, 
                    mu = c(24, 26.2), 
                    sd = 6.4, 
-                   labelnames = c("condition", "control", "pet"))
+                   labelnames = c("condition", "control", "pet"),
+                   plot = FALSE)
 
 ANOVA_exact(design_result)$main_results$power
 #Very close. Let's add a few more and try n = 180
@@ -114,10 +116,34 @@ design_result <- ANOVA_design(design = "2b",
                    n = 180, 
                    mu = c(24, 26.2), 
                    sd = 6.4, 
-                   labelnames = c("condition", "control", "pet"))
+                   labelnames = c("condition", "control", "pet"),
+                   plot = FALSE)
 
 ANOVA_exact(design_result)$main_results$power
 
+
+## ---- fig.width=7, fig.height=4------------------------------------------
+plot_power(design_result, min_n = 10, max_n = 250)
+
+## ---- fig.width=7, fig.height=4------------------------------------------
+design_result <- ANOVA_design(design = "2b",
+                   n = 180, 
+                   mu = c(24, 26), 
+                   sd = 6.4, 
+                   labelnames = c("condition", "control", "pet"),
+                   plot = FALSE)
+
+plot_power(design_result, max_n = 250)
+
+## ---- fig.width=7, fig.height=4------------------------------------------
+design_result <- ANOVA_design(design = "2b",
+                   n = 180, 
+                   mu = c(24, 26), 
+                   sd = 6.8, 
+                   labelnames = c("condition", "control", "pet"),
+                   plot = FALSE)
+
+plot_power(design_result, min_n = 10, max_n = 250)
 
 ## ---- fig.width=7, fig.height=4------------------------------------------
 design <- "3b"
@@ -153,6 +179,9 @@ pwr.t.test(d = 0.4/6.4,
            type="two.sample",
            alternative="two.sided")$power
 
+
+## ---- fig.width=7, fig.height=4------------------------------------------
+plot_power(design_result, min_n = 10, max_n = 250)
 
 ## ---- fig.width=7, fig.height=4------------------------------------------
 design <- "3b"
@@ -261,7 +290,7 @@ r <- 0.7
 (4.3-4.2)/0.9/sqrt(2*(1-r))
 
 
-## ------------------------------------------------------------------------
+## ---- fig.width=7, fig.height=4------------------------------------------
 K <- 3
 n <- 20
 sd <- 1
@@ -297,7 +326,7 @@ knitr::include_graphics("screenshots/gpower_14.png")
 ## ---- out.width = "600px", echo=FALSE------------------------------------
 knitr::include_graphics("screenshots/gpower_5.png")
 
-## ------------------------------------------------------------------------
+## ---- fig.width=7, fig.height=4------------------------------------------
 mu <- c(-0.25, 0.25, 0.25, -0.25)
 n <- 23
 sd <- 1
@@ -315,7 +344,7 @@ ANOVA_exact(design_result)
 ## ---- out.width = "600px", echo=FALSE------------------------------------
 knitr::include_graphics("screenshots/gpower_6.png")
 
-## ------------------------------------------------------------------------
+## ---- fig.width=7, fig.height=4------------------------------------------
 mu <- c(-0.25, 0.25, 0.25, -0.25)
 n <- 23
 sd <- 1
@@ -378,7 +407,7 @@ power_threeway_between(design_result)$power_ABC
 power_threeway_between(design_result)$Cohen_f_ABC
 
 
-## ------------------------------------------------------------------------
+## ---- fig.width=7, fig.height=4------------------------------------------
 design <- "3b*3b"
 n <- 20
 mu <- c(20, 20, 20, 20, 20, 20, 20, 20, 25) #All means are equal - so there is no real difference.
@@ -405,10 +434,13 @@ power_res$power_B
 power_res$power_AB
 
 
+## ---- fig.width=7, fig.height=8------------------------------------------
+plot_power(design_result, min_n = 20, max_n = 100)
+
 ## ---- out.width = "600px", echo=FALSE------------------------------------
 knitr::include_graphics("screenshots/PS2000.png")
 
-## ------------------------------------------------------------------------
+## ---- fig.width=7, fig.height=4------------------------------------------
 mu = c(2,1,4,2) 
 n <- 20
 sd <- 5

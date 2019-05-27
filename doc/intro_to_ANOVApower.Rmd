@@ -5,14 +5,16 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to ANOVApower}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ANOVApower)
-nsims = 100
+nsims = 100000
 ```
 
 # An Introduction to ANOVApower
@@ -197,7 +199,7 @@ ANOVA_exact requires the following input: ANOVA_design, alpha_level, and verbose
 2. alpha_level: Alpha level used to determine statistical significance
 3. verbose: Set to FALSE to not print results (default = TRUE)
 
-Compared to the ANOVA_power function, the ANOVA_exact approach is much faster (it requires simulating only a single dataset). Currently the only difference is that ANOVA_exact does not allow you to examine the consequences of correcting for multiple comparisons (there is no `p_adjust` option).
+Compared to the ANOVA_power function, the ANOVA_exact approach is much faster (it requires simulating only a single dataset). Currently the only difference is that ANOVA_exact does not allow you to examine the consequences of correcting for multiple comparisons (there is no `p_adjust` option), and that ANOVA_exact does not work for sample sizes smaller than 8 (because it is not possible to simulate a dataset with exactly the desired properties for very small sample sizes). 
 
 ## An Example
 
@@ -281,11 +283,11 @@ pwr.anova.test(n = 100,
                sig.level = 0.05)$power
 ```
 
-This analysis tells us that running the study with 100 participants in each condition is too likely to *not* yield a significant test result, even if our expected pattern of differences is true. This is clearly not optimal. IF we perform a study, we would like to get informative results - which means we should be likely to detect effect we expect or care about, if they are there, and not find effects, if they are absent. 
+This analysis tells us that running the study with 100 participants in each condition is quite likely to *not* yield a significant test result, even if our expected pattern of differences is true. This is clearly not optimal. If we perform a study, we would like to get informative results - which means we should be likely to detect effect we expect or care about, if these effects exist, and not find effects, if they are absent. 
 
 How many participants do we need for sufficient power? Given the expected difference and standard deviation, d = 0.34375, and f = 0.171875, we can increase the number of participants and run the simulation until we are content. The desired power depends on the cost of a Type 2 error. Cohen recommended to aim for 80% power, or a Type 2 error rate of 20%. I personally find a 20% Type 2 error rate too high, and not balanced enough compared to a much stricter Type 1 error rate (often by default 5%, although you should justify your alpha, for example by [reducing it as a function of the sample size](http://daniellakens.blogspot.com/2018/12/testing-whether-observed-data-should.html), or by [balancing error rates](http://daniellakens.blogspot.com/2019/05/justifying-your-alpha-by-minimizing-or.html)). Let's say we want to aim for 90% power.
 
-Especially when you are increasing the sample size in your design to figure out how many participants you would need, it is much more efficient to use the `ANOVA_exact` function. You can see in the code below that we slowly increase the sample size and find that 180 participants give a bit more than 90% power. 
+Especially when you are increasing the sample size in your design to figure out how many participants you would need, it is much more efficient to use the `ANOVA_exact` function. You can see in the code below that we slowly increase the sample size and find that 180 participants give a bit more than 90% power.
 
 ```{r, fig.width=7, fig.height=4}
 design_result <- ANOVA_design(design = "2b",
@@ -301,7 +303,8 @@ design_result <- ANOVA_design(design = "2b",
                    n = 150, 
                    mu = c(24, 26.2), 
                    sd = 6.4, 
-                   labelnames = c("condition", "control", "pet"))
+                   labelnames = c("condition", "control", "pet"),
+                   plot = FALSE)
 
 ANOVA_exact(design_result)$main_results$power
 # Close, but not there yet. Let's try n = 175 
@@ -310,7 +313,8 @@ design_result <- ANOVA_design(design = "2b",
                    n = 175, 
                    mu = c(24, 26.2), 
                    sd = 6.4, 
-                   labelnames = c("condition", "control", "pet"))
+                   labelnames = c("condition", "control", "pet"),
+                   plot = FALSE)
 
 ANOVA_exact(design_result)$main_results$power
 #Very close. Let's add a few more and try n = 180
@@ -319,11 +323,57 @@ design_result <- ANOVA_design(design = "2b",
                    n = 180, 
                    mu = c(24, 26.2), 
                    sd = 6.4, 
-                   labelnames = c("condition", "control", "pet"))
+                   labelnames = c("condition", "control", "pet"),
+                   plot = FALSE)
 
 ANOVA_exact(design_result)$main_results$power
 
 ```
+
+## The plot_power function
+
+Simulation based power analyses require you to increase to sample size until power is high enough to reach your desired Type 2 error rate. To facilitate this trial and error process you can use the `plot_power` function to plot the power across a range of sample sizes to produce a power curve.
+
+plot_power requires the following input: ANOVA_design, max_n, and plot. 
+
+1. design_result: Output from the ANOVA_design function saved as an object
+2. min_n: The minimum sample size you want to plot in the power curve
+2. max_n: The maximum sample size you want to plot in the power curve
+3. plot: Set to FALSE to not print the plot (default = TRUE)
+
+The `plot_power` functions simulates power up to a sample size of `max_n` using the `ANOVA_exact` function. ALthough it is relatively fast, with large sample size to can take some time to produce. In the figure below we can easily see that, assuming the true pattern of means and standard deviations represents our expected pattern of means and standard deviations, we have 80% power around 135 participants per condition, 90% power around 180 participants per condition, and 95% power around 225 participants per condition.
+
+```{r, fig.width=7, fig.height=4}
+plot_power(design_result, min_n = 10, max_n = 250)
+```
+
+Because the true pattern of means is always unknown, it is sensible to examine the power across a range of scenarios. For example, is the difference in means is somewhat smaller,because the means are 24 and 26 instead of 24 and 26.2, we can compare the power curve above with the power curve for a slightly less optimistic scenario (where the true effect size is slightly smaller).
+
+```{r, fig.width=7, fig.height=4}
+design_result <- ANOVA_design(design = "2b",
+                   n = 180, 
+                   mu = c(24, 26), 
+                   sd = 6.4, 
+                   labelnames = c("condition", "control", "pet"),
+                   plot = FALSE)
+
+plot_power(design_result, max_n = 250)
+```
+
+It could be that in ddition to a slightly smaller effect size, the standard deviation is slighty larger than we expected as well. This will reduce the power even further, and is thus an even less optimistic scenario. Let's assume the true standard deviation is 6.8 instead of 6.4.
+
+```{r, fig.width=7, fig.height=4}
+design_result <- ANOVA_design(design = "2b",
+                   n = 180, 
+                   mu = c(24, 26), 
+                   sd = 6.8, 
+                   labelnames = c("condition", "control", "pet"),
+                   plot = FALSE)
+
+plot_power(design_result, min_n = 10, max_n = 250)
+```
+
+As these different plots make clear, your study never realy has a known statistical power. Because the true effect size (i.e., the pattern of means and standard deviations) is unknown, the true power of your study is unknown. A study has 90% power *assuming a specific effect size*, but if the effect size is different than what you expected, the true power can be either higher or lower. We should therefore always talk about the 'expected' power when we do an a-priori power analysis, and provide a good justification for our expectations (i.e., for the pattern of means, standard deviations, and correlations for within designs).
 
 ## Three between subject conditions
 
@@ -369,7 +419,13 @@ pwr.t.test(d = 0.4/6.4,
 
 ```
 
-It is clear we would need to collect more participants in each group to increase our power. Steadily increasing the sample size, we see 134 participants give us good power for the ANOVA. But power for the comparison of the control condition and the cat condition is then only 80%. If we want to aim for 90% power for follow up tests, we need more participants. 180 participants provides good power for the follow-up comparison between control and cats. But power for the difference between cats and dogs is incredibly low. We would need 5380 participants to have 90% power for that comparison. This is possible if you can easily collect data, but might make this specific question impossible to reliably answer if data collection is costly. Realizing you can not reliably study a question is an important aspect of a-priori power analysis.
+It is clear we would need to collect more participants in each group to increase our power. Let's plot a power curve across a range of sample sizes to see how much we need to increase the sample size. 
+
+```{r, fig.width=7, fig.height=4}
+plot_power(design_result, min_n = 10, max_n = 250)
+```
+
+We see 134 participants give us aroud 90% power for the ANOVA. But we should also check the power for the comparison of the control condition and the cat condition. 
 
 ```{r, fig.width=7, fig.height=4}
 design <- "3b"
@@ -408,6 +464,8 @@ design_result <- ANOVA_design(design = design,
 ANOVA_exact(design_result)
 
 ```
+
+With 134 participants per condition, power for this simple comparison is only 80%. If we want to aim for 90% power for follow up tests, we need more participants. 180 participants provides good power for the follow-up comparison between control and cats. But power for the difference between cats and dogs is incredibly low. We would need 5380 participants to have 90% power for that comparison. This is possible if you can easily collect data, but might make this specific question impossible to reliably answer if data collection is costly. Realizing you can not reliably study a question is an important aspect of a-priori power analysis.
 
 ## Power in Repeated Measures ANOVA
 
@@ -541,7 +599,7 @@ We can perform power analyses for within designs using simulations. We set group
 
 In this case, we simulate data with means -0.3061862, 0.0000000, and 0.3061862, and set the sd to 1. 
 
-```{r}
+```{r, fig.width=7, fig.height=4}
 K <- 3
 n <- 20
 sd <- 1
@@ -589,9 +647,9 @@ We can simulate a two-way ANOVA with a specific alpha, sample size and effect si
 knitr::include_graphics("screenshots/gpower_5.png")
 ```
 
-For the 2-way interaction, the result should be a power of 91.25% is we have a total sample size of 46. Since we have 2 groups in the between factor that means the sample size per group is 2 (and both these groups collect 2 repeated measures). 
+For the 2-way interaction, the result should be a power of 91.25% if we have a total sample size of 46. Since we have 2 levels for the between-participants factor, that means the number of groups 2 (and both these groups collect 2 repeated measures). 
 
-```{r}
+```{r, fig.width=7, fig.height=4}
 mu <- c(-0.25, 0.25, 0.25, -0.25)
 n <- 23
 sd <- 1
@@ -607,13 +665,13 @@ ANOVA_exact(design_result)
 
 ```
 
-We can simulate the same Two-Way ANOVA increasing the correlation to 0.7. Power should be 98.98% 
+We can simulate the same Two-Way ANOVA increasing the correlation to 0.7. Power should be 98.98% for the two-way interaction.  
 
 ```{r, out.width = "600px", echo=FALSE}
 knitr::include_graphics("screenshots/gpower_6.png")
 ```
 
-```{r}
+```{r, fig.width=7, fig.height=4}
 mu <- c(-0.25, 0.25, 0.25, -0.25)
 n <- 23
 sd <- 1
@@ -715,7 +773,7 @@ The same effect size can represent very different patterns of means depending on
 
 If we extend the design with an extra level for each factor, we have a 3x3 design (two factors, three levels each). 
 
-```{r}
+```{r, fig.width=7, fig.height=4}
 design <- "3b*3b"
 n <- 20
 mu <- c(20, 20, 20, 20, 20, 20, 20, 20, 25) #All means are equal - so there is no real difference.
@@ -746,6 +804,13 @@ power_res$power_AB
 
 ```
 
+As we see, power is quite low with n = 20 per cell. Let's examine how the power increases, as the sample size per condition increases.
+
+```{r, fig.width=7, fig.height=8}
+plot_power(design_result, min_n = 20, max_n = 100)
+```
+
+
 ## Two by two ANOVA, within design
 
 Potvin & Schutz (2000) simulate a wide range of repeated measure designs. The give an example of a 3x3 design, with the following correlation matrix:
@@ -769,7 +834,7 @@ $\sigma _ { e } ^ { 2 } = \sigma ^ { 2 } ( 1 - \rho _ { \max } ) - \sigma ^ { 2 
  
 We first simulate a within subjects 2x2 ANOVA design.
 
-```{r}
+```{r, fig.width=7, fig.height=4}
 mu = c(2,1,4,2) 
 n <- 20
 sd <- 5

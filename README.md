@@ -17,12 +17,6 @@
         Design](#two-way-anova-between-participants-design)
       - [2x2 ANOVA, Within Design](#two-by-two-anova-within-design)
 
-[![Development
-Status](https://travis-ci.com/Lakens/ANOVApower.png)](https://travis-ci.com/Lakens/ANOVApower)
-\[![](vignettes/screenshots/maturing.svg) [![Coverage
-status](https://codecov.io/gh/lakens/ANOVApower/branch/master/graph/badge.svg)](https://codecov.io/github/Lakens/ANOVApower?branch=master)
-<!-- badges: end -->
-
 # An Introduction to ANOVApower
 
 The goal of ANOVApower is to easily simulate ANOVA designs and
@@ -504,9 +498,10 @@ pwr.anova.test(n = 100,
 This analysis tells us that running the study with 100 participants in
 each condition is quite likely to *not* yield a significant test result,
 even if our expected pattern of differences is true. This is clearly not
-optimal. If we perform a study, we would like to get informative results
-- which means we should be likely to detect effect we expect or care
-about, if they are there, and not find effects, if they are absent.
+optimal. If we perform a study, we would like to get informative
+results, which means we should be likely to detect effect we expect or
+care about, if these effects exist, and not find effects, if they are
+absent.
 
 How many participants do we need for sufficient power? Given the
 expected difference and standard deviation, d = 0.34375, and f =

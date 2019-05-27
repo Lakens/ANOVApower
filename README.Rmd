@@ -24,11 +24,6 @@ nsims = 100000
 library(ANOVApower)
 ```
 
-[![Development Status](https://travis-ci.com/Lakens/ANOVApower.png)](https://travis-ci.com/Lakens/ANOVApower)
-[![](vignettes/screenshots/maturing.svg)
-[![Coverage status](https://codecov.io/gh/lakens/ANOVApower/branch/master/graph/badge.svg)](https://codecov.io/github/Lakens/ANOVApower?branch=master)
-<!-- badges: end -->
-
 # An Introduction to ANOVApower
 
 The goal of ANOVApower is to easily simulate ANOVA designs and empirically calculate power using a simulation approach. 
@@ -295,7 +290,7 @@ pwr.anova.test(n = 100,
                sig.level = 0.05)$power
 ```
 
-This analysis tells us that running the study with 100 participants in each condition is quite likely to *not* yield a significant test result, even if our expected pattern of differences is true. This is clearly not optimal. If we perform a study, we would like to get informative results - which means we should be likely to detect effect we expect or care about, if they are there, and not find effects, if they are absent. 
+This analysis tells us that running the study with 100 participants in each condition is quite likely to *not* yield a significant test result, even if our expected pattern of differences is true. This is clearly not optimal. If we perform a study, we would like to get informative results, which means we should be likely to detect effect we expect or care about, if these effects exist, and not find effects, if they are absent. 
 
 How many participants do we need for sufficient power? Given the expected difference and standard deviation, d = 0.34375, and f = 0.171875, we can increase the number of participants and run the simulation until we are content. The desired power depends on the cost of a Type 2 error. Cohen recommended to aim for 80% power, or a Type 2 error rate of 20%. I personally find a 20% Type 2 error rate too high, and not balanced enough compared to a much stricter Type 1 error rate (often by default 5%, although you should justify your alpha, for example by [reducing it as a function of the sample size](http://daniellakens.blogspot.com/2018/12/testing-whether-observed-data-should.html), or by [balancing error rates](http://daniellakens.blogspot.com/2019/05/justifying-your-alpha-by-minimizing-or.html)). Let's say we want to aim for 90% power.
 
