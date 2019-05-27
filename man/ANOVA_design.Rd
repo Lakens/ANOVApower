@@ -23,7 +23,7 @@ ANOVA_design(design, n, mu, sd, r = 0, labelnames = NULL,
 \item{plot}{Should means plot be printed (defaults to TRUE)}
 }
 \value{
-Returns Single data-frame with simulated data, design, design list, factor names, formulas for ANOVA, means, sd, correlation, sample size per condition, correlation matrix, covariance matrix, design string, label names, factor names, meansplot
+Returns Single data-frame with simulated data, design, design list, factor names, formulas for ANOVA, means, sd, correlation, sample size per condition, correlation matrix, covariance matrix, design string, labelnames, labelnameslist, factor names, meansplot
 }
 \description{
 Design function used to specify the parameters used in the simulation

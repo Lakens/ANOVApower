@@ -130,9 +130,9 @@ power_threeway_between <- function(design_result, alpha_level=0.05){
     stop("Only three-way between designs allowed for this function")
   }
 
-  mu_array <- array(design_result$mu, dim = c(length(design_result$labelnames[[1]]),
-                                              length(design_result$labelnames[[2]]),
-                                              length(design_result$labelnames[[3]])))
+  mu_array <- array(design_result$mu, dim = c(length(design_result$labelnameslist[[1]]),
+                                              length(design_result$labelnameslist[[2]]),
+                                              length(design_result$labelnameslist[[3]])))
   #A
   mu_A <- apply(mu_array,c(3),mean)
   mu_A
@@ -162,45 +162,45 @@ power_threeway_between <- function(design_result, alpha_level=0.05){
   mu_BC
 
   # Calculate degrees of freedom
-  df_A <- (length(design_result$labelnames[[1]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
-  df_B <- (length(design_result$labelnames[[2]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
-  df_C <- (length(design_result$labelnames[[3]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
+  df_A <- (length(design_result$labelnameslist[[1]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
+  df_B <- (length(design_result$labelnameslist[[2]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
+  df_C <- (length(design_result$labelnameslist[[3]]) - 1) #calculate degrees of freedom 1 - ignoring the * e sphericity correction
 
-  df_AB <- (length(design_result$labelnames[[1]]) - 1) * (length(design_result$labelnames[[2]]) - 1)
-  df_AC <- (length(design_result$labelnames[[1]]) - 1) * (length(design_result$labelnames[[3]]) - 1)
-  df_BC <- (length(design_result$labelnames[[2]]) - 1) * (length(design_result$labelnames[[3]]) - 1)
+  df_AB <- (length(design_result$labelnameslist[[1]]) - 1) * (length(design_result$labelnameslist[[2]]) - 1)
+  df_AC <- (length(design_result$labelnameslist[[1]]) - 1) * (length(design_result$labelnameslist[[3]]) - 1)
+  df_BC <- (length(design_result$labelnameslist[[2]]) - 1) * (length(design_result$labelnameslist[[3]]) - 1)
 
-  df_ABC <- (length(design_result$labelnames[[1]]) - 1) * (length(design_result$labelnames[[2]]) - 1) * (length(design_result$labelnames[[3]]) - 1)
+  df_ABC <- (length(design_result$labelnameslist[[1]]) - 1) * (length(design_result$labelnameslist[[2]]) - 1) * (length(design_result$labelnameslist[[3]]) - 1)
 
-  df_error <- (design_result$n * length(design_result$mu)) - (length(design_result$labelnames[[1]])) * (length(design_result$labelnames[[2]])) * (length(design_result$labelnames[[3]]))
+  df_error <- (design_result$n * length(design_result$mu)) - (length(design_result$labelnameslist[[1]])) * (length(design_result$labelnames[[2]])) * (length(design_result$labelnames[[3]]))
   df_total <- df_error + df_A + df_B + df_C + df_AB + df_AC + df_BC + df_ABC
 
   # Calculate sum of squares
-  MS_A <- design_result$n * length(design_result$labelnames[[2]]) * length(design_result$labelnames[[3]]) * (sum((mu_A - mean(mu_A))^2)/(length(design_result$labelnames[[2]])-1))
-  SS_A <- design_result$n * length(design_result$labelnames[[2]]) * length(design_result$labelnames[[3]]) * sum((mu_A - mean(mu_A))^2)
+  MS_A <- design_result$n * length(design_result$labelnameslist[[2]]) * length(design_result$labelnameslist[[3]]) * (sum((mu_A - mean(mu_A))^2)/(length(design_result$labelnameslist[[2]])-1))
+  SS_A <- design_result$n * length(design_result$labelnameslist[[2]]) * length(design_result$labelnameslist[[3]]) * sum((mu_A - mean(mu_A))^2)
 
-  MS_B <- design_result$n * length(design_result$labelnames[[1]]) * length(design_result$labelnames[[3]]) * (sum((mu_B - mean(mu_B))^2)/(length(design_result$labelnames[[2]])-1))
-  SS_B <- design_result$n * length(design_result$labelnames[[1]]) * length(design_result$labelnames[[3]]) * sum((mu_B - mean(mu_B))^2)
+  MS_B <- design_result$n * length(design_result$labelnameslist[[1]]) * length(design_result$labelnameslist[[3]]) * (sum((mu_B - mean(mu_B))^2)/(length(design_result$labelnameslist[[2]])-1))
+  SS_B <- design_result$n * length(design_result$labelnameslist[[1]]) * length(design_result$labelnameslist[[3]]) * sum((mu_B - mean(mu_B))^2)
 
-  MS_C <- design_result$n * length(design_result$labelnames[[1]]) * length(design_result$labelnames[[2]]) * (sum((mu_C - mean(mu_C))^2)/(length(design_result$labelnames[[2]])-1))
-  SS_C <- design_result$n * length(design_result$labelnames[[1]]) * length(design_result$labelnames[[2]]) * sum((mu_C - mean(mu_C))^2)
+  MS_C <- design_result$n * length(design_result$labelnameslist[[1]]) * length(design_result$labelnameslist[[2]]) * (sum((mu_C - mean(mu_C))^2)/(length(design_result$labelnameslist[[2]])-1))
+  SS_C <- design_result$n * length(design_result$labelnameslist[[1]]) * length(design_result$labelnameslist[[2]]) * sum((mu_C - mean(mu_C))^2)
 
-  MS_AB <- design_result$n * length(design_result$labelnames[[3]]) * sum(mu_AB^2)/((length(design_result$labelnames[[1]])-1) * (length(design_result$labelnames[[2]])-1))
-  SS_AB <- design_result$n * length(design_result$labelnames[[3]]) * sum(mu_AB^2)
+  MS_AB <- design_result$n * length(design_result$labelnameslist[[3]]) * sum(mu_AB^2)/((length(design_result$labelnameslist[[1]])-1) * (length(design_result$labelnameslist[[2]])-1))
+  SS_AB <- design_result$n * length(design_result$labelnameslist[[3]]) * sum(mu_AB^2)
 
-  SS_AB_between <- design_result$n * length(design_result$labelnames[[3]]) * sum((apply(mu_array,c(2,3),mean) - mean(apply(mu_array,c(2,3),mean)))^2)
+  SS_AB_between <- design_result$n * length(design_result$labelnameslist[[3]]) * sum((apply(mu_array,c(2,3),mean) - mean(apply(mu_array,c(2,3),mean)))^2)
   SS_AB_2 <- SS_AB_between - SS_A - SS_B
 
-  MS_AC <- design_result$n * length(design_result$labelnames[[2]]) * sum(mu_AC^2)/((length(design_result$labelnames[[1]])-1) * (length(design_result$labelnames[[3]])-1))
-  SS_AC <- design_result$n * length(design_result$labelnames[[2]]) * sum(mu_AC^2)
+  MS_AC <- design_result$n * length(design_result$labelnameslist[[2]]) * sum(mu_AC^2)/((length(design_result$labelnameslist[[1]])-1) * (length(design_result$labelnameslist[[3]])-1))
+  SS_AC <- design_result$n * length(design_result$labelnameslist[[2]]) * sum(mu_AC^2)
 
-  SS_AC_between <- design_result$n * length(design_result$labelnames[[2]]) * sum((apply(mu_array,c(1,3),mean) - mean(apply(mu_array,c(1,3),mean)))^2)
+  SS_AC_between <- design_result$n * length(design_result$labelnameslist[[2]]) * sum((apply(mu_array,c(1,3),mean) - mean(apply(mu_array,c(1,3),mean)))^2)
   SS_AC_2 <- SS_AC_between - SS_A - SS_C
 
-  MS_BC <- design_result$n * length(design_result$labelnames[[1]]) * sum(mu_BC^2)/((length(design_result$labelnames[[2]])-1) * (length(design_result$labelnames[[3]])-1))
-  SS_BC <- design_result$n * length(design_result$labelnames[[1]]) * sum(mu_BC^2)
+  MS_BC <- design_result$n * length(design_result$labelnameslist[[1]]) * sum(mu_BC^2)/((length(design_result$labelnameslist[[2]])-1) * (length(design_result$labelnameslist[[3]])-1))
+  SS_BC <- design_result$n * length(design_result$labelnameslist[[1]]) * sum(mu_BC^2)
 
-  SS_BC_between <- design_result$n * length(design_result$labelnames[[1]]) * sum((apply(mu_array,c(1,2),mean) - mean(apply(mu_array,c(1,2),mean)))^2)
+  SS_BC_between <- design_result$n * length(design_result$labelnameslist[[1]]) * sum((apply(mu_array,c(1,2),mean) - mean(apply(mu_array,c(1,2),mean)))^2)
   SS_BC_2 <- SS_BC_between - SS_B - SS_C
 
   MS_total <- design_result$sd^2

@@ -106,7 +106,7 @@ test_that("2w defaults", {
   expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$design, "2w")
-  expect_equal(d$labelnames, list(c("a1", "a2")))
+  expect_equal(d$labelnameslist, list(c("a1", "a2")))
   expect_equal(d$factornames, "a")
 })
 
@@ -132,7 +132,7 @@ test_that("2b defaults", {
   expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$design, "2b")
-  expect_equal(d$labelnames, list(c("a1", "a2")))
+  expect_equal(d$labelnameslist, list(c("a1", "a2")))
   expect_equal(d$factornames, "a")
 })
 
@@ -158,7 +158,7 @@ test_that("2w set r & labels", {
   expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$design, "2w")
-  expect_equal(d$labelnames, list(c("W1", "W2")))
+  expect_equal(d$labelnameslist, list(c("W1", "W2")))
   expect_equal(d$factornames, "W")
 })
 
@@ -184,7 +184,7 @@ test_that("2b set r & labels", {
   expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$design, "2b")
-  expect_equal(d$labelnames, list(c("B1", "B2")))
+  expect_equal(d$labelnameslist, list(c("B1", "B2")))
   expect_equal(d$factornames, "B")
 })
 
@@ -214,7 +214,7 @@ test_that("4w", {
   expect_true(dplyr::all_equal(d$sigmatrix, as.data.frame(sigma)))
 
   expect_equal(d$design, "4w")
-  expect_equal(d$labelnames, list(c("W1", "W2", "W3", "W4")))
+  expect_equal(d$labelnameslist, list(c("W1", "W2", "W3", "W4")))
   expect_equal(d$factornames, "W")
 })
 
@@ -244,7 +244,7 @@ test_that("4b", {
   expect_true(dplyr::all_equal(d$sigmatrix, as.data.frame(sigma)))
 
   expect_equal(d$design, "4b")
-  expect_equal(d$labelnames, list(c("B1", "B2", "B3", "B4")))
+  expect_equal(d$labelnameslist, list(c("B1", "B2", "B3", "B4")))
   expect_equal(d$factornames, "B")
 })
 
@@ -274,7 +274,7 @@ test_that("2w*2b", {
   expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$design, "2w*2b")
-  expect_equal(d$labelnames, list(c("W1", "W2"), c("B1", "B2")))
+  expect_equal(d$labelnameslist, list(c("W1", "W2"), c("B1", "B2")))
   expect_equal(d$factornames, c("W", "B"))
 })
 
@@ -303,7 +303,7 @@ test_that("2b*2w", {
   expect_true(dplyr::all_equal(d$sigmatrix, mat))
 
   expect_equal(d$design, "2b*2w")
-  expect_equal(d$labelnames, list(c("B1", "B2"), c("W1", "W2")))
+  expect_equal(d$labelnameslist, list(c("B1", "B2"), c("W1", "W2")))
   expect_equal(d$factornames, c("B", "W"))
 })
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ANOVA_exact.R
 \name{ANOVA_exact}
 \alias{ANOVA_exact}
-\title{Create an empirical data set from the design; alternative to simulation}
+\title{Simulates on exact empirical data set from the design to calculate power}
 \usage{
 ANOVA_exact(design_result, alpha_level, verbose = TRUE)
 }
@@ -17,7 +17,7 @@ ANOVA_exact(design_result, alpha_level, verbose = TRUE)
 Returns dataframe with simulation data (power and effect sizes), anova results and simple effect results, plot of exact data, and alpha_level.
 }
 \description{
-Create an empirical data set from the design; alternative to simulation
+Simulates on exact empirical data set from the design to calculate power
 }
 \section{References}{
 
@@ -27,7 +27,7 @@ to be added
 \examples{
 ## Set up a within design with 2 factors, each with 2 levels,
 ## with correlation between observations of 0.8,
-## 40 participants (woh do all conditions), and standard deviation of 2
+## 40 participants (who do all conditions), and standard deviation of 2
 ## with a mean pattern of 1, 0, 1, 0, conditions labeled 'condition' and
 ## 'voice', with names for levels of "cheerful", "sad", amd "human", "robot"
 design_result <- ANOVA_design(design = "2w*2w", n = 40, mu = c(1, 0, 1, 0),
