@@ -846,7 +846,7 @@ plot_power(design_result, min_n = 20, max_n = 100)
 Potvin & Schutz (2000) simulate a wide range of repeated measure designs. The give an example of a 3x3 design, with the following correlation matrix:
 
 ```{r, out.width = "600px", echo=FALSE}
-knitr::include_graphics("vignettes/screenshots/PS2000.png")
+knitr::include_graphics("vignettes/screenshots/PS2000.gif")
 ```
 
 Variances were set to 1 (so all covariance matrices in their simulations were identical). In this specific example, the white fields are related to the correlation for the A main effect (these cells have the same level for B, but different levels of A). The grey cells are related to the main effect of B (the cells have the same level of A, but different levels of B). Finally, the black cells are related to the AxB interaction (they have different levels of A and B). The diagonal (all 1) relate to cells with the same levels of A and B. 

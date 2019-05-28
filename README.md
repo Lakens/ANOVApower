@@ -1558,7 +1558,7 @@ Potvin & Schutz (2000) simulate a wide range of repeated measure
 designs. The give an example of a 3x3 design, with the following
 correlation matrix:
 
-<img src="vignettes/screenshots/PS2000.png" width="600px" />
+<img src="vignettes/screenshots/PS2000.gif" width="600px" />
 
 Variances were set to 1 (so all covariance matrices in their simulations
 were identical). In this specific example, the white fields are related
