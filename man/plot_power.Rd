@@ -4,10 +4,12 @@
 \alias{plot_power}
 \title{Convenience function to plot power across a range of sample sizes.}
 \usage{
-plot_power(design_result, max_n, plot = TRUE)
+plot_power(design_result, min_n = 7, max_n = 100, plot = TRUE)
 }
 \arguments{
 \item{design_result}{Output from the ANOVA_design function}
+
+\item{min_n}{Minimum sample size in power curve.}
 
 \item{max_n}{Maximum sample size in power curve.}
 
@@ -32,5 +34,5 @@ design_result <- ANOVA_design(design = "3b",
                              labelnames = c("condition",
                              "cheerful", "neutral", "sad"))
 
-plot_power(design_result, max_n = 300)
+plot_power(design_result, min_n = 50, max_n = 70)
 }

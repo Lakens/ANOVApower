@@ -12,7 +12,7 @@
 #'                              labelnames = c("condition",
 #'                              "cheerful", "neutral", "sad"))
 #'
-#' plot_power(design_result, max_n = 300)
+#' plot_power(design_result, min_n = 50, max_n = 70)
 #' @section References:
 #' too be added
 #' @import ggplot2
@@ -46,7 +46,7 @@ plot_power <- function(design_result, min_n = 7, max_n = 100, plot = TRUE){
   }
   plot_data <- suppressMessages(melt(power_df, id = c('n')))
 
-  p1 <- ggplot(data=plot_data, aes(x = n, y = value)) +
+  p1 <- ggplot(data=plot_data, aes(x = plot_data$n, y = plot_data$value)) +
     geom_line( size=1.5) +
     scale_x_continuous(limits = c(min_n, max_n)) +
     scale_y_continuous(limits = c(0, 100), breaks = seq(0,100,10)) +
