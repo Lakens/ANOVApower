@@ -373,7 +373,11 @@ design_result <- ANOVA_design(design = "2b*2w",
 #                                   alpha = 0.05, 
 #                                   nsims = nsims, 
 #                                   seed = 1234)
-# saveRDS(power_result_vig_1, file = "vignettes/sim_data/power_result_vig_1.rds")
+# reduce file size for github - only save what is needed
+# power_result_vig_1$sim_data <- NULL
+# #power_result_vig_1$plot1 <- NULL
+# power_result_vig_1$plot2 <- NULL
+# saveRDS(power_result_vig_1, file = "vignettes/sim_data/power_result_vig_1_test.rds")
 power_result_vig_1 <- readRDS(file = "vignettes/sim_data/power_result_vig_1.rds")
 ```
 
@@ -452,6 +456,10 @@ design_result <- ANOVA_design(design = design,
 ``` r
 # power_result_vig_2 <- ANOVA_power(design_result, nsims = nsims, seed = 1234)
 # 
+# reduce file size for github - only save what is needed
+# power_result_vig_2$sim_data <- NULL
+# power_result_vig_2$plot1 <- NULL
+# power_result_vig_2$plot2 <- NULL
 # saveRDS(power_result_vig_2, file = "vignettes/sim_data/power_result_vig_2.rds")
 power_result_vig_2 <- readRDS(file = "vignettes/sim_data/power_result_vig_2.rds")
 
@@ -1250,6 +1258,10 @@ design_result <- ANOVA_design(design = design,
 
 ``` r
 # power_result_vig_3 <- ANOVA_power(design_result, nsims = nsims)
+# reduce file size for github - only save what is needed
+# power_result_vig_3$sim_data <- NULL
+# power_result_vig_3$plot1 <- NULL
+# power_result_vig_3$plot2 <- NULL
 # saveRDS(power_result_vig_3, file = "vignettes/sim_data/power_result_vig_3.rds")
 power_result_vig_3 <- readRDS(file = "vignettes/sim_data/power_result_vig_3.rds")
 ```
@@ -1605,15 +1617,12 @@ design_result <- ANOVA_design(design = design,
 
 ``` r
 # power_result_vig_4 <- ANOVA_power(design_result, nsims = nsims)
+# power_result_vig_4$sim_data <- NULL
+# power_result_vig_4$plot1 <- NULL
+# power_result_vig_4$plot2 <- NULL
 # saveRDS(power_result_vig_4, file = "vignettes/sim_data/power_result_vig_4.rds")
 power_result_vig_4 <- readRDS(file = "vignettes/sim_data/power_result_vig_4.rds")
-power_result_vig_4$main_results
 ```
-
-    ##            power effect_size
-    ## anova_A   27.014   0.1299693
-    ## anova_B   64.091   0.2565452
-    ## anova_A:B 26.986   0.1295441
 
 We can use the exact simulation as well.
 
