@@ -9,3 +9,9 @@
 ^.travis.yml$
 ^\.Rproj\.user$
 ^codecov\.yml$
+
+^jamovi$
+^build/js$
+^build/R$
+^temp$
+^.*\.jmo$
