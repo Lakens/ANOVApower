@@ -30,6 +30,7 @@ Suggests:
     pwr,
     testthat,
     dplyr,
-    covr
-VignetteBuilder: 
+    covr,
+    jmvcore
+VignetteBuilder:
     knitr
