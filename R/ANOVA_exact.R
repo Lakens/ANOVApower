@@ -45,7 +45,8 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
       sd = sd_pooled,
       type = "two.sample",
       alternative = "two.sided",
-      strict = TRUE
+      strict = TRUE,
+      sig.level = alpha_level
     )$power
 
     d <- m_diff / sd_pooled #Cohen's d
@@ -80,7 +81,8 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
       sd = s_diff,
       type = "paired",
       alternative = "two.sided",
-      strict = TRUE
+      strict = TRUE,
+      sig.level = alpha_level
     )$power
 
     #Cohen's d_z, using s_diff as standardizer
