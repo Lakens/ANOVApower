@@ -35,7 +35,8 @@ test_that("3-way design", {
   design_result <- ANOVA_design(design = "2b*2b*2b",
                                 n = 50,
                                 mu = c(2, 2, 6, 1, 6, 6, 1, 8),
-                                sd = 10 )
+                                sd = 10,
+                                plot = FALSE)
 
 
   power <- power_threeway_between(design_result)

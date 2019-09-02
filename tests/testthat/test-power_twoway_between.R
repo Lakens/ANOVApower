@@ -34,7 +34,8 @@ test_that("2x2 design", {
                                 n = n,
                                 mu = mu,
                                 sd = sd,
-                                labelnames = labelnames)
+                                labelnames = labelnames,
+                                plot = FALSE)
 
 
 
