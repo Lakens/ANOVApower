@@ -96,6 +96,7 @@ power_oneway_within <- function(design_result, alpha_level=0.05){
                  f_2 = f_2,
                  f_2_SPSS = f_2_SPSS,
                  lambda = lambda,
+                 lambda_2 = lambda_2,
                  F_critical = F_critical,
                  power = power,
                  df1 = df1,
