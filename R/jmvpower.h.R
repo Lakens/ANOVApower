@@ -151,12 +151,12 @@ jmvpowerResults <- if (requireNamespace('jmvcore')) R6::R6Class(
                             rows=4,
                             columns=list(
                                 list(
-                                    `name`="name", 
-                                    `title`="", 
+                                    `name`="name",
+                                    `title`="",
                                     `type`="text"),
                                 list(
-                                    `name`="value", 
-                                    `title`="", 
+                                    `name`="value",
+                                    `title`="",
                                     `type`="text")),
                             clearWith=list(
                                 "design",
@@ -209,14 +209,14 @@ jmvpowerResults <- if (requireNamespace('jmvcore')) R6::R6Class(
                             visible="(simulate)",
                             columns=list(
                                 list(
-                                    `name`="name", 
-                                    `title`="", 
+                                    `name`="name",
+                                    `title`="",
                                     `type`="text"),
                                 list(
-                                    `name`="power", 
+                                    `name`="power",
                                     `title`="Power"),
                                 list(
-                                    `name`="es", 
+                                    `name`="es",
                                     `title`="Effect-size")),
                             clearWith=list(
                                 "design",
@@ -235,14 +235,14 @@ jmvpowerResults <- if (requireNamespace('jmvcore')) R6::R6Class(
                             visible="(simulate)",
                             columns=list(
                                 list(
-                                    `name`="name", 
-                                    `title`="", 
+                                    `name`="name",
+                                    `title`="",
                                     `type`="text"),
                                 list(
-                                    `name`="power", 
+                                    `name`="power",
                                     `title`="Power"),
                                 list(
-                                    `name`="es", 
+                                    `name`="es",
                                     `title`="Effect-size")),
                             clearWith=list(
                                 "design",
@@ -276,7 +276,7 @@ jmvpowerBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 
 #' ANOVA power
 #'
-#' 
+#'
 #' @param design a string describing the design
 #' @param labelnames a comma separated string describing the factor and level
 #'   labels
@@ -300,6 +300,7 @@ jmvpowerBase <- if (requireNamespace('jmvcore')) R6::R6Class(
 #'   \code{results$sims$multi} \tab \tab \tab \tab \tab a table \cr
 #' }
 #'
+#' @importFrom utils data
 #' @export
 jmvpower <- function(
     design = "2b*2w",

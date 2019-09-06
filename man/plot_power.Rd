@@ -4,10 +4,13 @@
 \alias{plot_power}
 \title{Convenience function to plot power across a range of sample sizes.}
 \usage{
-plot_power(design_result, min_n = 7, max_n = 100, plot = TRUE)
+plot_power(design_result, alpha_level, min_n = 7, max_n = 100,
+  plot = TRUE)
 }
 \arguments{
 \item{design_result}{Output from the ANOVA_design function}
+
+\item{alpha_level}{Alpha level used to determine statistical significance}
 
 \item{min_n}{Minimum sample size in power curve.}
 

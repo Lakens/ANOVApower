@@ -4,10 +4,13 @@
 \alias{ANOVA_exact}
 \title{Simulates on exact empirical data set from the design to calculate power}
 \usage{
-ANOVA_exact(design_result, alpha_level, verbose = TRUE)
+ANOVA_exact(design_result, correction = "none", alpha_level,
+  verbose = TRUE)
 }
 \arguments{
 \item{design_result}{Output from the ANOVA_design function}
+
+\item{correction}{Set a correction of violations of sphericity. This can be set to "none", "GG" Grennhouse-Geisser, and "HF" Huynh-Feldt}
 
 \item{alpha_level}{Alpha level used to determine statistical significance}
 

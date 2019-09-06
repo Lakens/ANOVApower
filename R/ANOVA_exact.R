@@ -1,6 +1,7 @@
 #' Simulates on exact empirical data set from the design to calculate power
 #' @param design_result Output from the ANOVA_design function
 #' @param alpha_level Alpha level used to determine statistical significance
+#' @param correction Set a correction of violations of sphericity. This can be set to "none", "GG" Grennhouse-Geisser, and "HF" Huynh-Feldt
 #' @param verbose Set to FALSE to not print results (default = TRUE)
 #' @return Returns dataframe with simulation data (power and effect sizes), anova results and simple effect results, plot of exact data, and alpha_level.
 #' @examples
@@ -16,7 +17,7 @@
 #' exact_result <- ANOVA_exact(design_result, alpha_level = 0.05)
 #' @section References:
 #' to be added
-#' @importFrom stats pnorm pt qnorm qt as.formula median qf power.t.test
+#' @importFrom stats pnorm pt qnorm qt as.formula median qf power.t.test pf
 #' @importFrom utils combn
 #' @importFrom reshape2 melt
 #' @importFrom MASS mvrnorm
@@ -25,7 +26,18 @@
 #' @export
 #'
 
-ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
+ANOVA_exact <- function(design_result, correction = "none", alpha_level, verbose = TRUE) {
+
+  if (is.element(correction, c("none", "GG", "HF")) == FALSE ) {
+    stop("Correction for sphericity can only be none, GG, or HF")
+  }
+
+  #Errors with very small sample size; issue with mvrnorm function from MASS package
+  if (design_result$n < prod(as.numeric(unlist(regmatches(design_result$design,
+                                       gregexpr("[[:digit:]]+", design_result$design)))))
+  ) {
+    stop("ANOVA_exact cannot handle small sample sizes (n < the product of the factors) at this time; please pass this design_result to the ANOVA_power function to simulate power")
+  }
 
   effect_size_d <- function(x, y, conf.level = 0.95){
     sd1 <- sd(x) #standard deviation of measurement 1
@@ -97,6 +109,90 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
     ))
   }
 
+  #Check to ensure there is a within subject factor -- if none --> no MANOVA
+  run_manova <- grepl("w", design_result$design)
+
+  Roy <- function(eig, q, df.res) {
+    p <- length(eig)
+    test <- max(eig)
+    tmp1 <- max(p, q)
+    tmp2 <- df.res - tmp1 + q
+    c(test, (tmp2 * test)/tmp1, tmp1, tmp2)
+  }
+
+  Wilks <- function(eig, q, df.res)
+  {
+    test <- prod(1/(1 + eig))
+    p <- length(eig)
+    tmp1 <- df.res - 0.5 * (p - q + 1)
+    tmp2 <- (p * q - 2)/4
+    tmp3 <- p^2 + q^2 - 5
+    tmp3 <- if (tmp3 > 0)
+      sqrt(((p * q)^2 - 4)/tmp3)
+    else 1
+    c(test, ((test^(-1/tmp3) - 1) * (tmp1 * tmp3 - 2 * tmp2))/p/q,
+      p * q, tmp1 * tmp3 - 2 * tmp2)
+  }
+
+  HL <- function(eig, q, df.res)
+  {
+    test <- sum(eig)
+    p <- length(eig)
+    m <- 0.5 * (abs(p - q) - 1)
+    n <- 0.5 * (df.res - p - 1)
+    s <- min(p, q)
+    tmp1 <- 2 * m + s + 1
+    tmp2 <- 2 * (s * n + 1)
+    c(test, (tmp2 * test)/s/s/tmp1, s * tmp1, tmp2)
+  }
+
+  Pillai <- function(eig, q, df.res)
+  {
+    test <- sum(eig/(1 + eig))
+    p <- length(eig)
+    s <- min(p, q)
+    n <- 0.5 * (df.res - p - 1)
+    m <- 0.5 * (abs(p - q) - 1)
+    tmp1 <- 2 * m + s + 1
+    tmp2 <- 2 * n + s + 1
+    c(test, (tmp2/tmp1 * test)/(s - test), s * tmp1, s * tmp2)
+  }
+
+  #Only utilized if MANOVA output included (see run_manova)
+  Anova.mlm.table <- function(x, ...)
+  {
+    test <- x$test
+    repeated <- x$repeated
+    ntests <- length(x$terms)
+    tests <- matrix(NA, ntests, 4)
+    if (!repeated)
+      SSPE.qr <- qr(x$SSPE)
+    for (term in 1:ntests) {
+      eigs <- Re(eigen(qr.coef(if (repeated) qr(x$SSPE[[term]])
+                               else SSPE.qr,
+                               x$SSP[[term]]), symmetric = FALSE)$values)
+      tests[term, 1:4] <- switch(test, Pillai = Pillai(eigs,
+                                                               x$df[term], x$error.df), Wilks = Wilks(eigs,
+                                                                                                              x$df[term], x$error.df), `Hotelling-Lawley` =
+                                   HL(eigs,
+                                              x$df[term], x$error.df), Roy = Roy(eigs,
+                                                                                         x$df[term], x$error.df))
+    }
+    ok <- tests[, 2] >= 0 & tests[, 3] > 0 & tests[, 4] > 0
+    ok <- !is.na(ok) & ok
+    tests <- cbind(x$df, tests, pf(tests[ok, 2], tests[ok, 3],
+                                   tests[ok, 4], lower.tail = FALSE))
+    rownames(tests) <- x$terms
+    colnames(tests) <- c("df", "test_stat", "approx_F", "num_Df",
+                         "den_Df", "p.value")
+    tests <- structure(as.data.frame(tests), heading = paste("\nType ",
+                                                             x$type, if (repeated)
+                                                               " Repeated Measures", " MANOVA Tests: ", test, " test
+                                                             statistic",
+                                                             sep = ""), class = c("anova", "data.frame"))
+    invisible(tests)
+  }
+
   round_dig <- 4 #Set digits to which you want to round the output.
 
   if (missing(alpha_level)) {
@@ -120,10 +216,7 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   dataframe <- design_result$dataframe
   design_list <- design_result$design_list
 
-  #Errors with very small sample size; issue with mvrnorm function from MASS package
-  if(n < 8){
-    stop("ANOVA_exact cannot handle small sample sizes (n < 8) at this time; please pass this design_result to the ANOVA_power function to simulate power")
-  }
+
 
   ###############
   #Specify factors for formula ----
@@ -135,6 +228,11 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   aov_result <- suppressMessages({aov_car(frml1, #here we use frml1 to enter formula 1 as designed above on the basis of the design
                                           data = dataframe, include_aov = FALSE,
                                           anova_table = list(es = "pes")) }) #This reports PES not GES
+
+  #Run MANOVA if within subject factor is included; otherwise ignored
+  if (run_manova == TRUE) {
+    manova_result <- Anova.mlm.table(aov_result$Anova)
+  }
 
   ###############
   # Set up dataframe for storing empirical results
@@ -187,7 +285,9 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   #Can be set to NICE to speed up, but required data grabbing from output the change.
   aov_result <- suppressMessages({aov_car(frml1, #here we use frml1 to enter fromula 1 as designed above on the basis of the design
                                           data = dataframe, include_aov = FALSE, #Need development code to get aov_include function
-                                          anova_table = list(es = "pes"))}) #This reports PES not GES
+                                          anova_table = list(es = "pes",
+                                                             correction = correction))}) #This reports PES not GES
+
 
 
   #Add additional statistics
@@ -196,14 +296,33 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   colnames(anova_table) <- c("num_Df", "den_Df", "MSE", "F", "pes", "p")
 
   #Calculate cohen's f
-  anova_table$f2 <- anova_table$pes/(1-anova_table$pes)
+  anova_table$f2 <- anova_table$pes/(1 - anova_table$pes)
   #Calculate noncentrality
   anova_table$lambda <- anova_table$f2*anova_table$den_Df
 
   #minusalpha<- 1-alpha_level
-  anova_table$Ft <- qf((1-alpha_level), anova_table$num_Df, anova_table$den_Df)
+  anova_table$Ft <- qf((1 - alpha_level), anova_table$num_Df, anova_table$den_Df)
   #Calculate power
-  anova_table$power <- (1-pf(anova_table$Ft, anova_table$num_Df, anova_table$den_Df, anova_table$lambda))*100
+  anova_table$power <- (1 - pf(anova_table$Ft, anova_table$num_Df, anova_table$den_Df, anova_table$lambda))*100
+
+  #MANOVA exact results
+
+  # Store MANOVA result if there are within subject factors
+  if (run_manova == TRUE) {
+    manova_result <- Anova.mlm.table(aov_result$Anova)
+
+
+
+  manova_result$f2 <- manova_result$test_stat / (1 - manova_result$test_stat)
+  manova_result$lambda <-   manova_result$f2 *   manova_result$den_Df
+  manova_result$Ft <- qf((1 - alpha_level), manova_result$num_Df,   manova_result$den_Df)
+  manova_result$power <- round(1 - pf(manova_result$Ft,
+                                             manova_result$num_Df,
+                                             manova_result$den_Df,
+                                             manova_result$lambda), 4) * 100
+
+}
+  ###
 
   for (j in 1:possible_pc) {
     x <- dataframe$y[which(dataframe$cond == paired_tests[1,j])]
@@ -227,10 +346,26 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   ###############
   #Sumary of power and effect sizes of main effects and contrasts ----
   ###############
-  main_results <- round(data.frame(anova_table$power, anova_table$pes, sqrt(anova_table$f2), anova_table$lambda), round_dig)
+  #ANOVA
+  main_results <- round(data.frame(anova_table$power,
+                                   anova_table$pes,
+                                   sqrt(anova_table$f2),
+                                   anova_table$lambda),
+                        round_dig)
   rownames(main_results) <- rownames(anova_table)
   colnames(main_results) <- c("power", "partial_eta_squared", "cohen_f", "non_centrality")
   main_results$power <- round(main_results$power, 2)
+  #MANOVA
+  if (run_manova == TRUE) {
+  manova_results <- round(data.frame(manova_result$power,
+                                     manova_result$test_stat,
+                                     sqrt(manova_result$f2),
+                                     manova_result$lambda),
+                          round_dig)
+  rownames(manova_results) <- rownames(manova_result)
+  colnames(manova_results) <- c("power", "pillai_trace", "cohen_f", "non_centrality")
+  manova_results$power <- round(manova_results$power, 2)
+  }
 
   #Data summary for pairwise comparisons
   power_paired = as.data.frame(apply(as.matrix(sim_data[(2 * (2 ^ factors - 1) + 1):(2 * (2 ^ factors - 1) + possible_pc)]), 2,
@@ -245,8 +380,10 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   #Create plot
 
   if (factors == 1) {meansplot = ggplot(dataframe, aes_string(y = "y", x = factornames[1]))}
-  if (factors == 2) {meansplot = ggplot(dataframe, aes_string(y = "y", x = factornames[1])) + facet_wrap(  paste("~",factornames[2],sep=""))}
-  if (factors == 3) {meansplot = ggplot(dataframe, aes_string(y = "y", x = factornames[1])) + facet_grid(  paste(factornames[3],"~",factornames[2], sep=""))}
+  if (factors == 2) {meansplot = ggplot(dataframe, aes_string(y = "y",
+                                                              x = factornames[1])) + facet_wrap(  paste("~",factornames[2],sep = ""))}
+  if (factors == 3) {meansplot = ggplot(dataframe, aes_string(y = "y",
+                                                              x = factornames[1])) + facet_grid(  paste(factornames[3],"~",factornames[2], sep = ""))}
 
   meansplot2 = meansplot +
     geom_jitter(position = position_jitter(0.2)) +
@@ -262,7 +399,7 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
   #######################
   # Return Results ----
   #######################
-  if(verbose == TRUE){
+  if (verbose == TRUE) {
     # The section below should be blocked out when in Shiny
     cat("Power and Effect sizes for ANOVA tests")
     cat("\n")
@@ -273,11 +410,16 @@ ANOVA_exact <- function(design_result, alpha_level, verbose = TRUE) {
     print(pc_results)
   }
 
+  if (run_manova == FALSE) {
+  manova_results = NULL
+    }
+
   # Return results in list()
   invisible(list(dataframe = dataframe,
                  aov_result = aov_result,
                  main_results = main_results,
                  pc_results = pc_results,
+                 manova_results = manova_results,
                  alpha_level = alpha_level,
                  plot = meansplot2))
 }
